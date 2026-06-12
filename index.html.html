@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Housing.com | Sales Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --red: #e03131;
+    --red-light: #fff5f5;
+    --red-mid: #ffc9c9;
+    --green: #2f9e44;
+    --green-light: #ebfbee;
+    --green-mid: #b2f2bb;
+    --amber: #e67700;
+    --amber-light: #fff9db;
+    --blue: #1971c2;
+    --blue-light: #e7f5ff;
+    --gray-50: #f8f9fa;
+    --gray-100: #f1f3f5;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-400: #ced4da;
+    --gray-500: #adb5bd;
+    --gray-600: #868e96;
+    --gray-700: #495057;
+    --gray-800: #343a40;
+    --gray-900: #212529;
+    --brand: #e03131;
+    --brand-dark: #b91c1c;
+    --surface: #ffffff;
+    --page: #f4f5f7;
+    --border: #e9ecef;
+    --text: #212529;
+    --muted: #6c757d;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--page);
+    color: var(--text);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .brand-logo {
+    background: var(--brand);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+  .topbar h1 { font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.9); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .badge-process {
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.8);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .btn-edit {
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+  }
+  .btn-edit:hover { background: var(--brand-dark); }
+  .btn-edit svg { width: 14px; height: 14px; }
+
+  /* LAYOUT */
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    margin-top: 28px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent, var(--gray-300));
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: 'Roboto Mono', monospace;
+    line-height: 1.2;
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .kpi-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    margin-top: 6px;
+  }
+  .badge-danger { background: var(--red-light); color: var(--red); }
+  .badge-success { background: var(--green-light); color: var(--green); }
+  .badge-warning { background: var(--amber-light); color: var(--amber); }
+
+  /* TABLES */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--gray-50);
+  }
+  .card-header h3 { font-size: 13px; font-weight: 600; }
+  .card-header span { font-size: 11px; color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    background: var(--gray-50);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--gray-100); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--gray-50); }
+  tbody td {
+    padding: 10px 14px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .td-mono { font-family: 'Roboto Mono', monospace; font-size: 12px; }
+  .td-name { font-weight: 500; }
+  .td-total { font-weight: 700; font-family: 'Roboto Mono', monospace; font-size: 12px; }
+
+  .status-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .status-over { background: var(--green-light); color: var(--green); }
+  .status-under { background: var(--red-light); color: var(--red); }
+
+  .progress-bar-wrap {
+    background: var(--gray-200);
+    border-radius: 4px;
+    height: 6px;
+    width: 100px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s;
+  }
+
+  /* WEEKLY TABLE */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* CHART AREA */
+  .chart-wrap {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-top: 12px;
+  }
+  .last-updated {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--gray-100);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* MODAL OVERLAY */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 28px 32px;
+    width: 440px;
+    max-width: 95vw;
+    box-shadow: var(--shadow-md);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .modal p { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    transition: border 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--blue); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  .btn-primary {
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--brand-dark); }
+  .btn-secondary {
+    background: var(--gray-100);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { background: var(--gray-200); }
+  .error-msg { color: var(--red); font-size: 12px; margin-top: 4px; display: none; }
+  .modal-tabs { display: flex; gap: 0; margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .modal-tab {
+    flex: 1;
+    text-align: center;
+    padding: 9px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: var(--gray-50);
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .modal-tab.active { background: var(--brand); color: #fff; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* AGENT EDIT GRID */
+  .agent-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 500px) { .agent-edit-grid { grid-template-columns: 1fr; } }
+  .agent-edit-grid .form-group { margin-bottom: 10px; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 10px 0 16px; }
+
+  .highlight-row td { background: #fff8f0 !important; font-weight: 600; }
+  .sum-row td { background: var(--gray-50) !important; font-weight: 700; border-top: 2px solid var(--gray-300) !important; }
+
+  /* Responsive table scroll */
+  .table-scroll { overflow-x: auto; }
+
+  /* Zebra rows */
+  .zebra tbody tr:nth-child(even) { background: var(--gray-50); }
+  .zebra tbody tr:nth-child(even):hover { background: #eef0f2; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="brand-logo">Housing.com</span>
+    <h1>Sales Performance Dashboard</h1>
+  </div>
+  <div class="topbar-right">
+    <span class="badge-process">Housing Owner</span>
+    <span class="last-updated" id="lastUpdatedBadge">—</span>
+    <button class="btn-edit" onclick="openLoginModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Update Data
+    </button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- JUNE KPIs -->
+  <div class="section-title">June 2025 — Monthly Overview</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent: #e03131;">
+      <div class="kpi-label">Monthly Target</div>
+      <div class="kpi-value" id="kpi-target">₹8,85,000</div>
+      <div class="kpi-sub">June 2025</div>
+    </div>
+    <div class="kpi-card" style="--accent: #2f9e44;">
+      <div class="kpi-label">Total Achievement</div>
+      <div class="kpi-value" id="kpi-achieved">₹1,69,145</div>
+      <div class="kpi-sub" id="kpi-achieved-pct">19.11% of target</div>
+    </div>
+    <div class="kpi-card" style="--accent: #e67700;">
+      <div class="kpi-label">Remaining Target</div>
+      <div class="kpi-value" id="kpi-remaining">₹7,15,855</div>
+      <div class="kpi-sub" id="kpi-remaining-days">19 days left</div>
+    </div>
+    <div class="kpi-card" style="--accent: #1971c2;">
+      <div class="kpi-label">DRR Required</div>
+      <div class="kpi-value" id="kpi-drr">₹37,677</div>
+      <div class="kpi-sub">Daily run rate needed</div>
+    </div>
+    <div class="kpi-card" style="--accent: #7048e8;">
+      <div class="kpi-label">Days Elapsed</div>
+      <div class="kpi-value" id="kpi-elapsed">11</div>
+      <div class="kpi-sub" id="kpi-days-total">of 30 days</div>
+    </div>
+    <div class="kpi-card" style="--accent: #0ca678;">
+      <div class="kpi-label">May Total Revenue</div>
+      <div class="kpi-value">₹3,82,739</div>
+      <div class="kpi-sub">77% of May target</div>
+    </div>
+  </div>
+
+  <!-- CHART ROW -->
+  <div class="section-title">June — Daily Revenue Trend</div>
+  <div class="chart-wrap">
+    <div class="card-header">
+      <h3>Day-wise Collection (June 2025)</h3>
+      <span id="juneChartTotal">Total: ₹1,69,145</span>
+    </div>
+    <div style="padding: 16px 18px;">
+      <div style="position: relative; height: 220px;">
+        <canvas id="juneChart" role="img" aria-label="Bar chart of June daily revenue"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEKLY SUMMARY -->
+  <div class="section-title">May vs June — Weekly Comparison</div>
+  <div class="two-col">
+    <!-- May weekly -->
+    <div class="card">
+      <div class="card-header"><h3>May 2025 — Week-wise</h3><span>Target: ₹2,21,250/week</span></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Deficit</th><th>WoW</th><th>Contribution</th></tr></thead>
+          <tbody id="mayWeeklyBody"></tbody>
+          <tfoot id="mayWeeklyFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+    <!-- June weekly -->
+    <div class="card">
+      <div class="card-header"><h3>June 2025 — Week-wise</h3><span id="juneWeeklyNote">In progress</span></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Deficit</th><th>Contribution</th></tr></thead>
+          <tbody id="juneWeeklyBody"></tbody>
+          <tfoot id="juneWeeklyFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGENT TABLE -->
+  <div class="section-title">June 2025 — Agent-wise Performance</div>
+  <div class="card">
+    <div class="card-header">
+      <h3>Agent Daily Tracker</h3>
+      <span>Sorted by Achievement %</span>
+    </div>
+    <div class="table-scroll">
+      <table class="zebra">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Agent Name</th>
+            <th>Process</th>
+            <th id="agentDateCols">Days →</th>
+            <th>Total</th>
+            <th>Target</th>
+            <th>Achievement %</th>
+            <th>Day Target</th>
+            <th>Wk Target</th>
+            <th>Target Till Now</th>
+            <th>Deficit</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="agentTableBody"></tbody>
+        <tfoot id="agentTableFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- MAY DAILY TABLE -->
+  <div class="section-title">May &amp; June 2025 — Daily Revenue Log</div>
+  <div class="chart-wrap" style="margin-bottom: 14px;">
+    <div class="card-header">
+      <h3>Daily Revenue (May + June)</h3>
+      <span>May: ₹3,82,739 | June: ₹1,69,145</span>
+    </div>
+    <div style="padding: 16px 18px;">
+      <div style="position: relative; height: 200px;">
+        <canvas id="mayChart" role="img" aria-label="Bar chart of May daily revenue"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>May 2025 — Daily Log</h3><span>Total: ₹3,82,739</span></div>
+    <div class="table-scroll">
+      <table class="zebra">
+        <thead><tr><th>Week</th><th>Date</th><th>May Revenue</th><th>June Revenue</th></tr></thead>
+        <tbody id="dailyTableBody"></tbody>
+        <tfoot id="dailyTableFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Housing.com | Housing Owner Process — Sales Dashboard &nbsp;·&nbsp; Confidential</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <h2>🔐 Admin Access</h2>
+    <p>Enter the password to update dashboard data.</p>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter') attemptLogin()">
+      <div class="error-msg" id="loginError">Incorrect password. Try again.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeLoginModal()">Cancel</button>
+      <button class="btn-primary" onclick="attemptLogin()">Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal" style="width: 600px;">
+    <h2>✏️ Update Dashboard</h2>
+    <p>Edit data below and click Save to update the dashboard.</p>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab('tab-june')">June KPIs</button>
+      <button class="modal-tab" onclick="switchTab('tab-agents')">Agent Data</button>
+      <button class="modal-tab" onclick="switchTab('tab-weekly')">Weekly Data</button>
+    </div>
+
+    <!-- TAB: June KPIs -->
+    <div class="tab-panel active" id="tab-june">
+      <div class="agent-edit-grid">
+        <div class="form-group">
+          <label>Monthly Target (₹)</label>
+          <input type="number" id="e-target" placeholder="885000">
+        </div>
+        <div class="form-group">
+          <label>Total Achievement (₹)</label>
+          <input type="number" id="e-achieved" placeholder="169145">
+        </div>
+        <div class="form-group">
+          <label>Days in Month</label>
+          <input type="number" id="e-days-total" placeholder="30">
+        </div>
+        <div class="form-group">
+          <label>Days Elapsed</label>
+          <input type="number" id="e-days-elapsed" placeholder="11">
+        </div>
+        <div class="form-group" style="grid-column: 1/-1;">
+          <label>Last Updated</label>
+          <input type="date" id="e-updated">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">June Daily Revenue (₹) — Days 1–30</div>
+      <div id="juneDailyInputs" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;"></div>
+    </div>
+
+    <!-- TAB: Agents -->
+    <div class="tab-panel" id="tab-agents">
+      <div class="form-group">
+        <label>Select Agent to Edit</label>
+        <select id="agentSelect" onchange="loadAgentEdit()"></select>
+      </div>
+      <div id="agentDayInputs" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px;"></div>
+      <div class="form-group" style="margin-top: 12px;">
+        <label>Agent Monthly Target (₹)</label>
+        <input type="number" id="agentTargetInput" placeholder="68077">
+      </div>
+    </div>
+
+    <!-- TAB: Weekly -->
+    <div class="tab-panel" id="tab-weekly">
+      <div style="font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">May Weekly Revenue (₹)</div>
+      <div id="mayWeeklyInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"></div>
+      <div class="divider"></div>
+      <div style="font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">June Weekly Revenue (₹)</div>
+      <div id="junWeeklyInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveData()">💾 Save & Refresh</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIGURATION — CHANGE PASSWORD HERE
+// ============================================================
+const ADMIN_HASH = "8e2e7a9d3c5b1f4a6d2c8e7a9d3c5b1f"; // MD5 of "housing2025" — change this
+
+// Simple hash for password check (change both the password in your mind and this hash)
+// To generate a new hash: open browser console, run: btoa("yourpassword")
+// Then update ADMIN_B64 below
+const ADMIN_B64 = btoa("housing2025"); // Change "housing2025" to your own password
+
+// ============================================================
+//  INITIAL DATA
+// ============================================================
+let data = {
+  lastUpdated: "2025-06-11",
+  june: {
+    target: 885000,
+    achieved: 169145,
+    daysTotal: 30,
+    daysElapsed: 11,
+    daily: [26428, 11245, 38262, 11229, 11346, 12823, 2000, 7903, 15029, 13055, 19820,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+  },
+  mayWeekly: [
+    { week: "Wk-1", target: 221250, revenue: 113338 },
+    { week: "Wk-2", target: 221250, revenue: 55807 },
+    { week: "Wk-3", target: 221250, revenue: 72355 },
+    { week: "Wk-4", target: 221250, revenue: 141239 }
+  ],
+  juneWeekly: [
+    { week: "Wk-1", target: 221250, revenue: 112333 },
+    { week: "Wk-2", target: 221250, revenue: 56812 },
+    { week: "Wk-3", target: 221250, revenue: 0 },
+    { week: "Wk-4", target: 221250, revenue: 0 }
+  ],
+  mayDaily: [
+    { week:"Wk-1", date:"01-May", may:0 },
+    { week:"Wk-1", date:"02-May", may:8623 },
+    { week:"Wk-1", date:"03-May", may:2123 },
+    { week:"Wk-1", date:"04-May", may:10015 },
+    { week:"Wk-1", date:"05-May", may:4049 },
+    { week:"Wk-1", date:"06-May", may:7042 },
+    { week:"Wk-1", date:"07-May", may:11551 },
+    { week:"Wk-2", date:"08-May", may:7342 },
+    { week:"Wk-2", date:"09-May", may:24567 },
+    { week:"Wk-2", date:"10-May", may:9083 },
+    { week:"Wk-2", date:"11-May", may:12699 },
+    { week:"Wk-2", date:"12-May", may:4359 },
+    { week:"Wk-2", date:"13-May", may:13623 },
+    { week:"Wk-2", date:"14-May", may:11395 },
+    { week:"Wk-3", date:"15-May", may:21386 },
+    { week:"Wk-3", date:"16-May", may:8728 },
+    { week:"Wk-3", date:"17-May", may:4424 },
+    { week:"Wk-3", date:"18-May", may:18774 },
+    { week:"Wk-3", date:"19-May", may:5309 },
+    { week:"Wk-3", date:"20-May", may:8221 },
+    { week:"Wk-3", date:"21-May", may:6075 },
+    { week:"Wk-4", date:"22-May", may:8848 },
+    { week:"Wk-4", date:"23-May", may:4359 },
+    { week:"Wk-4", date:"24-May", may:6162 },
+    { week:"Wk-4", date:"25-May", may:14561 },
+    { week:"Wk-4", date:"26-May", may:32552 },
+    { week:"Wk-4", date:"27-May", may:27545 },
+    { week:"Wk-4", date:"28-May", may:16000 },
+    { week:"Wk-4", date:"29-May", may:11000 },
+    { week:"Wk-4", date:"30-May", may:38342 },
+    { week:"Wk-4", date:"31-May", may:23982 }
+  ],
+  agents: [
+    { name:"Atul Kumar", process:"Housing Owner", target:68077, daily:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Teena Pal OC", process:"Housing Owner", target:68077, daily:[0,0,0,0,2831,0,0,0,0,2233,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Cally Richard OC", process:"Housing Owner", target:68077, daily:[0,0,0,0,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Km Kashish Sengar", process:"Housing Owner", target:68077, daily:[0,4021,6489,0,0,0,0,0,2831,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Neha Sharma", process:"Housing Owner", target:68077, daily:[0,0,0,0,0,0,2000,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Uqba Suhail OC", process:"Housing Owner", target:68077, daily:[0,0,0,5073,0,6039,0,0,2662,0,2831,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Lucky Malik", process:"Housing Owner", target:68077, daily:[8554,3834,2757,4152,3067,2359,0,0,3244,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Priyanka Saini OC", process:"Housing Owner", target:68077, daily:[0,0,2831,0,2724,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Mohit Batra OC", process:"Housing Owner", target:68077, daily:[0,0,0,0,2724,0,0,0,3568,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Altmas OC", process:"Housing Owner", target:68077, daily:[7255,0,0,0,0,0,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Shivani Pal OC", process:"Housing Owner", target:68077, daily:[0,3390,3179,0,0,0,0,0,0,3244,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Md Mehtab", process:"Housing Owner", target:68077, daily:[10619,0,20175,2004,0,0,0,5899,2724,0,8556,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { name:"Aman Tyagi OC", process:"Housing Owner", target:68077, daily:[0,0,2831,0,0,0,0,2004,0,3568,2004,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] }
+  ]
+};
+
+// Load from localStorage if available
+function loadData() {
+  try {
+    const saved = localStorage.getItem("hcDashboard2025");
+    if (saved) data = JSON.parse(saved);
+  } catch(e) {}
+}
+function saveToStorage() {
+  localStorage.setItem("hcDashboard2025", JSON.stringify(data));
+}
+
+// ============================================================
+//  FORMAT HELPERS
+// ============================================================
+function fmt(n) { return "₹" + Math.round(n).toLocaleString("en-IN"); }
+function fmtPct(n) { return n.toFixed(2) + "%"; }
+function fmtShort(n) {
+  if (Math.abs(n) >= 100000) return "₹" + (n/100000).toFixed(1) + "L";
+  if (Math.abs(n) >= 1000) return "₹" + (n/1000).toFixed(0) + "K";
+  return "₹" + n;
+}
+
+// ============================================================
+//  RENDER FUNCTIONS
+// ============================================================
+function renderKPIs() {
+  const { target, achieved, daysTotal, daysElapsed } = data.june;
+  const remaining = target - achieved;
+  const remainingDays = daysTotal - daysElapsed;
+  const drr = remainingDays > 0 ? remaining / remainingDays : 0;
+  const pct = (achieved / target) * 100;
+
+  document.getElementById("kpi-target").textContent = fmt(target);
+  document.getElementById("kpi-achieved").textContent = fmt(achieved);
+  document.getElementById("kpi-achieved-pct").textContent = fmtPct(pct) + " of target";
+  document.getElementById("kpi-remaining").textContent = fmt(remaining);
+  document.getElementById("kpi-remaining-days").textContent = remainingDays + " days left";
+  document.getElementById("kpi-drr").textContent = fmt(drr);
+  document.getElementById("kpi-elapsed").textContent = daysElapsed;
+  document.getElementById("kpi-days-total").textContent = "of " + daysTotal + " days";
+  document.getElementById("lastUpdatedBadge").textContent = "Updated: " + data.lastUpdated;
+  document.getElementById("juneChartTotal").textContent = "Total: " + fmt(achieved);
+}
+
+let juneChartObj = null;
+function renderJuneChart() {
+  const days = data.june.daily.map((v,i) => (i+1));
+  const values = data.june.daily;
+  const ctx = document.getElementById("juneChart").getContext("2d");
+
+  if (juneChartObj) juneChartObj.destroy();
+  juneChartObj = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: days.map(d => d),
+      datasets: [{
+        label: "Revenue (₹)",
+        data: values,
+        backgroundColor: values.map(v => v > 0 ? "#e03131cc" : "#dee2e6"),
+        borderRadius: 3,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => "₹" + ctx.parsed.y.toLocaleString("en-IN"),
+            title: ctx => "Jun " + ctx[0].label
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 0 }
+        },
+        y: {
+          grid: { color: "#f1f3f5" },
+          ticks: { callback: v => fmtShort(v), font: { size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+let mayChartObj = null;
+function renderMayChart() {
+  const labels = data.mayDaily.map(d => d.date.replace("-May","").replace("-Jun",""));
+  const mayVals = data.mayDaily.map(d => d.may);
+  const ctx = document.getElementById("mayChart").getContext("2d");
+  if (mayChartObj) mayChartObj.destroy();
+  mayChartObj = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "May Revenue",
+        data: mayVals,
+        backgroundColor: "#1971c2aa",
+        borderRadius: 2,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => "₹" + ctx.parsed.y.toLocaleString("en-IN") } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 9 }, autoSkip: true, maxTicksLimit: 15 } },
+        y: { grid: { color: "#f1f3f5" }, ticks: { callback: v => fmtShort(v), font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+function renderWeeklyTables() {
+  // May
+  const mayTotRev = data.mayWeekly.reduce((s,r) => s+r.revenue, 0);
+  const mayTotTgt = data.mayWeekly.reduce((s,r) => s+r.target, 0);
+  let mayHTML = "";
+  data.mayWeekly.forEach((r,i) => {
+    const def = r.revenue - r.target;
+    const prev = i > 0 ? data.mayWeekly[i-1].revenue : null;
+    const wow = prev !== null && prev > 0 ? ((r.revenue - prev)/prev*100).toFixed(0)+"%" : "—";
+    const contrib = mayTotRev > 0 ? (r.revenue/mayTotRev*100).toFixed(0)+"%" : "0%";
+    mayHTML += `<tr>
+      <td><strong>${r.week}</strong></td>
+      <td class="td-mono">${fmt(r.target)}</td>
+      <td class="td-mono">${fmt(r.revenue)}</td>
+      <td class="td-mono" style="color:${def>=0?'var(--green)':'var(--red)'};">${def>=0?'+':''}${fmt(def)}</td>
+      <td class="td-mono" style="color:${wow.startsWith('-')?'var(--red)':'var(--green)'}">${wow}</td>
+      <td class="td-mono">${contrib}</td>
+    </tr>`;
+  });
+  document.getElementById("mayWeeklyBody").innerHTML = mayHTML;
+  document.getElementById("mayWeeklyFoot").innerHTML = `<tr class="sum-row">
+    <td><strong>Total</strong></td>
+    <td class="td-mono">${fmt(mayTotTgt)}</td>
+    <td class="td-mono">${fmt(mayTotRev)}</td>
+    <td class="td-mono" style="color:var(--red);">${fmt(mayTotRev-mayTotTgt)}</td>
+    <td colspan="2" class="td-mono">${(mayTotRev/mayTotTgt*100).toFixed(0)}% of target</td>
+  </tr>`;
+
+  // June
+  const junTotRev = data.juneWeekly.reduce((s,r) => s+r.revenue, 0);
+  const junTotTgt = data.juneWeekly.reduce((s,r) => s+r.target, 0);
+  let junHTML = "";
+  data.juneWeekly.forEach(r => {
+    const def = r.revenue - r.target;
+    const contrib = junTotRev > 0 ? (r.revenue/junTotRev*100).toFixed(0)+"%" : "0%";
+    junHTML += `<tr>
+      <td><strong>${r.week}</strong></td>
+      <td class="td-mono">${fmt(r.target)}</td>
+      <td class="td-mono">${fmt(r.revenue)}</td>
+      <td class="td-mono" style="color:${def>=0?'var(--green)':'var(--red)'};">${def>=0?'+':''}${fmt(def)}</td>
+      <td class="td-mono">${contrib}</td>
+    </tr>`;
+  });
+  document.getElementById("juneWeeklyBody").innerHTML = junHTML;
+  document.getElementById("juneWeeklyFoot").innerHTML = `<tr class="sum-row">
+    <td><strong>Total</strong></td>
+    <td class="td-mono">${fmt(junTotTgt)}</td>
+    <td class="td-mono">${fmt(junTotRev)}</td>
+    <td class="td-mono" style="color:var(--red);">${fmt(junTotRev-junTotTgt)}</td>
+    <td class="td-mono">${(junTotRev/junTotTgt*100).toFixed(0)}% of target</td>
+  </tr>`;
+}
+
+function renderAgentTable() {
+  const elapsed = data.june.daysElapsed;
+  const daysTotal = data.june.daysTotal;
+  const daysRemaining = daysTotal - elapsed;
+
+  // Build header day columns (only show elapsed days)
+  const headerRow = document.querySelector("#agentTableBody").closest("table").querySelector("thead tr");
+  // Rebuild header
+  headerRow.innerHTML = `<th>#</th><th>Agent Name</th>`;
+  for (let d = 1; d <= elapsed; d++) {
+    headerRow.innerHTML += `<th style="min-width:42px;">${d}</th>`;
+  }
+  headerRow.innerHTML += `<th>Total</th><th>Target</th><th>Achv%</th><th>Day Tgt</th><th>Wk Tgt</th><th>Tgt Till Now</th><th>Deficit</th><th>Status</th>`;
+
+  // Sort by achievement %
+  const sorted = [...data.agents].sort((a,b) => {
+    const ta = a.daily.slice(0,elapsed).reduce((s,v)=>s+v,0);
+    const tb = b.daily.slice(0,elapsed).reduce((s,v)=>s+v,0);
+    return (tb/b.target) - (ta/a.target);
+  });
+
+  let html = "";
+  let grandTotal = 0;
+  sorted.forEach((ag,idx) => {
+    const total = ag.daily.slice(0,elapsed).reduce((s,v)=>s+v,0);
+    grandTotal += total;
+    const achvPct = (total/ag.target*100);
+    const dayTarget = Math.round(ag.target/daysTotal);
+    const wkTarget = dayTarget*7;
+    const targetTillNow = dayTarget * elapsed;
+    const deficit = total - targetTillNow;
+    const over = deficit >= 0;
+
+    let row = `<tr>
+      <td style="color:var(--muted);font-size:11px;">${idx+1}</td>
+      <td class="td-name">${ag.name}</td>`;
+    for (let d = 0; d < elapsed; d++) {
+      const v = ag.daily[d];
+      row += `<td class="td-mono" style="color:${v>0?'var(--text)':'var(--muted);font-size:11px'};">${v>0?fmtShort(v):'—'}</td>`;
+    }
+    row += `
+      <td class="td-total">${fmt(total)}</td>
+      <td class="td-mono">${fmt(ag.target)}</td>
+      <td class="td-mono">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${Math.min(achvPct,100)}%;background:${achvPct>=100?'var(--green)':achvPct>=50?'var(--amber)':'var(--red)'};"></div></div>
+          <span style="color:${achvPct>=100?'var(--green)':achvPct>=50?'var(--amber)':'var(--red)'};">${achvPct.toFixed(1)}%</span>
+        </div>
+      </td>
+      <td class="td-mono">${fmt(dayTarget)}</td>
+      <td class="td-mono">${fmt(wkTarget)}</td>
+      <td class="td-mono">${fmt(targetTillNow)}</td>
+      <td class="td-mono" style="color:${over?'var(--green)':'var(--red)'};">${over?'+':''}${fmt(deficit)}</td>
+      <td><span class="status-pill ${over?'status-over':'status-under'}">${over?'✓ On Track':'✗ Under'}</span></td>
+    </tr>`;
+    html += row;
+  });
+  document.getElementById("agentTableBody").innerHTML = html;
+
+  // Footer sum
+  const sumRow = `<tr class="sum-row"><td colspan="2"><strong>SUM</strong></td>`;
+  let footHTML = sumRow;
+  let dayTots = [];
+  for (let d = 0; d < elapsed; d++) {
+    const dt = data.agents.reduce((s,ag) => s+ag.daily[d], 0);
+    dayTots.push(dt);
+    footHTML += `<td class="td-mono">${fmtShort(dt)}</td>`;
+  }
+  footHTML += `<td class="td-total">${fmt(grandTotal)}</td><td colspan="7" class="td-mono" style="color:var(--muted);">Total collected June</td></tr>`;
+  document.getElementById("agentTableFoot").innerHTML = footHTML;
+}
+
+function renderDailyTable() {
+  let html = "";
+  const junDaily = data.june.daily;
+  data.mayDaily.forEach((r,i) => {
+    const junVal = i < junDaily.length ? junDaily[i] : 0;
+    html += `<tr>
+      <td style="color:var(--muted);font-size:11px;">${r.week}</td>
+      <td class="td-name">${r.date}</td>
+      <td class="td-mono" style="color:${r.may>0?'var(--blue)':'var(--muted)'}">${r.may>0?fmt(r.may):'—'}</td>
+      <td class="td-mono" style="color:${junVal>0?'var(--red)':'var(--muted)'}">${junVal>0?fmt(junVal):'—'}</td>
+    </tr>`;
+  });
+  document.getElementById("dailyTableBody").innerHTML = html;
+  const maySum = data.mayDaily.reduce((s,r)=>s+r.may,0);
+  const junSum = junDaily.reduce((s,v)=>s+v,0);
+  document.getElementById("dailyTableFoot").innerHTML = `<tr class="sum-row">
+    <td colspan="2"><strong>Total</strong></td>
+    <td class="td-total" style="color:var(--blue);">${fmt(maySum)}</td>
+    <td class="td-total" style="color:var(--red);">${fmt(junSum)}</td>
+  </tr>`;
+}
+
+function renderAll() {
+  renderKPIs();
+  renderJuneChart();
+  renderMayChart();
+  renderWeeklyTables();
+  renderAgentTable();
+  renderDailyTable();
+}
+
+// ============================================================
+//  AUTH
+// ============================================================
+let isLoggedIn = false;
+
+function openLoginModal() {
+  document.getElementById("loginModal").classList.add("active");
+  document.getElementById("loginPassword").value = "";
+  document.getElementById("loginError").style.display = "none";
+  setTimeout(() => document.getElementById("loginPassword").focus(), 100);
+}
+function closeLoginModal() {
+  document.getElementById("loginModal").classList.remove("active");
+}
+function attemptLogin() {
+  const pw = document.getElementById("loginPassword").value;
+  if (btoa(pw) === ADMIN_B64) {
+    isLoggedIn = true;
+    closeLoginModal();
+    openEditModal();
+  } else {
+    document.getElementById("loginError").style.display = "block";
+  }
+}
+
+// ============================================================
+//  EDIT MODAL
+// ============================================================
+function openEditModal() {
+  populateEditForm();
+  document.getElementById("editModal").classList.add("active");
+}
+function closeEditModal() {
+  document.getElementById("editModal").classList.remove("active");
+}
+
+function switchTab(tabId) {
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".modal-tab").forEach(t => t.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+  const idx = ["tab-june","tab-agents","tab-weekly"].indexOf(tabId);
+  document.querySelectorAll(".modal-tab")[idx].classList.add("active");
+}
+
+function populateEditForm() {
+  // June KPIs
+  document.getElementById("e-target").value = data.june.target;
+  document.getElementById("e-achieved").value = data.june.achieved;
+  document.getElementById("e-days-total").value = data.june.daysTotal;
+  document.getElementById("e-days-elapsed").value = data.june.daysElapsed;
+  document.getElementById("e-updated").value = data.lastUpdated;
+
+  // June daily inputs
+  const junContainer = document.getElementById("juneDailyInputs");
+  junContainer.innerHTML = "";
+  data.june.daily.forEach((v,i) => {
+    junContainer.innerHTML += `<div>
+      <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Jun ${i+1}</label>
+      <input type="number" id="jd-${i}" value="${v}" style="width:100%;padding:5px 7px;font-size:12px;border:1px solid var(--border);border-radius:6px;font-family:monospace;">
+    </div>`;
+  });
+
+  // Agents dropdown
+  const agSel = document.getElementById("agentSelect");
+  agSel.innerHTML = data.agents.map((a,i) => `<option value="${i}">${a.name}</option>`).join("");
+  loadAgentEdit();
+
+  // May weekly
+  const mayWI = document.getElementById("mayWeeklyInputs");
+  mayWI.innerHTML = "";
+  data.mayWeekly.forEach((w,i) => {
+    mayWI.innerHTML += `<div>
+      <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">May ${w.week} Revenue</label>
+      <input type="number" id="mw-${i}" value="${w.revenue}" style="width:100%;padding:6px 8px;font-size:12px;border:1px solid var(--border);border-radius:6px;">
+    </div>`;
+  });
+
+  // June weekly
+  const junWI = document.getElementById("junWeeklyInputs");
+  junWI.innerHTML = "";
+  data.juneWeekly.forEach((w,i) => {
+    junWI.innerHTML += `<div>
+      <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">June ${w.week} Revenue</label>
+      <input type="number" id="jw-${i}" value="${w.revenue}" style="width:100%;padding:6px 8px;font-size:12px;border:1px solid var(--border);border-radius:6px;">
+    </div>`;
+  });
+}
+
+function loadAgentEdit() {
+  const idx = parseInt(document.getElementById("agentSelect").value);
+  const ag = data.agents[idx];
+  const container = document.getElementById("agentDayInputs");
+  container.innerHTML = "";
+  ag.daily.slice(0, data.june.daysTotal).forEach((v,i) => {
+    container.innerHTML += `<div>
+      <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Jun ${i+1}</label>
+      <input type="number" id="ag-${i}" value="${v}" style="width:100%;padding:5px 6px;font-size:11px;border:1px solid var(--border);border-radius:5px;font-family:monospace;">
+    </div>`;
+  });
+  document.getElementById("agentTargetInput").value = ag.target;
+}
+
+function saveData() {
+  // June KPIs
+  data.june.target = parseInt(document.getElementById("e-target").value) || data.june.target;
+  data.june.achieved = parseInt(document.getElementById("e-achieved").value) || 0;
+  data.june.daysTotal = parseInt(document.getElementById("e-days-total").value) || 30;
+  data.june.daysElapsed = parseInt(document.getElementById("e-days-elapsed").value) || 0;
+  data.lastUpdated = document.getElementById("e-updated").value;
+
+  // June daily
+  data.june.daily = data.june.daily.map((_,i) => parseInt(document.getElementById("jd-"+i)?.value) || 0);
+  // Recalculate achieved from daily sum
+  data.june.achieved = data.june.daily.reduce((s,v)=>s+v,0);
+  document.getElementById("e-achieved").value = data.june.achieved;
+
+  // Save currently displayed agent
+  const agIdx = parseInt(document.getElementById("agentSelect").value);
+  data.agents[agIdx].target = parseInt(document.getElementById("agentTargetInput").value) || data.agents[agIdx].target;
+  data.agents[agIdx].daily = data.agents[agIdx].daily.map((_,i) => parseInt(document.getElementById("ag-"+i)?.value) || 0);
+
+  // May weekly
+  data.mayWeekly.forEach((_,i) => {
+    data.mayWeekly[i].revenue = parseInt(document.getElementById("mw-"+i)?.value) || 0;
+  });
+
+  // June weekly
+  data.juneWeekly.forEach((_,i) => {
+    data.juneWeekly[i].revenue = parseInt(document.getElementById("jw-"+i)?.value) || 0;
+  });
+
+  saveToStorage();
+  closeEditModal();
+  renderAll();
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+loadData();
+renderAll();
+</script>
+</body>
+</html>
