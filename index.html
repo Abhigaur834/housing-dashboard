@@ -6,45 +6,27 @@
 <title>Housing.com · Sales Command Centre</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<!-- Firebase v9 compat (CDN) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root {
-  /* ── Housing.com Brand ── */
-  --hgold:#F7C31A;       /* Housing gold/yellow — triangle accent */
-  --hgold-d:#c9980e;     /* darker gold for hover */
-  --hgold-l:#fef9e7;     /* pale gold tint for bg */
-  --hgold-m:#fde68a;     /* mid gold for borders */
-  --hblack:#0a0a0a;      /* topbar near-black */
-  --hblack-2:#111111;    /* card headers */
-
-  /* ── Status colours (unchanged semantics) ── */
+  --hgold:#F7C31A;--hgold-d:#c9980e;--hgold-l:#fef9e7;--hgold-m:#fde68a;
+  --hblack:#0a0a0a;--hblack-2:#111111;
   --red:#dc2626;--red-d:#b91c1c;--red-l:#fef2f2;--red-m:#fca5a5;
   --green:#16a34a;--green-l:#f0fdf4;--green-m:#86efac;--green-d:#14532d;
   --amber:#d97706;--amber-l:#fffbeb;--amber-m:#fcd34d;--amber-d:#78350f;
   --blue:#2563eb;--blue-l:#eff6ff;--blue-m:#93c5fd;--blue-d:#1e3a8a;
-  --violet:#7c3aed;--violet-l:#f5f3ff;
-  --teal:#0d9488;
-
-  /* ── Neutrals — slightly warm to complement gold ── */
+  --violet:#7c3aed;--violet-l:#f5f3ff;--teal:#0d9488;
   --n0:#ffffff;--n50:#fafaf8;--n100:#f4f3ef;--n200:#e8e6df;
   --n300:#d0cdc4;--n400:#9e9b92;--n500:#6b6860;--n600:#514e47;
   --n700:#35322c;--n800:#1e1c18;--n900:#0f0e0b;
-
-  /* ── UI tokens ── */
-  --page:#f2f1ec;          /* warm off-white page bg */
-  --surface:#ffffff;
-  --border:#e0ddd5;
-  --text:#0f0e0b;
-  --muted:#6b6860;
-  --accent:var(--hgold);   /* primary accent = Housing gold */
-  --accent-d:var(--hgold-d);
-
+  --page:#f2f1ec;--surface:#ffffff;--border:#e0ddd5;
+  --text:#0f0e0b;--muted:#6b6860;--accent:var(--hgold);--accent-d:var(--hgold-d);
   --r-sm:6px;--r:10px;--r-lg:14px;
-  --sh-sm:0 1px 3px rgba(0,0,0,.07);
-  --sh:0 2px 8px rgba(0,0,0,.09);
-  --sh-md:0 4px 16px rgba(0,0,0,.11);
-  --sh-lg:0 8px 32px rgba(0,0,0,.16);
-  --ease-out:cubic-bezier(.16,1,.3,1);
-  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --sh-sm:0 1px 3px rgba(0,0,0,.07);--sh:0 2px 8px rgba(0,0,0,.09);
+  --sh-md:0 4px 16px rgba(0,0,0,.11);--sh-lg:0 8px 32px rgba(0,0,0,.16);
+  --ease-out:cubic-bezier(.16,1,.3,1);--ease-spring:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
@@ -52,21 +34,27 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 ::selection{background:rgba(247,195,26,.25);}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
 
-/* TOPBAR — Housing.com black with gold accent */
-.topbar{background:var(--hblack);color:#fff;height:62px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 2px 0 var(--hgold),0 4px 24px rgba(0,0,0,.5);}
+/* ── SYNC STATUS BAR ── */
+.sync-bar{background:linear-gradient(90deg,#052e16,#0a3d1e);border-bottom:1px solid rgba(247,195,26,.15);padding:5px 28px;display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);}
+.sync-bar.error{background:linear-gradient(90deg,#450a0a,#5c1a1a);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;}
+.sync-dot.connecting{background:#fbbf24;animation:blink .8s ease-in-out infinite;}
+.sync-dot.error{background:#ef4444;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.sync-viewers{margin-left:auto;display:flex;align-items:center;gap:5px;}
+
+/* TOPBAR */
+.topbar{background:var(--hblack);color:#fff;height:62px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:29px;z-index:300;box-shadow:0 2px 0 var(--hgold),0 4px 24px rgba(0,0,0,.5);}
 .tb-left{display:flex;align-items:center;gap:0;}
-/* Housing.com logo replica */
 .tb-housing{display:flex;align-items:center;gap:0;text-decoration:none;flex-shrink:0;}
 .tb-housing-triangle{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:15px solid var(--hgold);margin-right:9px;flex-shrink:0;}
 .tb-housing-wordmark{font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.5px;font-family:'Inter',sans-serif;line-height:1;}
 .tb-housing-wordmark span{color:var(--hgold);}
 .tb-sep{width:1px;height:28px;background:rgba(255,255,255,.15);margin:0 18px;flex-shrink:0;}
-/* Ocube logo */
 .tb-ocube{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .tb-ocube-ring{position:relative;width:26px;height:26px;flex-shrink:0;}
 .tb-ocube-ring svg{width:26px;height:26px;}
-.tb-ocube-word{font-size:14px;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.5px;font-family:'Inter',sans-serif;}
-/* pipe + title */
+.tb-ocube-word{font-size:14px;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.5px;}
 .tb-sep2{width:1px;height:22px;background:rgba(255,255,255,.12);margin:0 14px;flex-shrink:0;}
 .tb-title{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.8px;text-transform:uppercase;}
 .tb-right{display:flex;align-items:center;gap:10px;}
@@ -177,41 +165,65 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .zebra tbody tr:nth-child(even){background:var(--n50);}
 .zebra tbody tr:nth-child(even):hover{background:var(--n100);}
 
-/* ═══ ACTION PLAN ═══ */
+/* ACTION PLAN */
 .ap-wrap{padding:20px 22px 24px;}
 .ap-meta{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
 .ap-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:20px;}
 .ap-badge.status{background:#fef9c3;color:#713f12;border:1px solid #fde047;}
 .ap-badge.priority{background:var(--red-l);color:var(--red-d);border:1px solid var(--red-m);}
 .ap-badge.date{background:var(--n100);color:var(--n700);border:1px solid var(--border);}
-
 .ap-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media(max-width:860px){.ap-grid{grid-template-columns:1fr;}}
-
 .ap-item{display:flex;gap:12px;padding:13px 15px;border-radius:var(--r);border:1px solid var(--border);background:var(--n50);transition:box-shadow .18s,border-color .18s;}
 .ap-item:hover{box-shadow:var(--sh);border-color:var(--n300);}
 .ap-item.highlight{background:#fef2f2;border-color:var(--red-m);}
-.ap-item.insight{background:var(--amber-l);border-color:var(--amber-m);}
 .ap-item.strategic{background:var(--blue-l);border-color:var(--blue-m);}
-
 .ap-icon{font-size:20px;flex-shrink:0;line-height:1;margin-top:1px;}
-.ap-body{}
 .ap-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:1px 7px;border-radius:10px;margin-bottom:5px;}
 .ap-tag.people{background:#f3e8ff;color:#6b21a8;}
 .ap-tag.process{background:var(--blue-l);color:var(--blue-d);}
-.ap-tag.insight-tag{background:var(--amber-l);color:var(--amber-d);}
 .ap-tag.strategy{background:#f0fdf4;color:var(--green-d);}
 .ap-title{font-size:13px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:4px;}
 .ap-desc{font-size:11px;color:var(--muted);line-height:1.6;}
-
 .ap-divider{grid-column:1/-1;display:flex;align-items:center;gap:10px;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:4px 0;}
 .ap-divider::before,.ap-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-
 .ap-summary{grid-column:1/-1;background:linear-gradient(135deg,var(--hblack) 0%,#1a1a00 100%);border-radius:var(--r-lg);padding:18px 22px;display:flex;align-items:flex-start;gap:16px;border:1px solid rgba(247,195,26,.2);}
 .ap-summary-icon{font-size:28px;flex-shrink:0;}
-.ap-summary-body{}
 .ap-summary-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;}
 .ap-summary-text{font-size:12px;color:rgba(255,255,255,.62);line-height:1.65;}
+
+/* INTEL */
+.intel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:16px 18px 20px;}
+.intel-card{border-radius:var(--r);border:1px solid transparent;padding:13px 15px;display:flex;gap:11px;position:relative;overflow:hidden;transition:box-shadow .18s;}
+.intel-card:hover{box-shadow:var(--sh);}
+.intel-card::before{content:'';position:absolute;inset:0;opacity:.045;pointer-events:none;}
+.intel-card.sev-critical{background:#fff1f2;border-color:#fecdd3;}
+.intel-card.sev-critical::before{background:var(--red);}
+.intel-card.sev-warn{background:#fffbeb;border-color:#fde68a;}
+.intel-card.sev-warn::before{background:var(--amber);}
+.intel-card.sev-info{background:var(--blue-l);border-color:var(--blue-m);}
+.intel-card.sev-info::before{background:var(--blue);}
+.intel-card.sev-ok{background:var(--green-l);border-color:#bbf7d0;}
+.intel-card.sev-ok::before{background:var(--green);}
+.intel-card.sev-neutral{background:var(--n50);border-color:var(--border);}
+.intel-icon{font-size:22px;flex-shrink:0;line-height:1;margin-top:1px;}
+.intel-body{flex:1;min-width:0;}
+.intel-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:1px 7px;border-radius:10px;margin-bottom:5px;}
+.badge-critical{background:#fee2e2;color:#991b1b;}
+.badge-warn{background:#fef3c7;color:#92400e;}
+.badge-info{background:#dbeafe;color:#1e3a8a;}
+.badge-ok{background:#dcfce7;color:#14532d;}
+.badge-neutral{background:var(--n200);color:var(--n700);}
+.intel-title{font-size:12px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px;}
+.intel-desc{font-size:11px;color:var(--muted);line-height:1.6;}
+.intel-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:3px;line-height:1.2;}
+.intel-val.red{color:var(--red-d);}
+.intel-val.amber{color:var(--amber);}
+.intel-val.green{color:var(--green);}
+.intel-val.blue{color:var(--blue);}
+.intel-names{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.intel-name-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;background:rgba(0,0,0,.07);color:var(--text);}
+.intel-static{background:var(--amber-l);border-color:var(--amber-m);}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--n800);color:#fff;padding:12px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:10px;transform:translateY(100px);opacity:0;transition:all .4s var(--ease-spring);pointer-events:none;}
@@ -251,85 +263,59 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .live-item{}.live-item span{display:block;font-size:9px;color:#78620a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
 .live-item strong{font-size:13px;font-family:'JetBrains Mono',monospace;color:#3d3000;}
 
-.footer{text-align:center;padding:28px;font-size:11px;color:var(--n400);}
+/* SAVING OVERLAY */
+.saving-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+.saving-overlay.on{display:flex;}
+.saving-box{background:#fff;border-radius:var(--r-lg);padding:24px 32px;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;box-shadow:var(--sh-lg);}
+.saving-spinner{width:22px;height:22px;border:3px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-/* ═══ INTELLIGENCE ALERTS ═══ */
-.intel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:16px 18px 20px;}
-.intel-card{border-radius:var(--r);border:1px solid transparent;padding:13px 15px;display:flex;gap:11px;position:relative;overflow:hidden;transition:box-shadow .18s;}
-.intel-card:hover{box-shadow:var(--sh);}
-.intel-card::before{content:'';position:absolute;inset:0;opacity:.045;pointer-events:none;}
-/* severity variants */
-.intel-card.sev-critical{background:#fff1f2;border-color:#fecdd3;}
-.intel-card.sev-critical::before{background:var(--red);}
-.intel-card.sev-warn{background:#fffbeb;border-color:#fde68a;}
-.intel-card.sev-warn::before{background:var(--amber);}
-.intel-card.sev-info{background:var(--blue-l);border-color:var(--blue-m);}
-.intel-card.sev-info::before{background:var(--blue);}
-.intel-card.sev-ok{background:var(--green-l);border-color:#bbf7d0;}
-.intel-card.sev-ok::before{background:var(--green);}
-.intel-card.sev-neutral{background:var(--n50);border-color:var(--border);}
-.intel-icon{font-size:22px;flex-shrink:0;line-height:1;margin-top:1px;}
-.intel-body{flex:1;min-width:0;}
-.intel-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:1px 7px;border-radius:10px;margin-bottom:5px;}
-.badge-critical{background:#fee2e2;color:#991b1b;}
-.badge-warn{background:#fef3c7;color:#92400e;}
-.badge-info{background:#dbeafe;color:#1e3a8a;}
-.badge-ok{background:#dcfce7;color:#14532d;}
-.badge-neutral{background:var(--n200);color:var(--n700);}
-.intel-title{font-size:12px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px;}
-.intel-desc{font-size:11px;color:var(--muted);line-height:1.6;}
-.intel-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:3px;line-height:1.2;}
-.intel-val.red{color:var(--red-d);}
-.intel-val.amber{color:var(--amber);}
-.intel-val.green{color:var(--green);}
-.intel-val.blue{color:var(--blue);}
-.intel-names{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-.intel-name-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;background:rgba(0,0,0,.07);color:var(--text);}
-.intel-divider{grid-column:1/-1;display:flex;align-items:center;gap:10px;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;padding:0 2px;}
-.intel-divider::before,.intel-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.intel-static{background:var(--amber-l);border-color:var(--amber-m);}
+.footer{text-align:center;padding:28px;font-size:11px;color:var(--n400);}
 </style>
 </head>
 <body>
 
+<!-- Firebase sync status bar -->
+<div class="sync-bar" id="syncBar">
+  <div class="sync-dot connecting" id="syncDot"></div>
+  <span id="syncMsg">Connecting to Firebase…</span>
+  <span class="sync-viewers" id="syncViewers"></span>
+</div>
+
 <div class="topbar">
   <div class="tb-left">
-    <!-- Housing.com logo -->
     <div class="tb-housing">
       <div class="tb-housing-triangle"></div>
       <div class="tb-housing-wordmark">HOUSING<span>.com</span></div>
     </div>
     <div class="tb-sep"></div>
-    <!-- OcubeServices logo -->
     <div class="tb-ocube">
       <div class="tb-ocube-ring">
-        <!-- Dotted circle SVG matching OcubeServices logo mark -->
         <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="20" cy="4"  r="2" fill="white" opacity="1"/>
-          <circle cx="28.3" cy="6.3"  r="1.8" fill="white" opacity=".9"/>
+          <circle cx="20" cy="4" r="2" fill="white" opacity="1"/>
+          <circle cx="28.3" cy="6.3" r="1.8" fill="white" opacity=".9"/>
           <circle cx="34.5" cy="12" r="1.7" fill="white" opacity=".8"/>
           <circle cx="37.5" cy="19.5" r="1.6" fill="white" opacity=".7"/>
-          <circle cx="36"   cy="27.5" r="1.5" fill="white" opacity=".6"/>
+          <circle cx="36" cy="27.5" r="1.5" fill="white" opacity=".6"/>
           <circle cx="30.5" cy="33.8" r="1.4" fill="white" opacity=".55"/>
           <circle cx="22.5" cy="37.5" r="1.3" fill="white" opacity=".5"/>
-          <circle cx="14"   cy="37"   r="1.2" fill="white" opacity=".45"/>
-          <circle cx="7"    cy="33"   r="1.2" fill="white" opacity=".4"/>
-          <circle cx="3"    cy="26.5" r="1.1" fill="white" opacity=".35"/>
-          <circle cx="2.5"  cy="18.5" r="1.1" fill="white" opacity=".3"/>
-          <circle cx="5.5"  cy="11"   r="1.2" fill="white" opacity=".35"/>
-          <circle cx="11.5" cy="5.5"  r="1.3" fill="white" opacity=".4"/>
-          <!-- inner ring -->
-          <circle cx="20"   cy="9"    r="1.4" fill="white" opacity=".7"/>
-          <circle cx="26"   cy="11"   r="1.3" fill="white" opacity=".65"/>
-          <circle cx="30"   cy="16"   r="1.2" fill="white" opacity=".6"/>
-          <circle cx="31"   cy="22"   r="1.2" fill="white" opacity=".55"/>
-          <circle cx="28"   cy="28"   r="1.1" fill="white" opacity=".5"/>
+          <circle cx="14" cy="37" r="1.2" fill="white" opacity=".45"/>
+          <circle cx="7" cy="33" r="1.2" fill="white" opacity=".4"/>
+          <circle cx="3" cy="26.5" r="1.1" fill="white" opacity=".35"/>
+          <circle cx="2.5" cy="18.5" r="1.1" fill="white" opacity=".3"/>
+          <circle cx="5.5" cy="11" r="1.2" fill="white" opacity=".35"/>
+          <circle cx="11.5" cy="5.5" r="1.3" fill="white" opacity=".4"/>
+          <circle cx="20" cy="9" r="1.4" fill="white" opacity=".7"/>
+          <circle cx="26" cy="11" r="1.3" fill="white" opacity=".65"/>
+          <circle cx="30" cy="16" r="1.2" fill="white" opacity=".6"/>
+          <circle cx="31" cy="22" r="1.2" fill="white" opacity=".55"/>
+          <circle cx="28" cy="28" r="1.1" fill="white" opacity=".5"/>
           <circle cx="22.5" cy="31.5" r="1.1" fill="white" opacity=".45"/>
-          <circle cx="16.5" cy="31"   r="1"   fill="white" opacity=".4"/>
-          <circle cx="11.5" cy="27.5" r="1"   fill="white" opacity=".35"/>
-          <circle cx="9.5"  cy="22"   r="1"   fill="white" opacity=".35"/>
-          <circle cx="10"   cy="15.5" r="1.1" fill="white" opacity=".4"/>
-          <circle cx="14"   cy="10.5" r="1.2" fill="white" opacity=".45"/>
+          <circle cx="16.5" cy="31" r="1" fill="white" opacity=".4"/>
+          <circle cx="11.5" cy="27.5" r="1" fill="white" opacity=".35"/>
+          <circle cx="9.5" cy="22" r="1" fill="white" opacity=".35"/>
+          <circle cx="10" cy="15.5" r="1.1" fill="white" opacity=".4"/>
+          <circle cx="14" cy="10.5" r="1.2" fill="white" opacity=".45"/>
         </svg>
       </div>
       <div class="tb-ocube-word">cube</div>
@@ -347,7 +333,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 </div>
 
 <div class="wrap">
-
 <div class="sec">June 2026 — Monthly Snapshot</div>
 <div class="kpi-grid" id="kpiGrid"></div>
 
@@ -427,69 +412,38 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   </div>
 </div>
 
-<!-- ══════════════════════════ ACTION PLAN ══════════════════════════ -->
+<!-- ACTION PLAN -->
 <div class="sec">Action Plan — June 2026 Recovery</div>
 <div class="card">
-  <div class="card-hdr">
-    <h3>📋 Team Action Plan</h3>
-    <aside>Housing Owner Process · Effective immediately</aside>
-  </div>
+  <div class="card-hdr"><h3>📋 Team Action Plan</h3><aside>Housing Owner Process · Effective immediately</aside></div>
   <div class="ap-wrap">
     <div class="ap-meta">
       <span class="ap-badge status">⚡ In Execution</span>
       <span class="ap-badge priority">🎯 High Priority</span>
       <span class="ap-badge date">📅 June 2026</span>
     </div>
-
     <div class="ap-grid">
-
-      <!-- PEOPLE interventions -->
       <div class="ap-divider">People &amp; Coaching</div>
-
       <div class="ap-item highlight">
         <div class="ap-icon">🎙️</div>
-        <div class="ap-body">
-          <span class="ap-tag people">People</span>
-          <div class="ap-title">Daily Performance Reviews</div>
-          <div class="ap-desc">Structured daily check-ins with low-performing and non-performing agents to identify blockers, set daily commitments, and track follow-through.</div>
-        </div>
+        <div class="ap-body"><span class="ap-tag people">People</span><div class="ap-title">Daily Performance Reviews</div><div class="ap-desc">Structured daily check-ins with low-performing and non-performing agents to identify blockers, set daily commitments, and track follow-through.</div></div>
       </div>
-
       <div class="ap-item highlight">
         <div class="ap-icon">🧠</div>
-        <div class="ap-body">
-          <span class="ap-tag people">People</span>
-          <div class="ap-title">Focused Skill Coaching</div>
-          <div class="ap-desc">Targeted coaching sessions on conversion techniques, objection handling, and closing skills — particularly for agents currently sitting below 10% achievement.</div>
-        </div>
+        <div class="ap-body"><span class="ap-tag people">People</span><div class="ap-title">Focused Skill Coaching</div><div class="ap-desc">Targeted coaching sessions on conversion techniques, objection handling, and closing skills — particularly for agents currently sitting below 10% achievement.</div></div>
       </div>
-
-      <!-- PROCESS interventions -->
       <div class="ap-divider">Process &amp; Execution</div>
-
       <div class="ap-item">
         <div class="ap-icon">🔥</div>
-        <div class="ap-body">
-          <span class="ap-tag process">Process</span>
-          <div class="ap-title">Hot Lead Follow-Up Blitz</div>
-          <div class="ap-desc">Increased follow-up activity on hot and payment-ready leads. Closures and daily target commitments to be monitored more rigorously by TLs.</div>
-        </div>
+        <div class="ap-body"><span class="ap-tag process">Process</span><div class="ap-title">Hot Lead Follow-Up Blitz</div><div class="ap-desc">Increased follow-up activity on hot and payment-ready leads. Closures and daily target commitments to be monitored more rigorously by TLs.</div></div>
       </div>
-
       <div class="ap-item">
         <div class="ap-icon">⚖️</div>
-        <div class="ap-body">
-          <span class="ap-tag process">Process</span>
-          <div class="ap-title">Reduce Top-Performer Dependency</div>
-          <div class="ap-desc">Additional focus on improving contributions from underperforming agents to distribute revenue load more evenly across the team.</div>
-        </div>
+        <div class="ap-body"><span class="ap-tag process">Process</span><div class="ap-title">Reduce Top-Performer Dependency</div><div class="ap-desc">Additional focus on improving contributions from underperforming agents to distribute revenue load more evenly across the team.</div></div>
       </div>
-
-      <!-- INSIGHTS — dynamic, injected by renderInsights() -->
       <div class="ap-divider">Lead Intelligence &amp; Observations</div>
-    </div><!-- /ap-grid closed early; intel section is full-width below -->
+    </div>
 
-    <!-- DYNAMIC INTELLIGENCE PANEL -->
     <div style="margin-top:4px;">
       <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:0 2px 10px;display:flex;align-items:center;justify-content:space-between;">
         <span>Auto-computed alerts · refreshes on every data save</span>
@@ -498,31 +452,16 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <div class="intel-grid" id="intelGrid"></div>
     </div>
 
-    <!-- re-open ap-grid for Strategic section -->
     <div class="ap-grid" style="margin-top:4px;">
-
-      <!-- STRATEGIC -->
       <div class="ap-divider">Strategic Initiative</div>
-
       <div class="ap-item strategic">
         <div class="ap-icon">🌅</div>
-        <div class="ap-body">
-          <span class="ap-tag strategy">Strategy</span>
-          <div class="ap-title">Early-Login Initiative</div>
-          <div class="ap-desc">Team members will log in early each morning to maximize access to fresh leads — improving contactability and increasing chances of early-day conversions before other centres engage.</div>
-        </div>
+        <div class="ap-body"><span class="ap-tag strategy">Strategy</span><div class="ap-title">Early-Login Initiative</div><div class="ap-desc">Team members will log in early each morning to maximize access to fresh leads — improving contactability and increasing chances of early-day conversions before other centres engage.</div></div>
       </div>
-
       <div class="ap-item strategic">
         <div class="ap-icon">🔁</div>
-        <div class="ap-body">
-          <span class="ap-tag strategy">Strategy</span>
-          <div class="ap-title">Regular Effectiveness Reviews</div>
-          <div class="ap-desc">The early-login strategy will be reviewed regularly. Further process improvements will be implemented based on lead quality trends, contactability rates, and conversion outcomes observed.</div>
-        </div>
+        <div class="ap-body"><span class="ap-tag strategy">Strategy</span><div class="ap-title">Regular Effectiveness Reviews</div><div class="ap-desc">The early-login strategy will be reviewed regularly. Further process improvements will be implemented based on lead quality trends, contactability rates, and conversion outcomes observed.</div></div>
       </div>
-
-      <!-- SUMMARY BANNER -->
       <div class="ap-summary">
         <div class="ap-summary-icon">🎯</div>
         <div class="ap-summary-body">
@@ -530,27 +469,26 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
           <div class="ap-summary-text">The team is tracking below the June DRR target. The immediate priority is activating zero-revenue agents, exploiting the FIFO lead advantage through earlier logins, and compressing the gap on hot leads before month-end. Every day of delay costs approximately <strong style="color:#fcd34d">₹14,000+</strong> in opportunity against target.</div>
         </div>
       </div>
-
-    </div><!-- /ap-grid -->
-  </div><!-- /ap-wrap -->
+    </div>
+  </div>
 </div>
-
 </div><!-- /wrap -->
 
 <div class="footer" style="background:var(--hblack);color:rgba(255,255,255,.35);padding:20px 28px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:11px;letter-spacing:.3px;">
   <span style="color:var(--hgold);font-weight:800;font-size:13px;">▲</span>
   <span>HOUSING<span style="color:var(--hgold)">.com</span></span>
-  <span style="opacity:.3">·</span>
-  <span>Housing Owner Process</span>
-  <span style="opacity:.3">·</span>
-  <span>Sales Command Centre 2026</span>
-  <span style="opacity:.3">·</span>
-  <span>Powered by OcubeServices</span>
-  <span style="opacity:.3">·</span>
-  <span>Confidential</span>
+  <span style="opacity:.3">·</span><span>Housing Owner Process</span>
+  <span style="opacity:.3">·</span><span>Sales Command Centre 2026</span>
+  <span style="opacity:.3">·</span><span>Powered by OcubeServices</span>
+  <span style="opacity:.3">·</span><span>Confidential</span>
 </div>
 
 <div class="toast" id="toast"><span id="toastMsg">✅ Dashboard updated!</span></div>
+
+<!-- SAVING OVERLAY -->
+<div class="saving-overlay" id="savingOverlay">
+  <div class="saving-box"><div class="saving-spinner"></div><span>Saving to Firebase…</span></div>
+</div>
 
 <!-- LOGIN MODAL -->
 <div class="ovl" id="loginOvl">
@@ -573,7 +511,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 <div class="ovl" id="editOvl">
   <div class="modal wide">
     <h2>✏️ Update Dashboard</h2>
-    <p>All charts, KPIs, rankings & forecasts update automatically on save.</p>
+    <p>All charts, KPIs, rankings & forecasts update automatically on save — and sync live to all viewers instantly.</p>
     <div class="m-tabs">
       <button class="m-tab on" onclick="swTab('tpJune',0)">June KPIs</button>
       <button class="m-tab" onclick="swTab('tpAgents',1)">Agents</button>
@@ -616,15 +554,33 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     </div>
     <div class="m-act">
       <button class="btn-sec" onclick="closeEdit()">Cancel</button>
-      <button class="btn-primary" onclick="saveData()">💾 Save & Refresh All</button>
+      <button class="btn-primary" onclick="saveData()">☁️ Save & Sync All</button>
     </div>
   </div>
 </div>
 
 <script>
-const ADMIN_B64 = btoa("housing2026");
+/* ═══════════════════════════════════════════
+   FIREBASE INITIALISATION
+═══════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyATL9HIa5E_j69DAa-novWcz8lmA__IliM",
+  authDomain: "housing-dashboard-6ab66.firebaseapp.com",
+  databaseURL: "https://housing-dashboard-6ab66-default-rtdb.firebaseio.com",
+  projectId: "housing-dashboard-6ab66",
+  storageBucket: "housing-dashboard-6ab66.firebasestorage.app",
+  messagingSenderId: "1020378573497",
+  appId: "1:1020378573497:web:bf3f8c0e2011ca4ce84968"
+};
 
-let D = {
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const DB_KEY = "housing_dashboard_v1";
+
+/* ═══════════════════════════════════════════
+   DEFAULT DATA — used only if Firebase is empty
+═══════════════════════════════════════════ */
+const DEFAULT_DATA = {
   lastUpdated:"2026-06-11",
   june:{ target:885000, daysTotal:30, daysElapsed:11,
     daily:[26428,11245,38262,11229,11346,12823,2000,7903,15029,13055,19820,
@@ -672,9 +628,73 @@ let D = {
   ]
 };
 
-function loadData(){try{const s=localStorage.getItem("hc26v4");if(s)D=JSON.parse(s);}catch(e){}}
-function storeData(){localStorage.setItem("hc26v4",JSON.stringify(D));}
+/* ═══════════════════════════════════════════
+   LIVE DATA — populated from Firebase
+═══════════════════════════════════════════ */
+let D = JSON.parse(JSON.stringify(DEFAULT_DATA));
+const ADMIN_B64 = btoa("housing2026");
 
+/* ── Sync status UI ── */
+function setSyncStatus(state, msg){
+  const bar = document.getElementById("syncBar");
+  const dot = document.getElementById("syncDot");
+  const txt = document.getElementById("syncMsg");
+  dot.className = "sync-dot";
+  bar.className = "sync-bar";
+  if(state === "live"){ dot.classList.add(); txt.textContent = msg || "🟢 Live — synced to Firebase"; }
+  else if(state === "connecting"){ dot.classList.add("connecting"); txt.textContent = msg || "Connecting to Firebase…"; }
+  else if(state === "error"){ dot.classList.add("error"); bar.classList.add("error"); txt.textContent = msg || "⚠️ Firebase error"; }
+}
+
+/* ── Bootstrap: connect Firebase listener ── */
+function connectFirebase(){
+  setSyncStatus("connecting");
+  const ref = db.ref(DB_KEY);
+
+  // One-time read — if empty, seed with defaults
+  ref.once("value").then(snap => {
+    if(!snap.exists()){
+      ref.set(DEFAULT_DATA).then(()=>{
+        console.log("Firebase seeded with default data");
+      });
+    }
+  }).catch(err => {
+    setSyncStatus("error","Firebase read error: "+err.message);
+  });
+
+  // Realtime listener — fires immediately + on every remote change
+  ref.on("value", snap => {
+    if(snap.exists()){
+      const fresh = snap.val();
+      // Normalise arrays (Firebase stores arrays as objects sometimes)
+      if(fresh.june && fresh.june.daily && !Array.isArray(fresh.june.daily))
+        fresh.june.daily = Object.values(fresh.june.daily);
+      if(fresh.mayDaily && !Array.isArray(fresh.mayDaily))
+        fresh.mayDaily = Object.values(fresh.mayDaily);
+      if(fresh.mayWeekly && !Array.isArray(fresh.mayWeekly))
+        fresh.mayWeekly = Object.values(fresh.mayWeekly);
+      if(fresh.juneWeekly && !Array.isArray(fresh.juneWeekly))
+        fresh.juneWeekly = Object.values(fresh.juneWeekly);
+      if(fresh.agents && !Array.isArray(fresh.agents))
+        fresh.agents = Object.values(fresh.agents);
+      if(fresh.agents){
+        fresh.agents.forEach(ag => {
+          if(ag.daily && !Array.isArray(ag.daily))
+            ag.daily = Object.values(ag.daily);
+        });
+      }
+      D = fresh;
+      renderAll();
+      setSyncStatus("live", "🟢 Live · last updated " + (D.lastUpdated || "—"));
+    }
+  }, err => {
+    setSyncStatus("error","Firebase error: "+err.message);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
 const INR = n => "₹"+Math.round(n).toLocaleString("en-IN");
 const S   = n => { const a=Math.abs(n),sg=n<0?"-":""; return a>=1e5?sg+"₹"+(a/1e5).toFixed(1)+"L":a>=1000?sg+"₹"+(a/1000).toFixed(0)+"K":sg+"₹"+Math.round(a); };
 const Pct = (n,d=1) => n.toFixed(d)+"%";
@@ -699,45 +719,37 @@ function derive(){
 
 function agentTotal(ag){ return ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+v,0); }
 
-const _prev = {};
-function animNum(id,val,isCurr=true){
-  const el=document.getElementById(id); if(!el)return;
-  const from=_prev[id]||0; _prev[id]=val;
-  if(from===val){el.textContent=isCurr?INR(val):val;return;}
-  const dur=650,start=performance.now();
-  const tick=now=>{ const p=Math.min((now-start)/dur,1),ease=1-Math.pow(1-p,3),cur=Math.round(from+(val-from)*ease); el.textContent=isCurr?INR(cur):cur; if(p<1)requestAnimationFrame(tick); else el.textContent=isCurr?INR(val):val; };
-  requestAnimationFrame(tick);
-}
-
 const AV_COLORS=["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c","#ea580c","#4f46e5","#0284c7","#65a30d","#9333ea","#db2777"];
 function avColor(i){ return AV_COLORS[i%AV_COLORS.length]; }
 function initials(name){ return name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
 
+/* ═══════════════════════════════════════════
+   RENDER FUNCTIONS (identical to original)
+═══════════════════════════════════════════ */
 function renderKPIs(){
   const {target,daysTotal,daysElapsed}=D.june;
   const {achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc}=derive();
   const drrGap=drr-actualDrr;
   const tagHtml=actualDrr>0?(drrGap>0?`<span class="kc-tag tag-warn">⚠ Need +${S(drrGap)}/day</span>`:`<span class="kc-tag tag-ok">✓ Ahead of pace</span>`):"";
   const kpis=[
-    {icon:"🎯",label:"Monthly Target",  val:INR(target),    sub:"June 2026",             ac:"#dc2626",bar:null},
-    {icon:"💰",label:"Total Achievement",val:INR(achieved), sub:Pct(pct)+" of target",  ac:"#16a34a",bar:Math.min(pct,100),barCol:pCol(pct)},
-    {icon:"⏳",label:"Remaining",        val:INR(remaining), sub:daysLeft+" days left",  ac:"#d97706",bar:null},
-    {icon:"📈",label:"DRR Required",     val:INR(drr),       sub:"To close the month",   ac:"#2563eb",bar:null,extra:tagHtml},
-    {icon:"📅",label:"Days Elapsed",     val:daysElapsed,    sub:"of "+daysTotal+" days",ac:"#7c3aed",bar:Math.round(daysElapsed/daysTotal*100),barCol:"#7c3aed",isCurr:false},
-    {icon:"⚡",label:"Actual DRR",       val:INR(actualDrr), sub:"Average so far",       ac:"#0d9488",bar:null},
-    {icon:"📊",label:"May Revenue",      val:"₹3,82,739",    sub:"77% of May target",    ac:"#c2255c",bar:77,barCol:"#c2255c",static:true},
-    {icon:"🔮",label:"Month-End Forecast",val:INR(baseFc),  sub:Pct(baseFc/target*100)+" of target",ac:"#5f3dc4",bar:Math.min(baseFc/target*100,100),barCol:"#5f3dc4"},
+    {icon:"🎯",label:"Monthly Target",    val:INR(target),    sub:"June 2026",                 ac:"#dc2626",bar:null},
+    {icon:"💰",label:"Total Achievement", val:INR(achieved),  sub:Pct(pct)+" of target",       ac:"#16a34a",bar:Math.min(pct,100),barCol:pCol(pct)},
+    {icon:"⏳",label:"Remaining",          val:INR(remaining), sub:daysLeft+" days left",       ac:"#d97706",bar:null},
+    {icon:"📈",label:"DRR Required",       val:INR(drr),       sub:"To close the month",       ac:"#2563eb",bar:null,extra:tagHtml},
+    {icon:"📅",label:"Days Elapsed",       val:daysElapsed,    sub:"of "+daysTotal+" days",    ac:"#7c3aed",bar:Math.round(daysElapsed/daysTotal*100),barCol:"#7c3aed",isCurr:false},
+    {icon:"⚡",label:"Actual DRR",         val:INR(actualDrr), sub:"Average so far",           ac:"#0d9488",bar:null},
+    {icon:"📊",label:"May Revenue",        val:"₹3,82,739",    sub:"77% of May target",        ac:"#c2255c",bar:77,barCol:"#c2255c",static:true},
+    {icon:"🔮",label:"Month-End Forecast", val:INR(baseFc),    sub:Pct(baseFc/target*100)+" of target",ac:"#5f3dc4",bar:Math.min(baseFc/target*100,100),barCol:"#5f3dc4"},
   ];
   document.getElementById("kpiGrid").innerHTML=kpis.map((k,i)=>`
     <div class="kc" style="--ac:${k.ac};--ac-glow:${k.ac}18;animation-delay:${i*45}ms">
       <span class="kc-icon">${k.icon}</span>
       <div class="kc-lbl">${k.label}</div>
-      <div class="kc-val" id="kv${i}">${k.val}</div>
-      <div class="kc-sub" id="ks${i}">${k.sub}</div>
+      <div class="kc-val">${k.val}</div>
+      <div class="kc-sub">${k.sub}</div>
       ${k.extra||""}
-      ${k.bar!=null?`<div class="kc-track"><div class="kc-fill" id="kb${i}" style="background:${k.barCol||k.ac};width:0%"></div></div>`:""}
+      ${k.bar!=null?`<div class="kc-track"><div class="kc-fill" style="background:${k.barCol||k.ac};width:${k.bar}%"></div></div>`:""}
     </div>`).join("");
-  requestAnimationFrame(()=>{ kpis.forEach((k,i)=>{ if(k.bar!=null){const el=document.getElementById("kb"+i);if(el)setTimeout(()=>el.style.width=k.bar+"%",80+i*40);} }); });
   document.getElementById("updBadge").textContent="Updated: "+D.lastUpdated;
   document.getElementById("juneTotalLbl").textContent="Total: "+INR(derive().achieved);
   document.getElementById("junLogTot").textContent=INR(derive().achieved);
@@ -800,7 +812,7 @@ function renderJuneChart(){
   const {daily,daysElapsed}=D.june;
   const ctx=document.getElementById("juneChart").getContext("2d");
   if(juneChart)juneChart.destroy();
-  juneChart=new Chart(ctx,{type:"bar",data:{labels:daily.map((_,i)=>i+1),datasets:[{label:"Revenue",data:daily,backgroundColor:daily.map((v,i)=>i>=daysElapsed?"#e2e8f0":v>0?"rgba(220,38,38,.82)":"rgba(226,232,240,.6)"),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700,easing:"easeInOutQuart"},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"₹"+c.parsed.y.toLocaleString("en-IN"),title:c=>"Jun "+c[0].label+" — "+(c[0].dataIndex<daysElapsed?"actual":"future")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:false,maxRotation:0}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+  juneChart=new Chart(ctx,{type:"bar",data:{labels:daily.map((_,i)=>i+1),datasets:[{label:"Revenue",data:daily,backgroundColor:daily.map((v,i)=>i>=daysElapsed?"#e2e8f0":v>0?"rgba(220,38,38,.82)":"rgba(226,232,240,.6)"),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"₹"+c.parsed.y.toLocaleString("en-IN"),title:c=>"Jun "+c[0].label+" — "+(c[0].dataIndex<daysElapsed?"actual":"future")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:false,maxRotation:0}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
 }
 
 let cmpChart=null;
@@ -809,7 +821,7 @@ function renderCmpChart(){
   const labels=D.mayDaily.map(r=>r.d.replace("-May",""));
   const ctx=document.getElementById("cmpChart").getContext("2d");
   if(cmpChart)cmpChart.destroy();
-  cmpChart=new Chart(ctx,{type:"bar",data:{labels,datasets:[{label:"May",data:D.mayDaily.map(r=>r.v),backgroundColor:"rgba(37,99,235,.72)",borderRadius:2,borderSkipped:false},{label:"June",data:D.mayDaily.map((_,i)=>i<jun.length?jun[i]:0),backgroundColor:"rgba(220,38,38,.72)",borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700,easing:"easeInOutQuart"},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+  cmpChart=new Chart(ctx,{type:"bar",data:{labels,datasets:[{label:"May",data:D.mayDaily.map(r=>r.v),backgroundColor:"rgba(37,99,235,.72)",borderRadius:2,borderSkipped:false},{label:"June",data:D.mayDaily.map((_,i)=>i<jun.length?jun[i]:0),backgroundColor:"rgba(220,38,38,.72)",borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
 }
 
 function renderWeekly(){
@@ -877,183 +889,84 @@ function renderDaily(){
   document.getElementById("dailyFoot").innerHTML=`<tr><td colspan="2"><strong>Total</strong></td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#1e3a8a">${INR(mSum)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#b91c1c">${INR(jSum)}</td><td></td></tr>`;
 }
 
-/* ═══════════════════════════════════════════════════════
-   RENDER: INTELLIGENCE ALERTS — fully computed from D
-   Each alert is auto-generated; nothing is hardcoded here.
-═══════════════════════════════════════════════════════ */
 function renderInsights(){
-  const {target,daysTotal,daysElapsed,daily} = D.june;
-  const {achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc,optFc,consFc} = derive();
-
-  const alerts = [];
-
-  /* ── 1. ZERO-REVENUE AGENTS (today = last elapsed day) ── */
-  const todayIdx = daysElapsed - 1;
-  const zeroToday = D.agents.filter(ag => (ag.daily[todayIdx]||0) === 0);
-  const activeToday = D.agents.length - zeroToday.length;
-  if(daysElapsed > 0){
-    const sev = zeroToday.length >= Math.ceil(D.agents.length * 0.6) ? "critical" : zeroToday.length >= 3 ? "warn" : "ok";
-    alerts.push({
-      sev, icon: sev==="ok"?"✅":"🚨",
-      badge: sev==="ok"?"All Active":"Zero Revenue Today",
-      title: sev==="ok"
-        ? `All ${activeToday} agents logged revenue on Jun ${daysElapsed}`
-        : `${zeroToday.length} of ${D.agents.length} agents had ₹0 on Jun ${daysElapsed}`,
-      val: zeroToday.length > 0 ? zeroToday.length+"" : null,
-      valColor: sev==="ok"?"green":"red",
-      desc: zeroToday.length === 0
-        ? "Every agent contributed today — ideal day for lead momentum."
-        : `${zeroToday.length} agent${zeroToday.length>1?"s":""} contributed nothing on the last logged day. Each idle agent costs ~${INR(dayTarget)} in missed daily quota.`,
-      names: zeroToday.map(a=>a.name)
-    });
+  const {target,daysTotal,daysElapsed,daily}=D.june;
+  const {achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc,optFc,consFc}=derive();
+  const alerts=[];
+  const todayIdx=daysElapsed-1;
+  const zeroToday=D.agents.filter(ag=>(ag.daily[todayIdx]||0)===0);
+  const activeToday=D.agents.length-zeroToday.length;
+  if(daysElapsed>0){
+    const sev=zeroToday.length>=Math.ceil(D.agents.length*0.6)?"critical":zeroToday.length>=3?"warn":"ok";
+    alerts.push({sev,icon:sev==="ok"?"✅":"🚨",badge:sev==="ok"?"All Active":"Zero Revenue Today",
+      title:sev==="ok"?`All ${activeToday} agents logged revenue on Jun ${daysElapsed}`:`${zeroToday.length} of ${D.agents.length} agents had ₹0 on Jun ${daysElapsed}`,
+      val:zeroToday.length>0?zeroToday.length+"":null,valColor:sev==="ok"?"green":"red",
+      desc:zeroToday.length===0?"Every agent contributed today — ideal day for lead momentum.":`${zeroToday.length} agent${zeroToday.length>1?"s":""} contributed nothing on the last logged day. Each idle agent costs ~${INR(dayTarget)} in missed daily quota.`,
+      names:zeroToday.map(a=>a.name)});
   }
-
-  /* ── 2. DRR PACE GAP ── */
-  const drrGap = drr - actualDrr;
-  const drrGapPct = actualDrr > 0 ? (drrGap/actualDrr*100) : 0;
-  const drrSev = drrGap > actualDrr * 0.5 ? "critical" : drrGap > 0 ? "warn" : "ok";
-  alerts.push({
-    sev: drrSev, icon: drrSev==="ok"?"🟢":"📉",
-    badge: drrSev==="ok" ? "On Pace" : drrGapPct>50 ? "Critical DRR Gap" : "DRR Behind Target",
-    title: drrSev==="ok"
-      ? `Team DRR is ahead of required pace`
-      : `Team needs ${INR(Math.round(drr))}/day but is averaging ${INR(Math.round(actualDrr))}/day`,
-    val: (drrGap>0?"+":"")+INR(Math.round(Math.abs(drrGap))),
-    valColor: drrSev==="ok"?"green": drrSev==="critical"?"red":"amber",
-    desc: drrSev==="ok"
-      ? `Actual DRR (${INR(Math.round(actualDrr))}) exceeds required DRR (${INR(Math.round(drr))}). Keep this pace to close above target.`
-      : `Gap of ${INR(Math.round(drrGap))}/day (${drrGapPct.toFixed(0)}% shortfall). At current pace, month-end forecast is ${INR(baseFc)} — ${Pct(baseFc/target*100)} of target.`,
-    names: []
-  });
-
-  /* ── 3. AGENTS WITH ZERO REVENUE ALL MONTH ── */
-  const zeroMonth = D.agents.filter(ag => agentTotal(ag) === 0);
-  if(zeroMonth.length > 0){
-    alerts.push({
-      sev: "critical", icon: "💤",
-      badge: "No Revenue — Month to Date",
-      title: `${zeroMonth.length} agent${zeroMonth.length>1?"s have":" has"} ₹0 for all of June so far`,
-      val: zeroMonth.length+"",
-      valColor: "red",
-      desc: `${zeroMonth.map(a=>a.name.split(" ")[0]).join(", ")} ${zeroMonth.length>1?"have":"has"} not logged a single rupee in ${daysElapsed} elapsed days. Each carries a ₹${(68077).toLocaleString("en-IN")} monthly target.`,
-      names: zeroMonth.map(a=>a.name)
-    });
+  const drrGap=drr-actualDrr,drrGapPct=actualDrr>0?(drrGap/actualDrr*100):0;
+  const drrSev=drrGap>actualDrr*0.5?"critical":drrGap>0?"warn":"ok";
+  alerts.push({sev:drrSev,icon:drrSev==="ok"?"🟢":"📉",badge:drrSev==="ok"?"On Pace":drrGapPct>50?"Critical DRR Gap":"DRR Behind Target",
+    title:drrSev==="ok"?"Team DRR is ahead of required pace":`Team needs ${INR(Math.round(drr))}/day but is averaging ${INR(Math.round(actualDrr))}/day`,
+    val:(drrGap>0?"+":"")+INR(Math.round(Math.abs(drrGap))),valColor:drrSev==="ok"?"green":drrSev==="critical"?"red":"amber",
+    desc:drrSev==="ok"?`Actual DRR (${INR(Math.round(actualDrr))}) exceeds required DRR (${INR(Math.round(drr))}). Keep this pace.`:`Gap of ${INR(Math.round(drrGap))}/day (${drrGapPct.toFixed(0)}% shortfall). Base forecast: ${INR(baseFc)} — ${Pct(baseFc/target*100)} of target.`,
+    names:[]});
+  const zeroMonth=D.agents.filter(ag=>agentTotal(ag)===0);
+  if(zeroMonth.length>0) alerts.push({sev:"critical",icon:"💤",badge:"No Revenue — Month to Date",
+    title:`${zeroMonth.length} agent${zeroMonth.length>1?"s have":" has"} ₹0 for all of June so far`,
+    val:zeroMonth.length+"",valColor:"red",
+    desc:`${zeroMonth.map(a=>a.name.split(" ")[0]).join(", ")} ${zeroMonth.length>1?"have":"has"} not logged a single rupee in ${daysElapsed} elapsed days.`,
+    names:zeroMonth.map(a=>a.name)});
+  const sortedAg=[...D.agents].map(ag=>({...ag,tot:agentTotal(ag)})).sort((a,b)=>b.tot-a.tot);
+  const top3Tot=sortedAg.slice(0,3).reduce((s,a)=>s+a.tot,0);
+  const concPct=achieved>0?top3Tot/achieved*100:0;
+  const concSev=concPct>75?"critical":concPct>60?"warn":"ok";
+  alerts.push({sev:concSev,icon:concSev==="ok"?"⚖️":"⚠️",badge:concSev==="ok"?"Balanced Load":"High Concentration Risk",
+    title:`Top 3 agents account for ${Pct(concPct,0)} of all June revenue`,
+    val:Pct(concPct,0),valColor:concSev==="ok"?"green":concSev==="critical"?"red":"amber",
+    desc:concSev==="ok"?"Revenue load is reasonably spread.":`${sortedAg[0].name.split(" ")[0]}, ${sortedAg[1].name.split(" ")[0]} & ${sortedAg[2].name.split(" ")[0]} are carrying the team.`,
+    names:concSev!=="ok"?sortedAg.slice(0,3).map(a=>a.name):[]});
+  const fcSev=baseFc>=target?"ok":baseFc>=target*0.75?"warn":"critical";
+  alerts.push({sev:fcSev,icon:fcSev==="ok"?"🎯":"🔮",badge:fcSev==="ok"?"On Track to Close":"Month-End Shortfall Risk",
+    title:fcSev==="ok"?`Base forecast meets target`:`Base forecast ${INR(baseFc)} — short by ${INR(target-baseFc)}`,
+    val:INR(baseFc),valColor:fcSev==="ok"?"green":fcSev==="critical"?"red":"amber",
+    desc:`Optimistic: ${INR(optFc)} (${Pct(optFc/target*100)}). Conservative: ${INR(consFc)} (${Pct(consFc/target*100)}). ${daysLeft} days to close ${INR(remaining)}.`,
+    names:[]});
+  const filledDays=daily.slice(0,daysElapsed).filter(v=>v>0);
+  if(filledDays.length>0){
+    const bestVal=Math.max(...filledDays),bestDay=daily.indexOf(bestVal)+1,avgDay=filledDays.reduce((s,v)=>s+v,0)/filledDays.length;
+    alerts.push({sev:"info",icon:"🏅",badge:"Best Single Day",
+      title:`Jun ${bestDay} was the strongest day — ${(bestVal/avgDay).toFixed(1)}× the daily average`,
+      val:INR(bestVal),valColor:"blue",
+      desc:`Daily average across ${filledDays.length} revenue-generating days is ${INR(Math.round(avgDay))}. Jun ${bestDay} outperformed by ${INR(Math.round(bestVal-avgDay))}.`,
+      names:[]});
   }
-
-  /* ── 4. TOP-HEAVY CONCENTRATION RISK ── */
-  const sorted = [...D.agents].map(ag=>({...ag,tot:agentTotal(ag)})).sort((a,b)=>b.tot-a.tot);
-  const top3Tot = sorted.slice(0,3).reduce((s,a)=>s+a.tot,0);
-  const concPct = achieved>0 ? top3Tot/achieved*100 : 0;
-  const concSev = concPct > 75 ? "critical" : concPct > 60 ? "warn" : "ok";
-  alerts.push({
-    sev: concSev, icon: concSev==="ok"?"⚖️":"⚠️",
-    badge: concSev==="ok"?"Balanced Load":"High Concentration Risk",
-    title: `Top 3 agents account for ${Pct(concPct,0)} of all June revenue`,
-    val: Pct(concPct,0),
-    valColor: concSev==="ok"?"green":concSev==="critical"?"red":"amber",
-    desc: concSev==="ok"
-      ? `Revenue load is reasonably spread. Continue encouraging mid-tier agents to maintain this balance.`
-      : `${sorted[0].name.split(" ")[0]}, ${sorted[1].name.split(" ")[0]} & ${sorted[2].name.split(" ")[0]} are carrying the team. If any one of them has a slow week, overall numbers will drop sharply.`,
-    names: concSev!=="ok" ? sorted.slice(0,3).map(a=>a.name) : []
-  });
-
-  /* ── 5. FORECAST vs TARGET — month-end risk ── */
-  const fcSev = baseFc >= target ? "ok" : baseFc >= target*0.75 ? "warn" : "critical";
-  alerts.push({
-    sev: fcSev, icon: fcSev==="ok"?"🎯":"🔮",
-    badge: fcSev==="ok"?"On Track to Close":"Month-End Shortfall Risk",
-    title: fcSev==="ok"
-      ? `Base forecast (${INR(baseFc)}) meets or exceeds target`
-      : `Base forecast ${INR(baseFc)} — short of ${INR(target)} target by ${INR(target-baseFc)}`,
-    val: INR(baseFc),
-    valColor: fcSev==="ok"?"green":fcSev==="critical"?"red":"amber",
-    desc: `Optimistic scenario: ${INR(optFc)} (${Pct(optFc/target*100)}). Conservative: ${INR(consFc)} (${Pct(consFc/target*100)}). ${daysLeft} days remain to close the gap of ${INR(remaining)}.`,
-    names: []
-  });
-
-  /* ── 6. BEST DAY THIS MONTH ── */
-  const filledDays = daily.slice(0,daysElapsed).filter(v=>v>0);
-  if(filledDays.length > 0){
-    const bestVal = Math.max(...filledDays);
-    const bestDay = daily.indexOf(bestVal)+1;
-    const avgDay  = filledDays.reduce((s,v)=>s+v,0)/filledDays.length;
-    const mult    = bestVal/avgDay;
-    alerts.push({
-      sev:"info", icon:"🏅",
-      badge:"Best Single Day",
-      title:`Jun ${bestDay} was the strongest day — ${mult.toFixed(1)}× the daily average`,
-      val: INR(bestVal),
-      valColor:"blue",
-      desc:`Daily average across ${filledDays.length} revenue-generating days is ${INR(Math.round(avgDay))}. Jun ${bestDay} outperformed by ${INR(Math.round(bestVal-avgDay))}. Replicate what drove that day.`,
-      names:[]
-    });
-  }
-
-  /* ── 7. AGENTS BELOW 10% ACHIEVEMENT (coaching priority) ── */
-  const critAgents = D.agents.filter(ag=>{
-    const tot=agentTotal(ag), pct=ag.target>0?tot/ag.target*100:0;
-    return pct < 10 && ag.target > 0;
-  });
-  if(critAgents.length > 0){
-    alerts.push({
-      sev:"warn", icon:"🎙️",
-      badge:"Coaching Priority",
-      title:`${critAgents.length} agent${critAgents.length>1?"s":""} below 10% monthly achievement`,
-      val: critAgents.length+"",
-      valColor:"amber",
-      desc:`These agents need immediate coaching intervention. Combined they represent ${INR(critAgents.reduce((s,a)=>s+a.target,0))} in untapped target capacity.`,
-      names: critAgents.map(a=>a.name)
-    });
-  }
-
-  /* ── 8. LAST-DAY REVENUE DROP / SURGE STREAK ── */
-  if(daysElapsed >= 3){
-    const last3 = daily.slice(Math.max(0,daysElapsed-3), daysElapsed).filter(v=>v>0);
-    if(last3.length === 3){
-      const trend = last3[2] > last3[1] && last3[1] > last3[0];
-      const drop  = last3[2] < last3[1] && last3[1] < last3[0];
-      if(trend || drop){
-        alerts.push({
-          sev: trend?"ok":"warn", icon: trend?"📈":"📉",
-          badge: trend?"3-Day Surge":"3-Day Decline",
-          title: trend
-            ? `Revenue has grown 3 days in a row — positive momentum`
-            : `Revenue has declined 3 days in a row — needs attention`,
-          val: null,
-          valColor: trend?"green":"amber",
-          desc: `Jun ${daysElapsed-2}: ${INR(last3[0])} → Jun ${daysElapsed-1}: ${INR(last3[1])} → Jun ${daysElapsed}: ${INR(last3[2])}. ${trend?"Sustain this trajectory into the rest of the week.":"Identify and address the cause before the pattern deepens."}`,
-          names:[]
-        });
-      }
+  const critAgents=D.agents.filter(ag=>{const tot=agentTotal(ag),p=ag.target>0?tot/ag.target*100:0;return p<10&&ag.target>0;});
+  if(critAgents.length>0) alerts.push({sev:"warn",icon:"🎙️",badge:"Coaching Priority",
+    title:`${critAgents.length} agent${critAgents.length>1?"s":""} below 10% monthly achievement`,
+    val:critAgents.length+"",valColor:"amber",
+    desc:`These agents need immediate coaching intervention. Combined target capacity: ${INR(critAgents.reduce((s,a)=>s+a.target,0))}.`,
+    names:critAgents.map(a=>a.name)});
+  if(daysElapsed>=3){
+    const last3=daily.slice(Math.max(0,daysElapsed-3),daysElapsed).filter(v=>v>0);
+    if(last3.length===3){
+      const trend=last3[2]>last3[1]&&last3[1]>last3[0],drop=last3[2]<last3[1]&&last3[1]<last3[0];
+      if(trend||drop) alerts.push({sev:trend?"ok":"warn",icon:trend?"📈":"📉",badge:trend?"3-Day Surge":"3-Day Decline",
+        title:trend?"Revenue has grown 3 days in a row":"Revenue has declined 3 days in a row",
+        val:null,valColor:trend?"green":"amber",
+        desc:`Jun ${daysElapsed-2}: ${INR(last3[0])} → Jun ${daysElapsed-1}: ${INR(last3[1])} → Jun ${daysElapsed}: ${INR(last3[2])}.`,
+        names:[]});
     }
   }
-
-  /* ── 9. STATIC QUALITATIVE INSIGHTS (MCN/SKN + FIFO) ── */
-  alerts.push({
-    sev:"neutral", icon:"📡",
-    badge:"Observed · Qualitative",
-    title:"MCN / SKN Lead Overlap",
-    val:null, valColor:null,
-    desc:"A significant portion of current leads have already been contacted by MCN and SKN centres, reducing contactability and conversion rates. This is a structural drag on the team's output that is independent of agent effort.",
-    names:[], isStatic:true
-  });
-  alerts.push({
-    sev:"neutral", icon:"🗂️",
-    badge:"Observed · Qualitative",
-    title:"FIFO Lead Allocation",
-    val:null, valColor:null,
-    desc:"Lead allocation follows a First In, First Out sequence. Agents who log in earlier access fresher leads before other centres engage them — the primary rationale behind the early-login initiative.",
-    names:[], isStatic:true
-  });
-
-  /* ── RENDER ── */
-  const sevOrder = {critical:0,warn:1,ok:2,info:3,neutral:4};
-  const sorted2  = [...alerts].sort((a,b)=>sevOrder[a.sev]-sevOrder[b.sev]);
-
-  const badgeCls = s => ({critical:"badge-critical",warn:"badge-warn",ok:"badge-ok",info:"badge-info",neutral:"badge-neutral"}[s]);
-  const cardCls  = s => "intel-card sev-"+s+(s==="neutral"?" intel-static":"");
-
-  document.getElementById("intelGrid").innerHTML = sorted2.map(a=>`
+  alerts.push({sev:"neutral",icon:"📡",badge:"Observed · Qualitative",title:"MCN / SKN Lead Overlap",val:null,valColor:null,
+    desc:"A significant portion of current leads have already been contacted by MCN and SKN centres, reducing contactability and conversion rates.",names:[],isStatic:true});
+  alerts.push({sev:"neutral",icon:"🗂️",badge:"Observed · Qualitative",title:"FIFO Lead Allocation",val:null,valColor:null,
+    desc:"Lead allocation follows a First In, First Out sequence. Agents who log in earlier access fresher leads before other centres engage them.",names:[],isStatic:true});
+  const sevOrder={critical:0,warn:1,ok:2,info:3,neutral:4};
+  const sorted2=[...alerts].sort((a,b)=>sevOrder[a.sev]-sevOrder[b.sev]);
+  const badgeCls=s=>({critical:"badge-critical",warn:"badge-warn",ok:"badge-ok",info:"badge-info",neutral:"badge-neutral"}[s]);
+  const cardCls=s=>"intel-card sev-"+s+(s==="neutral"?" intel-static":"");
+  document.getElementById("intelGrid").innerHTML=sorted2.map(a=>`
     <div class="${cardCls(a.sev)}">
       <div class="intel-icon">${a.icon}</div>
       <div class="intel-body">
@@ -1064,18 +977,21 @@ function renderInsights(){
         ${a.names&&a.names.length>0?`<div class="intel-names">${a.names.map(n=>`<span class="intel-name-chip">${n}</span>`).join("")}</div>`:""}
       </div>
     </div>`).join("");
-
-  document.getElementById("intelTimestamp").textContent = "Last updated: "+D.lastUpdated+" · "+sorted2.filter(a=>a.sev==="critical").length+" critical · "+sorted2.filter(a=>a.sev==="warn").length+" warnings";
+  document.getElementById("intelTimestamp").textContent="Last updated: "+D.lastUpdated+" · "+sorted2.filter(a=>a.sev==="critical").length+" critical · "+sorted2.filter(a=>a.sev==="warn").length+" warnings";
 }
 
-function renderAll(){ renderKPIs();renderLeaderboard();renderForecast();renderJuneChart();renderWeekly();renderAgents();renderDaily();renderCmpChart();renderInsights(); }
+function renderAll(){
+  renderKPIs();renderLeaderboard();renderForecast();renderJuneChart();
+  renderWeekly();renderAgents();renderDaily();renderCmpChart();renderInsights();
+}
 
+/* ═══════════════════════════════════════════
+   MODALS & EDIT UI
+═══════════════════════════════════════════ */
 function toast(msg){ const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3500); }
-
 function openLogin(){ document.getElementById("loginOvl").classList.add("on");const pw=document.getElementById("loginPw");pw.value="";document.getElementById("loginErr").style.display="none";setTimeout(()=>pw.focus(),120); }
 function closeLogin(){ document.getElementById("loginOvl").classList.remove("on"); }
 function doLogin(){ if(btoa(document.getElementById("loginPw").value)===ADMIN_B64){closeLogin();openEdit();}else document.getElementById("loginErr").style.display="block"; }
-
 function openEdit(){ populateEdit();document.getElementById("editOvl").classList.add("on"); }
 function closeEdit(){ document.getElementById("editOvl").classList.remove("on"); }
 function swTab(id,idx){ document.querySelectorAll(".tp").forEach(p=>p.classList.remove("on"));document.querySelectorAll(".m-tab").forEach(t=>t.classList.remove("on"));document.getElementById(id).classList.add("on");document.querySelectorAll(".m-tab")[idx].classList.add("on"); }
@@ -1124,23 +1040,53 @@ function updateAgLive(){
   document.getElementById("agLiveDrr").textContent=INR(Math.max(0,agDrr));
 }
 
+/* ═══════════════════════════════════════════
+   SAVE — writes to Firebase, triggers live sync
+═══════════════════════════════════════════ */
 function saveData(){
-  D.june.target=parseInt(document.getElementById("eTarget").value)||D.june.target;
-  D.june.daysTotal=parseInt(document.getElementById("eDaysTotal").value)||30;
-  D.june.daysElapsed=parseInt(document.getElementById("eDaysElapsed").value)||0;
-  D.lastUpdated=document.getElementById("eUpdated").value;
-  D.june.daily=D.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0);
-  const agIdx=parseInt(document.getElementById("agSel").value);
-  D.agents[agIdx].target=parseInt(document.getElementById("agTgt").value)||D.agents[agIdx].target;
-  D.agents[agIdx].daily=D.agents[agIdx].daily.map((_,i)=>parseInt(document.getElementById("agd"+i)?.value)||0);
-  D.mayWeekly.forEach((_,i)=>{D.mayWeekly[i].revenue=parseInt(document.getElementById("mw"+i)?.value)||0;});
-  D.juneWeekly.forEach((_,i)=>{D.juneWeekly[i].revenue=parseInt(document.getElementById("jw"+i)?.value)||0;});
-  storeData(); closeEdit(); renderAll();
-  toast("✅ All KPIs, charts, rankings & forecasts refreshed!");
+  // Collect form values into a new data object
+  const newD = JSON.parse(JSON.stringify(D)); // deep copy current state
+
+  newD.june.target     = parseInt(document.getElementById("eTarget").value)||D.june.target;
+  newD.june.daysTotal  = parseInt(document.getElementById("eDaysTotal").value)||30;
+  newD.june.daysElapsed= parseInt(document.getElementById("eDaysElapsed").value)||0;
+  newD.lastUpdated     = document.getElementById("eUpdated").value;
+  newD.june.daily      = newD.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0);
+
+  const agIdx = parseInt(document.getElementById("agSel").value);
+  newD.agents[agIdx].target = parseInt(document.getElementById("agTgt").value)||D.agents[agIdx].target;
+  newD.agents[agIdx].daily  = newD.agents[agIdx].daily.map((_,i)=>parseInt(document.getElementById("agd"+i)?.value)||0);
+
+  newD.mayWeekly.forEach((_,i)=>{ newD.mayWeekly[i].revenue=parseInt(document.getElementById("mw"+i)?.value)||0; });
+  newD.juneWeekly.forEach((_,i)=>{ newD.juneWeekly[i].revenue=parseInt(document.getElementById("jw"+i)?.value)||0; });
+
+  closeEdit();
+
+  // Show saving overlay
+  document.getElementById("savingOverlay").classList.add("on");
+  setSyncStatus("connecting","Saving to Firebase…");
+
+  // Write to Firebase — the realtime listener will pick it up and renderAll()
+  db.ref(DB_KEY).set(newD)
+    .then(()=>{
+      document.getElementById("savingOverlay").classList.remove("on");
+      toast("☁️ Saved & synced to all viewers!");
+      setSyncStatus("live","🟢 Live · last updated "+newD.lastUpdated);
+    })
+    .catch(err=>{
+      document.getElementById("savingOverlay").classList.remove("on");
+      setSyncStatus("error","Save failed: "+err.message);
+      toast("❌ Save failed: "+err.message);
+      // Fallback: update locally so the admin still sees their change
+      D = newD;
+      renderAll();
+    });
 }
 
-loadData();
-renderAll();
+/* ═══════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════ */
+connectFirebase();
 </script>
 </body>
 </html>
