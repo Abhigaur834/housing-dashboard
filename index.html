@@ -6,7 +6,6 @@
 <title>Housing.com · Sales Command Centre</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<!-- Firebase v9 compat (CDN) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
@@ -22,7 +21,7 @@
   --n300:#d0cdc4;--n400:#9e9b92;--n500:#6b6860;--n600:#514e47;
   --n700:#35322c;--n800:#1e1c18;--n900:#0f0e0b;
   --page:#f2f1ec;--surface:#ffffff;--border:#e0ddd5;
-  --text:#0f0e0b;--muted:#6b6860;--accent:var(--hgold);--accent-d:var(--hgold-d);
+  --text:#0f0e0b;--muted:#6b6860;
   --r-sm:6px;--r:10px;--r-lg:14px;
   --sh-sm:0 1px 3px rgba(0,0,0,.07);--sh:0 2px 8px rgba(0,0,0,.09);
   --sh-md:0 4px 16px rgba(0,0,0,.11);--sh-lg:0 8px 32px rgba(0,0,0,.16);
@@ -35,24 +34,35 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
 
 /* ── SYNC STATUS BAR ── */
-.sync-bar{background:linear-gradient(90deg,#052e16,#0a3d1e);border-bottom:1px solid rgba(247,195,26,.15);padding:5px 28px;display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);}
-.sync-bar.error{background:linear-gradient(90deg,#450a0a,#5c1a1a);}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;}
+.sync-bar{
+  background:linear-gradient(90deg,#052e16,#0a3d1e);
+  border-bottom:1px solid rgba(247,195,26,.15);
+  padding:0 28px;
+  height:30px;
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;color:rgba(255,255,255,.6);
+  position:sticky;top:0;z-index:400;
+}
+.sync-bar.err{background:linear-gradient(90deg,#450a0a,#5c1a1a);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;transition:background .3s;}
 .sync-dot.connecting{background:#fbbf24;animation:blink .8s ease-in-out infinite;}
 .sync-dot.error{background:#ef4444;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-.sync-viewers{margin-left:auto;display:flex;align-items:center;gap:5px;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+.sync-right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+.sync-clock{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);}
+.sync-clock strong{color:rgba(255,255,255,.75);}
+.sync-days-left{display:flex;align-items:center;gap:5px;background:rgba(247,195,26,.12);border:1px solid rgba(247,195,26,.2);padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;color:var(--hgold);letter-spacing:.3px;}
 
 /* TOPBAR */
-.topbar{background:var(--hblack);color:#fff;height:62px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:29px;z-index:300;box-shadow:0 2px 0 var(--hgold),0 4px 24px rgba(0,0,0,.5);}
+.topbar{background:var(--hblack);color:#fff;height:62px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:30px;z-index:300;box-shadow:0 2px 0 var(--hgold),0 4px 24px rgba(0,0,0,.5);}
 .tb-left{display:flex;align-items:center;gap:0;}
 .tb-housing{display:flex;align-items:center;gap:0;text-decoration:none;flex-shrink:0;}
 .tb-housing-triangle{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:15px solid var(--hgold);margin-right:9px;flex-shrink:0;}
-.tb-housing-wordmark{font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.5px;font-family:'Inter',sans-serif;line-height:1;}
+.tb-housing-wordmark{font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1;}
 .tb-housing-wordmark span{color:var(--hgold);}
 .tb-sep{width:1px;height:28px;background:rgba(255,255,255,.15);margin:0 18px;flex-shrink:0;}
 .tb-ocube{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.tb-ocube-ring{position:relative;width:26px;height:26px;flex-shrink:0;}
+.tb-ocube-ring{width:26px;height:26px;flex-shrink:0;}
 .tb-ocube-ring svg{width:26px;height:26px;}
 .tb-ocube-word{font-size:14px;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.5px;}
 .tb-sep2{width:1px;height:22px;background:rgba(255,255,255,.12);margin:0 14px;flex-shrink:0;}
@@ -75,6 +85,18 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .sec::after{content:'';flex:1;height:1px;background:var(--border);}
 .sec:first-child{margin-top:0;}
 
+/* ── SKELETON LOADER ── */
+.skeleton-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin-bottom:4px;}
+.sk-card{background:var(--surface);border-radius:var(--r-lg);padding:16px 18px 14px;border:1px solid var(--border);border-top:3px solid var(--n200);height:110px;overflow:hidden;position:relative;}
+.sk-card::after,.sk-line::after,.sk-block::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.6) 50%,transparent 100%);animation:shimmer 1.4s infinite;}
+@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.sk-line{height:10px;border-radius:4px;background:var(--n200);margin-bottom:8px;position:relative;overflow:hidden;}
+.sk-line.w60{width:60%;}
+.sk-line.w80{width:80%;}
+.sk-line.w40{width:40%;}
+.sk-block{height:24px;border-radius:4px;background:var(--n200);width:70%;margin-bottom:8px;position:relative;overflow:hidden;}
+.sk-lb{height:60px;border-radius:var(--r);background:var(--n100);margin-bottom:8px;position:relative;overflow:hidden;}
+
 /* KPI GRID */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin-bottom:4px;}
 .kc{background:var(--surface);border-radius:var(--r-lg);padding:16px 18px 14px;border:1px solid var(--border);border-top:3px solid var(--ac,var(--hgold));position:relative;overflow:hidden;transition:transform .22s var(--ease-out),box-shadow .22s;cursor:default;}
@@ -82,14 +104,13 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .kc::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle at top right,var(--ac-glow,transparent),transparent 70%);pointer-events:none;opacity:.4;}
 .kc-icon{font-size:17px;margin-bottom:10px;display:block;}
 .kc-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
-.kc-val{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text);line-height:1.2;transition:color .3s;}
+.kc-val{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text);line-height:1.2;}
 .kc-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;}
 .kc-track{height:3px;background:var(--n200);border-radius:2px;margin-top:11px;overflow:hidden;}
 .kc-fill{height:100%;border-radius:2px;width:0%;transition:width .9s var(--ease-spring);}
 .kc-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:7px;}
 .tag-ok{background:var(--green-l);color:var(--green-d);}
 .tag-warn{background:var(--red-l);color:var(--red-d);}
-.tag-info{background:var(--blue-l);color:var(--blue-d);}
 
 /* CARD */
 .card{background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh-sm);transition:box-shadow .2s;}
@@ -113,7 +134,7 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 @keyframes fade-up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 .lb-pos{font-size:14px;font-weight:900;width:34px;text-align:center;font-family:'JetBrains Mono',monospace;flex-shrink:0;}
 .lb-pos.gold{color:#d97706;}.lb-pos.silver{color:#94a3b8;}.lb-pos.bronze{color:#b45309;}.lb-pos.rest{color:var(--n400);font-size:12px;}
-.lb-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;text-transform:uppercase;}
+.lb-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
 .lb-info{flex:1;min-width:0;}
 .lb-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .lb-meta{font-size:10px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace;}
@@ -206,6 +227,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .intel-card.sev-ok{background:var(--green-l);border-color:#bbf7d0;}
 .intel-card.sev-ok::before{background:var(--green);}
 .intel-card.sev-neutral{background:var(--n50);border-color:var(--border);}
+.intel-card.intel-static{background:var(--amber-l);border-color:var(--amber-m);}
 .intel-icon{font-size:22px;flex-shrink:0;line-height:1;margin-top:1px;}
 .intel-body{flex:1;min-width:0;}
 .intel-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:1px 7px;border-radius:10px;margin-bottom:5px;}
@@ -217,13 +239,9 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .intel-title{font-size:12px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px;}
 .intel-desc{font-size:11px;color:var(--muted);line-height:1.6;}
 .intel-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:3px;line-height:1.2;}
-.intel-val.red{color:var(--red-d);}
-.intel-val.amber{color:var(--amber);}
-.intel-val.green{color:var(--green);}
-.intel-val.blue{color:var(--blue);}
+.intel-val.red{color:var(--red-d);}.intel-val.amber{color:var(--amber);}.intel-val.green{color:var(--green);}.intel-val.blue{color:var(--blue);}
 .intel-names{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
 .intel-name-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;background:rgba(0,0,0,.07);color:var(--text);}
-.intel-static{background:var(--amber-l);border-color:var(--amber-m);}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--n800);color:#fff;padding:12px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:10px;transform:translateY(100px);opacity:0;transition:all .4s var(--ease-spring);pointer-events:none;}
@@ -252,7 +270,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .m-tab.on{background:var(--hblack);color:var(--hgold);}
 .tp{display:none;}.tp.on{display:block;}
 .day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
-.dw{}.dw span{display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600;}
+.dw span{display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600;}
 .dw input{width:100%;padding:5px 6px;font-size:11px;border:1px solid var(--border);border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;transition:border .15s;}
 .dw input:focus{border-color:var(--blue);}
 .ag-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
@@ -260,26 +278,39 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .divider{height:1px;background:var(--border);margin:12px 0 16px;}
 .sub-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;}
 .live-bar{background:var(--hgold-l);border:1px solid var(--hgold-m);border-radius:var(--r);padding:10px 14px;margin-top:12px;display:flex;gap:20px;flex-wrap:wrap;}
-.live-item{}.live-item span{display:block;font-size:9px;color:#78620a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.live-item span{display:block;font-size:9px;color:#78620a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
 .live-item strong{font-size:13px;font-family:'JetBrains Mono',monospace;color:#3d3000;}
 
 /* SAVING OVERLAY */
 .saving-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
 .saving-overlay.on{display:flex;}
 .saving-box{background:#fff;border-radius:var(--r-lg);padding:24px 32px;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;box-shadow:var(--sh-lg);}
-.saving-spinner{width:22px;height:22px;border:3px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .7s linear infinite;}
+.saving-spinner{width:22px;height:22px;border:3px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-.footer{text-align:center;padding:28px;font-size:11px;color:var(--n400);}
+/* AUTO-REFRESH BANNER */
+.refresh-banner{display:none;background:linear-gradient(90deg,#1e3a8a,#1d4ed8);color:#fff;padding:8px 28px;font-size:11px;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.1);}
+.refresh-banner.show{display:flex;}
+.refresh-banner strong{color:#fcd34d;}
 </style>
 </head>
 <body>
 
-<!-- Firebase sync status bar -->
+<!-- Auto-refresh fallback banner -->
+<div class="refresh-banner" id="refreshBanner">
+  <span>🔄</span>
+  <span>Firebase real-time listener offline. Auto-refresh in <strong id="refreshCountdown">60:00</strong>.</span>
+  <button onclick="manualRefresh()" style="margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-weight:600;">Refresh Now</button>
+</div>
+
+<!-- Sync status bar -->
 <div class="sync-bar" id="syncBar">
   <div class="sync-dot connecting" id="syncDot"></div>
   <span id="syncMsg">Connecting to Firebase…</span>
-  <span class="sync-viewers" id="syncViewers"></span>
+  <div class="sync-right">
+    <span class="sync-clock">Last synced: <strong id="lastSyncedClock">—</strong></span>
+    <span class="sync-days-left" id="daysLeftBadge">⏳ — days left</span>
+  </div>
 </div>
 
 <div class="topbar">
@@ -324,7 +355,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <span class="tb-title">Sales Command Centre</span>
   </div>
   <div class="tb-right">
-    <span class="tb-live"><span class="live-dot"></span><span id="updBadge">Live</span></span>
+    <span class="tb-live"><span class="live-dot"></span><span id="updBadge">Connecting…</span></span>
     <button class="btn-update" onclick="openLogin()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
       Update Data
@@ -332,149 +363,132 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   </div>
 </div>
 
-<div class="wrap">
-<div class="sec">June 2026 — Monthly Snapshot</div>
-<div class="kpi-grid" id="kpiGrid"></div>
+<div class="wrap" id="mainWrap">
 
-<div class="sec">Performance Leaderboard — June 2026</div>
-<div class="card">
-  <div class="card-hdr"><h3>🏆 Agent Rankings</h3><aside id="lbDate">—</aside></div>
-  <div class="lb-wrap" id="lbWrap"></div>
-</div>
-
-<div class="sec">Sales Forecast & Projections</div>
-<div class="card">
-  <div class="card-hdr"><h3>📡 Month-End Scenarios</h3><aside>Auto-calculated from current DRR</aside></div>
-  <div class="fc-scenarios" id="fcScenarios"></div>
-  <div class="fc-chips" id="fcChips"></div>
-  <div class="leg">
-    <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual (cumulative)</span>
-    <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#2563eb;opacity:.7"></span>Base forecast</span>
-    <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#16a34a;opacity:.6"></span>Optimistic (+20%)</span>
-    <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#16a34a;opacity:.25"></span>Target line</span>
-  </div>
-  <div class="chart-pad"><div style="position:relative;height:230px"><canvas id="fcChart"></canvas></div></div>
-</div>
-
-<div class="sec">June 2026 — Daily Revenue</div>
-<div class="card">
-  <div class="card-hdr"><h3>Day-wise Collection</h3><aside id="juneTotalLbl">—</aside></div>
-  <div class="leg">
-    <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual revenue</span>
-    <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#e2e8f0"></span>Future / no data</span>
-  </div>
-  <div class="chart-pad"><div style="position:relative;height:220px"><canvas id="juneChart"></canvas></div></div>
-</div>
-
-<div class="sec">Weekly Breakdown — May vs June</div>
-<div class="two-col">
-  <div class="card" style="margin-bottom:0">
-    <div class="card-hdr"><h3>May 2026 — Weekly</h3><aside>₹2,21,250 / week target</aside></div>
-    <div class="tbl-wrap">
-      <table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ</th><th>WoW</th><th>Share</th></tr></thead>
-      <tbody id="mayWkBody"></tbody><tfoot id="mayWkFoot"></tfoot></table>
+  <!-- LOADING SKELETONS (shown until Firebase responds) -->
+  <div id="skeletonView">
+    <div class="sec">June 2026 — Monthly Snapshot</div>
+    <div class="skeleton-grid">
+      ${Array(8).fill(0).map(()=>`<div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div><div class="sk-line w80" style="height:3px;margin-top:14px"></div></div>`).join('')}
     </div>
+    <div class="sec" style="margin-top:28px">Performance Leaderboard</div>
+    <div class="card"><div class="card-hdr"><h3 style="color:#fff">🏆 Agent Rankings</h3></div><div style="padding:12px 18px">${Array(5).fill(0).map(()=>`<div class="sk-lb"></div>`).join('')}</div></div>
   </div>
-  <div class="card" style="margin-bottom:0">
-    <div class="card-hdr"><h3>June 2026 — Weekly</h3><aside id="junWkNote">In progress</aside></div>
-    <div class="tbl-wrap">
-      <table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ</th><th>Share</th><th>vs May</th></tr></thead>
-      <tbody id="junWkBody"></tbody><tfoot id="junWkFoot"></tfoot></table>
-    </div>
-  </div>
-</div>
 
-<div class="sec">Agent-wise Performance — June 2026</div>
-<div class="card">
-  <div class="card-hdr"><h3>Individual Daily Tracker</h3><aside>Auto-sorted by achievement %</aside></div>
-  <div class="tbl-wrap">
-    <table class="zebra"><thead><tr id="agHdr"></tr></thead><tbody id="agBody"></tbody><tfoot id="agFoot"></tfoot></table>
-  </div>
-</div>
+  <!-- MAIN CONTENT (hidden until Firebase responds) -->
+  <div id="dashView" style="display:none">
 
-<div class="sec">May & June 2026 — Daily Comparison</div>
-<div class="card">
-  <div class="card-hdr"><h3>Day-wise Revenue Side-by-Side</h3><aside>May: ₹3,82,739 | June: <span id="junLogTot">—</span></aside></div>
-  <div class="leg">
-    <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(37,99,235,.75)"></span>May 2026</span>
-    <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(220,38,38,.75)"></span>June 2026</span>
-  </div>
-  <div class="chart-pad"><div style="position:relative;height:200px"><canvas id="cmpChart"></canvas></div></div>
-</div>
+    <div class="sec">June 2026 — Monthly Snapshot</div>
+    <div class="kpi-grid" id="kpiGrid"></div>
 
-<div class="card">
-  <div class="card-hdr"><h3>Daily Revenue Log — May & June 2026</h3><aside>May total: ₹3,82,739</aside></div>
-  <div class="tbl-wrap">
-    <table class="zebra">
-      <thead><tr><th>Week</th><th>Date</th><th>May Revenue</th><th>June Revenue</th><th>MoD Δ</th></tr></thead>
-      <tbody id="dailyBody"></tbody><tfoot id="dailyFoot"></tfoot>
-    </table>
-  </div>
-</div>
-
-<!-- ACTION PLAN -->
-<div class="sec">Action Plan — June 2026 Recovery</div>
-<div class="card">
-  <div class="card-hdr"><h3>📋 Team Action Plan</h3><aside>Housing Owner Process · Effective immediately</aside></div>
-  <div class="ap-wrap">
-    <div class="ap-meta">
-      <span class="ap-badge status">⚡ In Execution</span>
-      <span class="ap-badge priority">🎯 High Priority</span>
-      <span class="ap-badge date">📅 June 2026</span>
-    </div>
-    <div class="ap-grid">
-      <div class="ap-divider">People &amp; Coaching</div>
-      <div class="ap-item highlight">
-        <div class="ap-icon">🎙️</div>
-        <div class="ap-body"><span class="ap-tag people">People</span><div class="ap-title">Daily Performance Reviews</div><div class="ap-desc">Structured daily check-ins with low-performing and non-performing agents to identify blockers, set daily commitments, and track follow-through.</div></div>
-      </div>
-      <div class="ap-item highlight">
-        <div class="ap-icon">🧠</div>
-        <div class="ap-body"><span class="ap-tag people">People</span><div class="ap-title">Focused Skill Coaching</div><div class="ap-desc">Targeted coaching sessions on conversion techniques, objection handling, and closing skills — particularly for agents currently sitting below 10% achievement.</div></div>
-      </div>
-      <div class="ap-divider">Process &amp; Execution</div>
-      <div class="ap-item">
-        <div class="ap-icon">🔥</div>
-        <div class="ap-body"><span class="ap-tag process">Process</span><div class="ap-title">Hot Lead Follow-Up Blitz</div><div class="ap-desc">Increased follow-up activity on hot and payment-ready leads. Closures and daily target commitments to be monitored more rigorously by TLs.</div></div>
-      </div>
-      <div class="ap-item">
-        <div class="ap-icon">⚖️</div>
-        <div class="ap-body"><span class="ap-tag process">Process</span><div class="ap-title">Reduce Top-Performer Dependency</div><div class="ap-desc">Additional focus on improving contributions from underperforming agents to distribute revenue load more evenly across the team.</div></div>
-      </div>
-      <div class="ap-divider">Lead Intelligence &amp; Observations</div>
+    <div class="sec">Performance Leaderboard — June 2026</div>
+    <div class="card">
+      <div class="card-hdr"><h3>🏆 Agent Rankings</h3><aside id="lbDate">—</aside></div>
+      <div class="lb-wrap" id="lbWrap"></div>
     </div>
 
-    <div style="margin-top:4px;">
-      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:0 2px 10px;display:flex;align-items:center;justify-content:space-between;">
-        <span>Auto-computed alerts · refreshes on every data save</span>
-        <span id="intelTimestamp" style="font-weight:400;color:var(--n400)"></span>
+    <div class="sec">Sales Forecast &amp; Projections</div>
+    <div class="card">
+      <div class="card-hdr"><h3>📡 Month-End Scenarios</h3><aside>Auto-calculated from current DRR</aside></div>
+      <div class="fc-scenarios" id="fcScenarios"></div>
+      <div class="fc-chips" id="fcChips"></div>
+      <div class="leg">
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual (cumulative)</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#2563eb;opacity:.7"></span>Base forecast</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#16a34a;opacity:.6"></span>Optimistic (+20%)</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#16a34a;opacity:.25"></span>Target line</span>
       </div>
-      <div class="intel-grid" id="intelGrid"></div>
+      <div class="chart-pad"><div style="position:relative;height:230px"><canvas id="fcChart"></canvas></div></div>
     </div>
 
-    <div class="ap-grid" style="margin-top:4px;">
-      <div class="ap-divider">Strategic Initiative</div>
-      <div class="ap-item strategic">
-        <div class="ap-icon">🌅</div>
-        <div class="ap-body"><span class="ap-tag strategy">Strategy</span><div class="ap-title">Early-Login Initiative</div><div class="ap-desc">Team members will log in early each morning to maximize access to fresh leads — improving contactability and increasing chances of early-day conversions before other centres engage.</div></div>
+    <div class="sec">June 2026 — Daily Revenue</div>
+    <div class="card">
+      <div class="card-hdr"><h3>Day-wise Collection</h3><aside id="juneTotalLbl">—</aside></div>
+      <div class="leg">
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual revenue</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#e2e8f0"></span>Future / no data</span>
       </div>
-      <div class="ap-item strategic">
-        <div class="ap-icon">🔁</div>
-        <div class="ap-body"><span class="ap-tag strategy">Strategy</span><div class="ap-title">Regular Effectiveness Reviews</div><div class="ap-desc">The early-login strategy will be reviewed regularly. Further process improvements will be implemented based on lead quality trends, contactability rates, and conversion outcomes observed.</div></div>
+      <div class="chart-pad"><div style="position:relative;height:220px"><canvas id="juneChart"></canvas></div></div>
+    </div>
+
+    <div class="sec">Weekly Breakdown — May vs June</div>
+    <div class="two-col">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-hdr"><h3>May 2026 — Weekly</h3><aside>₹2,21,250 / week target</aside></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ</th><th>WoW</th><th>Share</th></tr></thead><tbody id="mayWkBody"></tbody><tfoot id="mayWkFoot"></tfoot></table></div>
       </div>
-      <div class="ap-summary">
-        <div class="ap-summary-icon">🎯</div>
-        <div class="ap-summary-body">
-          <div class="ap-summary-title">Bottom Line</div>
-          <div class="ap-summary-text">The team is tracking below the June DRR target. The immediate priority is activating zero-revenue agents, exploiting the FIFO lead advantage through earlier logins, and compressing the gap on hot leads before month-end. Every day of delay costs approximately <strong style="color:#fcd34d">₹14,000+</strong> in opportunity against target.</div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-hdr"><h3>June 2026 — Weekly</h3><aside id="junWkNote">In progress</aside></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ</th><th>Share</th><th>vs May</th></tr></thead><tbody id="junWkBody"></tbody><tfoot id="junWkFoot"></tfoot></table></div>
+      </div>
+    </div>
+
+    <div class="sec">Agent-wise Performance — June 2026</div>
+    <div class="card">
+      <div class="card-hdr"><h3>Individual Daily Tracker</h3><aside>Auto-sorted by achievement %</aside></div>
+      <div class="tbl-wrap"><table class="zebra"><thead><tr id="agHdr"></tr></thead><tbody id="agBody"></tbody><tfoot id="agFoot"></tfoot></table></div>
+    </div>
+
+    <div class="sec">May &amp; June 2026 — Daily Comparison</div>
+    <div class="card">
+      <div class="card-hdr"><h3>Day-wise Revenue Side-by-Side</h3><aside>May: ₹3,82,739 | June: <span id="junLogTot">—</span></aside></div>
+      <div class="leg">
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(37,99,235,.75)"></span>May 2026</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(220,38,38,.75)"></span>June 2026</span>
+      </div>
+      <div class="chart-pad"><div style="position:relative;height:200px"><canvas id="cmpChart"></canvas></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-hdr"><h3>Daily Revenue Log — May &amp; June 2026</h3><aside>May total: ₹3,82,739</aside></div>
+      <div class="tbl-wrap"><table class="zebra"><thead><tr><th>Week</th><th>Date</th><th>May Revenue</th><th>June Revenue</th><th>MoD Δ</th></tr></thead><tbody id="dailyBody"></tbody><tfoot id="dailyFoot"></tfoot></table></div>
+    </div>
+
+    <!-- ACTION PLAN -->
+    <div class="sec">Action Plan — June 2026 Recovery</div>
+    <div class="card">
+      <div class="card-hdr"><h3>📋 Team Action Plan</h3><aside>Housing Owner Process · Effective immediately</aside></div>
+      <div class="ap-wrap">
+        <div class="ap-meta">
+          <span class="ap-badge status">⚡ In Execution</span>
+          <span class="ap-badge priority">🎯 High Priority</span>
+          <span class="ap-badge date">📅 June 2026</span>
+        </div>
+        <div class="ap-grid">
+          <div class="ap-divider">People &amp; Coaching</div>
+          <div class="ap-item highlight"><div class="ap-icon">🎙️</div><div class="ap-body"><span class="ap-tag people">People</span><div class="ap-title">Daily Performance Reviews</div><div class="ap-desc">Structured daily check-ins with low-performing and non-performing agents to identify blockers, set daily commitments, and track follow-through.</div></div></div>
+          <div class="ap-item highlight"><div class="ap-icon">🧠</div><div class="ap-body"><span class="ap-tag people">People</span><div class="ap-title">Focused Skill Coaching</div><div class="ap-desc">Targeted coaching sessions on conversion techniques, objection handling, and closing skills — particularly for agents currently sitting below 10% achievement.</div></div></div>
+          <div class="ap-divider">Process &amp; Execution</div>
+          <div class="ap-item"><div class="ap-icon">🔥</div><div class="ap-body"><span class="ap-tag process">Process</span><div class="ap-title">Hot Lead Follow-Up Blitz</div><div class="ap-desc">Increased follow-up activity on hot and payment-ready leads. Closures and daily target commitments to be monitored more rigorously by TLs.</div></div></div>
+          <div class="ap-item"><div class="ap-icon">⚖️</div><div class="ap-body"><span class="ap-tag process">Process</span><div class="ap-title">Reduce Top-Performer Dependency</div><div class="ap-desc">Additional focus on improving contributions from underperforming agents to distribute revenue load more evenly across the team.</div></div></div>
+          <div class="ap-divider">Lead Intelligence &amp; Observations</div>
+        </div>
+        <div style="margin-top:4px;">
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:0 2px 10px;display:flex;align-items:center;justify-content:space-between;">
+            <span>Auto-computed alerts · refreshes on every data save</span>
+            <span id="intelTimestamp" style="font-weight:400;color:var(--n400)"></span>
+          </div>
+          <div class="intel-grid" id="intelGrid"></div>
+        </div>
+        <div class="ap-grid" style="margin-top:4px;">
+          <div class="ap-divider">Strategic Initiative</div>
+          <div class="ap-item strategic"><div class="ap-icon">🌅</div><div class="ap-body"><span class="ap-tag strategy">Strategy</span><div class="ap-title">Early-Login Initiative</div><div class="ap-desc">Team members will log in early each morning to maximize access to fresh leads — improving contactability and increasing chances of early-day conversions before other centres engage.</div></div></div>
+          <div class="ap-item strategic"><div class="ap-icon">🔁</div><div class="ap-body"><span class="ap-tag strategy">Strategy</span><div class="ap-title">Regular Effectiveness Reviews</div><div class="ap-desc">The early-login strategy will be reviewed regularly. Further process improvements will be implemented based on lead quality trends, contactability rates, and conversion outcomes observed.</div></div></div>
+          <div class="ap-summary">
+            <div class="ap-summary-icon">🎯</div>
+            <div class="ap-summary-body">
+              <div class="ap-summary-title">Bottom Line</div>
+              <div class="ap-summary-text">The team is tracking below the June DRR target. The immediate priority is activating zero-revenue agents, exploiting the FIFO lead advantage through earlier logins, and compressing the gap on hot leads before month-end. Every day of delay costs approximately <strong style="color:#fcd34d">₹14,000+</strong> in opportunity against target.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
+
+  </div><!-- /dashView -->
 </div><!-- /wrap -->
 
-<div class="footer" style="background:var(--hblack);color:rgba(255,255,255,.35);padding:20px 28px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:11px;letter-spacing:.3px;">
+<div style="background:var(--hblack);color:rgba(255,255,255,.35);padding:20px 28px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:11px;letter-spacing:.3px;">
   <span style="color:var(--hgold);font-weight:800;font-size:13px;">▲</span>
   <span>HOUSING<span style="color:var(--hgold)">.com</span></span>
   <span style="opacity:.3">·</span><span>Housing Owner Process</span>
@@ -483,9 +497,8 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   <span style="opacity:.3">·</span><span>Confidential</span>
 </div>
 
-<div class="toast" id="toast"><span id="toastMsg">✅ Dashboard updated!</span></div>
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
 
-<!-- SAVING OVERLAY -->
 <div class="saving-overlay" id="savingOverlay">
   <div class="saving-box"><div class="saving-spinner"></div><span>Saving to Firebase…</span></div>
 </div>
@@ -495,15 +508,8 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   <div class="modal">
     <h2>🔐 Admin Login</h2>
     <p>Enter your password to update data.</p>
-    <div class="fg">
-      <label>Password</label>
-      <input type="password" id="loginPw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
-      <div class="err" id="loginErr">Incorrect password. Try again.</div>
-    </div>
-    <div class="m-act">
-      <button class="btn-sec" onclick="closeLogin()">Cancel</button>
-      <button class="btn-primary" onclick="doLogin()">Login</button>
-    </div>
+    <div class="fg"><label>Password</label><input type="password" id="loginPw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"><div class="err" id="loginErr">Incorrect password. Try again.</div></div>
+    <div class="m-act"><button class="btn-sec" onclick="closeLogin()">Cancel</button><button class="btn-primary" onclick="doLogin()">Login</button></div>
   </div>
 </div>
 
@@ -511,7 +517,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 <div class="ovl" id="editOvl">
   <div class="modal wide">
     <h2>✏️ Update Dashboard</h2>
-    <p>All charts, KPIs, rankings & forecasts update automatically on save — and sync live to all viewers instantly.</p>
+    <p>All charts, KPIs, rankings &amp; forecasts update automatically on save — and sync live to all viewers.</p>
     <div class="m-tabs">
       <button class="m-tab on" onclick="swTab('tpJune',0)">June KPIs</button>
       <button class="m-tab" onclick="swTab('tpAgents',1)">Agents</button>
@@ -521,13 +527,16 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <div class="two-inp">
         <div class="fg"><label>Monthly Target (₹)</label><input type="number" id="eTarget" oninput="livePreview()"></div>
         <div class="fg"><label>Days in Month</label><input type="number" id="eDaysTotal" oninput="livePreview()"></div>
-        <div class="fg"><label>Days Elapsed</label><input type="number" id="eDaysElapsed" oninput="livePreview()"></div>
-        <div class="fg"><label>Last Updated</label><input type="date" id="eUpdated"></div>
+        <div class="fg"><label>Days Elapsed (auto-computed)</label><input type="number" id="eDaysElapsed" oninput="livePreview()" style="background:#f8f7f4;color:var(--muted)" readonly title="Auto-calculated from Last Updated date"></div>
+        <div class="fg"><label>Last Updated (sets Days Elapsed)</label><input type="date" id="eUpdated" oninput="autoCalcDaysElapsed()"></div>
+      </div>
+      <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--blue-d);">
+        💡 <strong>Days Elapsed auto-calculates</strong> from the "Last Updated" date — no manual entry needed. Set date = today when updating.
       </div>
       <div class="divider"></div>
       <div class="sub-lbl">June Daily Revenue (₹) — all 30 days</div>
       <div class="day-grid" id="juneDayGrid"></div>
-      <div class="live-bar" id="liveBar">
+      <div class="live-bar" id="liveBar" style="margin-top:12px">
         <div class="live-item"><span>Daily Total</span><strong id="lvTotal">₹0</strong></div>
         <div class="live-item"><span>Avg DRR</span><strong id="lvDrr">₹0</strong></div>
         <div class="live-item"><span>Month-End Forecast</span><strong id="lvFc">₹0</strong></div>
@@ -536,14 +545,10 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       </div>
     </div>
     <div class="tp" id="tpAgents">
-      <div class="fg"><label>Select Agent</label><select id="agSel" onchange="loadAgEdit()"></select></div>
-      <div style="background:var(--n50);border-radius:var(--r);padding:8px 12px;margin-bottom:10px;font-size:11px;color:var(--muted);">
-        Running total: <strong id="agLiveTot" style="font-family:'JetBrains Mono',monospace;color:var(--text)">—</strong>
-        &nbsp;·&nbsp; Achievement: <strong id="agLivePct" style="font-family:'JetBrains Mono',monospace;color:var(--text)">—</strong>
-        &nbsp;·&nbsp; DRR needed: <strong id="agLiveDrr" style="font-family:'JetBrains Mono',monospace;color:var(--text)">—</strong>
+      <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--blue-d);">
+        💡 <strong>All agents shown below.</strong> Update any agent's daily revenue — all are saved together when you click Save.
       </div>
-      <div class="ag-grid" id="agDayGrid"></div>
-      <div class="fg" style="margin-top:14px"><label>Agent Monthly Target (₹)</label><input type="number" id="agTgt" oninput="updateAgLive()"></div>
+      <div id="allAgentsWrap"></div>
     </div>
     <div class="tp" id="tpWeekly">
       <div class="sub-lbl">May Weekly Revenue (₹)</div>
@@ -554,31 +559,57 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     </div>
     <div class="m-act">
       <button class="btn-sec" onclick="closeEdit()">Cancel</button>
-      <button class="btn-primary" onclick="saveData()">☁️ Save & Sync All</button>
+      <button class="btn-primary" onclick="saveData()">☁️ Save &amp; Sync All</button>
     </div>
   </div>
 </div>
 
 <script>
 /* ═══════════════════════════════════════════
-   FIREBASE INITIALISATION
+   FIREBASE
 ═══════════════════════════════════════════ */
 const firebaseConfig = {
-  apiKey: "AIzaSyATL9HIa5E_j69DAa-novWcz8lmA__IliM",
-  authDomain: "housing-dashboard-6ab66.firebaseapp.com",
-  databaseURL: "https://housing-dashboard-6ab66-default-rtdb.firebaseio.com",
-  projectId: "housing-dashboard-6ab66",
-  storageBucket: "housing-dashboard-6ab66.firebasestorage.app",
-  messagingSenderId: "1020378573497",
-  appId: "1:1020378573497:web:bf3f8c0e2011ca4ce84968"
+  apiKey:"AIzaSyATL9HIa5E_j69DAa-novWcz8lmA__IliM",
+  authDomain:"housing-dashboard-6ab66.firebaseapp.com",
+  databaseURL:"https://housing-dashboard-6ab66-default-rtdb.firebaseio.com",
+  projectId:"housing-dashboard-6ab66",
+  storageBucket:"housing-dashboard-6ab66.firebasestorage.app",
+  messagingSenderId:"1020378573497",
+  appId:"1:1020378573497:web:bf3f8c0e2011ca4ce84968"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const DB_KEY = "housing_dashboard_v1";
 
 /* ═══════════════════════════════════════════
-   DEFAULT DATA — used only if Firebase is empty
+   MONTH CONSTANTS
+═══════════════════════════════════════════ */
+const JUNE_MONTH = 5;   // JS month index for June (0-based)
+const JUNE_YEAR  = 2026;
+const JUNE_DAYS  = 30;
+const MONTH_END  = new Date(JUNE_YEAR, JUNE_MONTH + 1, 0); // June 30
+
+/* Auto-compute days elapsed from a YYYY-MM-DD date string */
+function computeDaysElapsed(dateStr) {
+  if(!dateStr) return 0;
+  const d = new Date(dateStr + "T00:00:00");
+  // Only count days within June 2026
+  if(d.getFullYear() !== JUNE_YEAR || d.getMonth() !== JUNE_MONTH) return 0;
+  return Math.min(d.getDate(), JUNE_DAYS);
+}
+
+/* Days left in June from today */
+function computeDaysLeft() {
+  const today = new Date();
+  if(today.getFullYear() !== JUNE_YEAR || today.getMonth() !== JUNE_MONTH) {
+    // If we're past June, return 0; before June return 30
+    return today < new Date(JUNE_YEAR, JUNE_MONTH, 1) ? JUNE_DAYS : 0;
+  }
+  return Math.max(0, JUNE_DAYS - today.getDate() + 1);
+}
+
+/* ═══════════════════════════════════════════
+   DEFAULT DATA
 ═══════════════════════════════════════════ */
 const DEFAULT_DATA = {
   lastUpdated:"2026-06-11",
@@ -587,28 +618,24 @@ const DEFAULT_DATA = {
            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
   },
   mayWeekly:[
-    {week:"Wk-1",target:221250,revenue:113338},
-    {week:"Wk-2",target:221250,revenue:55807},
-    {week:"Wk-3",target:221250,revenue:72355},
-    {week:"Wk-4",target:221250,revenue:141239}
+    {week:"Wk-1",target:221250,revenue:113338},{week:"Wk-2",target:221250,revenue:55807},
+    {week:"Wk-3",target:221250,revenue:72355},{week:"Wk-4",target:221250,revenue:141239}
   ],
   juneWeekly:[
-    {week:"Wk-1",target:221250,revenue:112333},
-    {week:"Wk-2",target:221250,revenue:56812},
-    {week:"Wk-3",target:221250,revenue:0},
-    {week:"Wk-4",target:221250,revenue:0}
+    {week:"Wk-1",target:221250,revenue:112333},{week:"Wk-2",target:221250,revenue:56812},
+    {week:"Wk-3",target:221250,revenue:0},{week:"Wk-4",target:221250,revenue:0}
   ],
   mayDaily:[
-    {w:"Wk-1",d:"01-May",v:0},   {w:"Wk-1",d:"02-May",v:8623},  {w:"Wk-1",d:"03-May",v:2123},
-    {w:"Wk-1",d:"04-May",v:10015},{w:"Wk-1",d:"05-May",v:4049},  {w:"Wk-1",d:"06-May",v:7042},
-    {w:"Wk-1",d:"07-May",v:11551},{w:"Wk-2",d:"08-May",v:7342},  {w:"Wk-2",d:"09-May",v:24567},
-    {w:"Wk-2",d:"10-May",v:9083}, {w:"Wk-2",d:"11-May",v:12699}, {w:"Wk-2",d:"12-May",v:4359},
-    {w:"Wk-2",d:"13-May",v:13623},{w:"Wk-2",d:"14-May",v:11395}, {w:"Wk-3",d:"15-May",v:21386},
-    {w:"Wk-3",d:"16-May",v:8728}, {w:"Wk-3",d:"17-May",v:4424},  {w:"Wk-3",d:"18-May",v:18774},
-    {w:"Wk-3",d:"19-May",v:5309}, {w:"Wk-3",d:"20-May",v:8221},  {w:"Wk-3",d:"21-May",v:6075},
-    {w:"Wk-4",d:"22-May",v:8848}, {w:"Wk-4",d:"23-May",v:4359},  {w:"Wk-4",d:"24-May",v:6162},
-    {w:"Wk-4",d:"25-May",v:14561},{w:"Wk-4",d:"26-May",v:32552}, {w:"Wk-4",d:"27-May",v:27545},
-    {w:"Wk-4",d:"28-May",v:16000},{w:"Wk-4",d:"29-May",v:11000}, {w:"Wk-4",d:"30-May",v:38342},
+    {w:"Wk-1",d:"01-May",v:0},{w:"Wk-1",d:"02-May",v:8623},{w:"Wk-1",d:"03-May",v:2123},
+    {w:"Wk-1",d:"04-May",v:10015},{w:"Wk-1",d:"05-May",v:4049},{w:"Wk-1",d:"06-May",v:7042},
+    {w:"Wk-1",d:"07-May",v:11551},{w:"Wk-2",d:"08-May",v:7342},{w:"Wk-2",d:"09-May",v:24567},
+    {w:"Wk-2",d:"10-May",v:9083},{w:"Wk-2",d:"11-May",v:12699},{w:"Wk-2",d:"12-May",v:4359},
+    {w:"Wk-2",d:"13-May",v:13623},{w:"Wk-2",d:"14-May",v:11395},{w:"Wk-3",d:"15-May",v:21386},
+    {w:"Wk-3",d:"16-May",v:8728},{w:"Wk-3",d:"17-May",v:4424},{w:"Wk-3",d:"18-May",v:18774},
+    {w:"Wk-3",d:"19-May",v:5309},{w:"Wk-3",d:"20-May",v:8221},{w:"Wk-3",d:"21-May",v:6075},
+    {w:"Wk-4",d:"22-May",v:8848},{w:"Wk-4",d:"23-May",v:4359},{w:"Wk-4",d:"24-May",v:6162},
+    {w:"Wk-4",d:"25-May",v:14561},{w:"Wk-4",d:"26-May",v:32552},{w:"Wk-4",d:"27-May",v:27545},
+    {w:"Wk-4",d:"28-May",v:16000},{w:"Wk-4",d:"29-May",v:11000},{w:"Wk-4",d:"30-May",v:38342},
     {w:"Wk-4",d:"31-May",v:23982}
   ],
   agents:[
@@ -628,81 +655,153 @@ const DEFAULT_DATA = {
   ]
 };
 
-/* ═══════════════════════════════════════════
-   LIVE DATA — populated from Firebase
-═══════════════════════════════════════════ */
 let D = JSON.parse(JSON.stringify(DEFAULT_DATA));
 const ADMIN_B64 = btoa("housing2026");
 
-/* ── Sync status UI ── */
-function setSyncStatus(state, msg){
+/* ═══════════════════════════════════════════
+   SYNC STATE & CLOCK
+═══════════════════════════════════════════ */
+let lastSyncedAt = null;
+let fbListenerActive = false;
+let autoRefreshTimer = null;
+let refreshCountdownSec = 3600;
+let clockInterval = null;
+
+function setSyncStatus(state, msg) {
   const bar = document.getElementById("syncBar");
   const dot = document.getElementById("syncDot");
   const txt = document.getElementById("syncMsg");
   dot.className = "sync-dot";
   bar.className = "sync-bar";
-  if(state === "live"){ dot.classList.add(); txt.textContent = msg || "🟢 Live — synced to Firebase"; }
-  else if(state === "connecting"){ dot.classList.add("connecting"); txt.textContent = msg || "Connecting to Firebase…"; }
-  else if(state === "error"){ dot.classList.add("error"); bar.classList.add("error"); txt.textContent = msg || "⚠️ Firebase error"; }
+  if(state === "live") {
+    txt.textContent = msg || "🟢 Firebase connected — live sync active";
+    lastSyncedAt = Date.now();
+    startSyncClock();
+    hideRefreshBanner();
+  } else if(state === "connecting") {
+    dot.classList.add("connecting");
+    txt.textContent = msg || "Connecting to Firebase…";
+  } else if(state === "error") {
+    dot.classList.add("error");
+    bar.classList.add("err");
+    txt.textContent = msg || "⚠️ Firebase offline — auto-refresh active";
+    startAutoRefreshCountdown();
+  }
 }
 
-/* ── Bootstrap: connect Firebase listener ── */
-function connectFirebase(){
-  setSyncStatus("connecting");
-  const ref = db.ref(DB_KEY);
+function startSyncClock() {
+  if(clockInterval) clearInterval(clockInterval);
+  clockInterval = setInterval(() => {
+    if(!lastSyncedAt) return;
+    const sec = Math.floor((Date.now() - lastSyncedAt) / 1000);
+    const el = document.getElementById("lastSyncedClock");
+    if(!el) return;
+    if(sec < 60) el.textContent = sec + "s ago";
+    else if(sec < 3600) el.textContent = Math.floor(sec/60) + "m ago";
+    else el.textContent = Math.floor(sec/3600) + "h ago";
+  }, 5000);
+  document.getElementById("lastSyncedClock").textContent = "just now";
+}
 
-  // One-time read — if empty, seed with defaults
+function updateDaysLeftBadge() {
+  const dl = computeDaysLeft();
+  const el = document.getElementById("daysLeftBadge");
+  if(el) el.textContent = `⏳ ${dl} day${dl !== 1 ? "s" : ""} left`;
+}
+
+function startAutoRefreshCountdown() {
+  document.getElementById("refreshBanner").classList.add("show");
+  refreshCountdownSec = 3600;
+  if(autoRefreshTimer) clearInterval(autoRefreshTimer);
+  autoRefreshTimer = setInterval(() => {
+    refreshCountdownSec--;
+    const m = String(Math.floor(refreshCountdownSec / 60)).padStart(2,"0");
+    const s = String(refreshCountdownSec % 60).padStart(2,"0");
+    const el = document.getElementById("refreshCountdown");
+    if(el) el.textContent = `${m}:${s}`;
+    if(refreshCountdownSec <= 0) {
+      clearInterval(autoRefreshTimer);
+      manualRefresh();
+    }
+  }, 1000);
+}
+
+function hideRefreshBanner() {
+  document.getElementById("refreshBanner").classList.remove("show");
+  if(autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+}
+
+function manualRefresh() {
+  setSyncStatus("connecting","Reconnecting…");
+  connectFirebase();
+}
+
+/* ═══════════════════════════════════════════
+   FIREBASE CONNECT
+═══════════════════════════════════════════ */
+function connectFirebase() {
+  const ref = db.ref(DB_KEY);
+  // Seed if empty
   ref.once("value").then(snap => {
-    if(!snap.exists()){
-      ref.set(DEFAULT_DATA).then(()=>{
-        console.log("Firebase seeded with default data");
-      });
+    if(!snap.exists()) {
+      ref.set(DEFAULT_DATA);
     }
   }).catch(err => {
-    setSyncStatus("error","Firebase read error: "+err.message);
+    setSyncStatus("error", "⚠️ Cannot reach Firebase: " + err.message);
   });
 
-  // Realtime listener — fires immediately + on every remote change
+  // Realtime listener
   ref.on("value", snap => {
-    if(snap.exists()){
+    fbListenerActive = true;
+    if(snap.exists()) {
       const fresh = snap.val();
-      // Normalise arrays (Firebase stores arrays as objects sometimes)
-      if(fresh.june && fresh.june.daily && !Array.isArray(fresh.june.daily))
-        fresh.june.daily = Object.values(fresh.june.daily);
-      if(fresh.mayDaily && !Array.isArray(fresh.mayDaily))
-        fresh.mayDaily = Object.values(fresh.mayDaily);
-      if(fresh.mayWeekly && !Array.isArray(fresh.mayWeekly))
-        fresh.mayWeekly = Object.values(fresh.mayWeekly);
-      if(fresh.juneWeekly && !Array.isArray(fresh.juneWeekly))
-        fresh.juneWeekly = Object.values(fresh.juneWeekly);
-      if(fresh.agents && !Array.isArray(fresh.agents))
-        fresh.agents = Object.values(fresh.agents);
-      if(fresh.agents){
-        fresh.agents.forEach(ag => {
-          if(ag.daily && !Array.isArray(ag.daily))
-            ag.daily = Object.values(ag.daily);
-        });
+      // Normalise arrays (Firebase can return objects for arrays)
+      const toArr = v => v && !Array.isArray(v) ? Object.values(v) : (v || []);
+      if(fresh.june) fresh.june.daily = toArr(fresh.june.daily);
+      fresh.mayDaily    = toArr(fresh.mayDaily);
+      fresh.mayWeekly   = toArr(fresh.mayWeekly);
+      fresh.juneWeekly  = toArr(fresh.juneWeekly);
+      fresh.agents      = toArr(fresh.agents);
+      fresh.agents.forEach(ag => { ag.daily = toArr(ag.daily); });
+
+      // ── AUTO-UPDATE daysElapsed from lastUpdated ──
+      if(fresh.lastUpdated) {
+        fresh.june.daysElapsed = computeDaysElapsed(fresh.lastUpdated);
       }
+
       D = fresh;
+      showDashboard();
       renderAll();
-      setSyncStatus("live", "🟢 Live · last updated " + (D.lastUpdated || "—"));
+      setSyncStatus("live");
+      updateDaysLeftBadge();
     }
   }, err => {
-    setSyncStatus("error","Firebase error: "+err.message);
+    setSyncStatus("error", "⚠️ Firebase error: " + err.message);
+    // Still render with cached data
+    showDashboard();
+    renderAll();
   });
+}
+
+function showDashboard() {
+  document.getElementById("skeletonView").style.display = "none";
+  document.getElementById("dashView").style.display = "block";
 }
 
 /* ═══════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════ */
-const INR = n => "₹"+Math.round(n).toLocaleString("en-IN");
+const INR = n => "₹" + Math.round(n).toLocaleString("en-IN");
 const S   = n => { const a=Math.abs(n),sg=n<0?"-":""; return a>=1e5?sg+"₹"+(a/1e5).toFixed(1)+"L":a>=1000?sg+"₹"+(a/1000).toFixed(0)+"K":sg+"₹"+Math.round(a); };
 const Pct = (n,d=1) => n.toFixed(d)+"%";
 const pCol = p => p>=100?"#16a34a":p>=60?"#d97706":"#dc2626";
 const pillCls = p => p>=100?"pill-g":p>=60?"pill-a":"pill-r";
 const pillTxt = p => p>=100?"✓ On Track":p>=60?"▲ Halfway":"✗ Behind";
+const AV_COLORS = ["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c","#ea580c","#4f46e5","#0284c7","#65a30d","#9333ea","#db2777"];
+const avColor = i => AV_COLORS[i % AV_COLORS.length];
+const initials = name => name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
 
-function derive(){
+function derive() {
   const {target,daysTotal,daysElapsed,daily} = D.june;
   const achieved  = daily.reduce((s,v)=>s+v,0);
   const remaining = target - achieved;
@@ -717,14 +816,10 @@ function derive(){
   return {achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc,optFc,consFc};
 }
 
-function agentTotal(ag){ return ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+v,0); }
-
-const AV_COLORS=["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c","#ea580c","#4f46e5","#0284c7","#65a30d","#9333ea","#db2777"];
-function avColor(i){ return AV_COLORS[i%AV_COLORS.length]; }
-function initials(name){ return name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
+function agentTotal(ag) { return ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+v,0); }
 
 /* ═══════════════════════════════════════════
-   RENDER FUNCTIONS (identical to original)
+   RENDER FUNCTIONS
 ═══════════════════════════════════════════ */
 function renderKPIs(){
   const {target,daysTotal,daysElapsed}=D.june;
@@ -732,17 +827,17 @@ function renderKPIs(){
   const drrGap=drr-actualDrr;
   const tagHtml=actualDrr>0?(drrGap>0?`<span class="kc-tag tag-warn">⚠ Need +${S(drrGap)}/day</span>`:`<span class="kc-tag tag-ok">✓ Ahead of pace</span>`):"";
   const kpis=[
-    {icon:"🎯",label:"Monthly Target",    val:INR(target),    sub:"June 2026",                 ac:"#dc2626",bar:null},
-    {icon:"💰",label:"Total Achievement", val:INR(achieved),  sub:Pct(pct)+" of target",       ac:"#16a34a",bar:Math.min(pct,100),barCol:pCol(pct)},
-    {icon:"⏳",label:"Remaining",          val:INR(remaining), sub:daysLeft+" days left",       ac:"#d97706",bar:null},
-    {icon:"📈",label:"DRR Required",       val:INR(drr),       sub:"To close the month",       ac:"#2563eb",bar:null,extra:tagHtml},
-    {icon:"📅",label:"Days Elapsed",       val:daysElapsed,    sub:"of "+daysTotal+" days",    ac:"#7c3aed",bar:Math.round(daysElapsed/daysTotal*100),barCol:"#7c3aed",isCurr:false},
-    {icon:"⚡",label:"Actual DRR",         val:INR(actualDrr), sub:"Average so far",           ac:"#0d9488",bar:null},
-    {icon:"📊",label:"May Revenue",        val:"₹3,82,739",    sub:"77% of May target",        ac:"#c2255c",bar:77,barCol:"#c2255c",static:true},
-    {icon:"🔮",label:"Month-End Forecast", val:INR(baseFc),    sub:Pct(baseFc/target*100)+" of target",ac:"#5f3dc4",bar:Math.min(baseFc/target*100,100),barCol:"#5f3dc4"},
+    {icon:"🎯",label:"Monthly Target",    val:INR(target),   sub:"June 2026",                ac:"#dc2626",bar:null},
+    {icon:"💰",label:"Total Achievement", val:INR(achieved), sub:Pct(pct)+" of target",      ac:"#16a34a",bar:Math.min(pct,100),barCol:pCol(pct)},
+    {icon:"⏳",label:"Remaining",          val:INR(remaining),sub:daysLeft+" days left",      ac:"#d97706",bar:null},
+    {icon:"📈",label:"DRR Required",       val:INR(drr),      sub:"To close the month",      ac:"#2563eb",bar:null,extra:tagHtml},
+    {icon:"📅",label:"Days Elapsed",       val:daysElapsed,   sub:"of "+daysTotal+" days",   ac:"#7c3aed",bar:Math.round(daysElapsed/daysTotal*100),barCol:"#7c3aed"},
+    {icon:"⚡",label:"Actual DRR",         val:INR(actualDrr),sub:"Average so far",          ac:"#0d9488",bar:null},
+    {icon:"📊",label:"May Revenue",        val:"₹3,82,739",   sub:"77% of May target",       ac:"#c2255c",bar:77,barCol:"#c2255c"},
+    {icon:"🔮",label:"Month-End Forecast", val:INR(baseFc),   sub:Pct(baseFc/target*100)+" of target",ac:"#5f3dc4",bar:Math.min(baseFc/target*100,100),barCol:"#5f3dc4"},
   ];
   document.getElementById("kpiGrid").innerHTML=kpis.map((k,i)=>`
-    <div class="kc" style="--ac:${k.ac};--ac-glow:${k.ac}18;animation-delay:${i*45}ms">
+    <div class="kc" style="--ac:${k.ac};--ac-glow:${k.ac}18">
       <span class="kc-icon">${k.icon}</span>
       <div class="kc-lbl">${k.label}</div>
       <div class="kc-val">${k.val}</div>
@@ -750,20 +845,18 @@ function renderKPIs(){
       ${k.extra||""}
       ${k.bar!=null?`<div class="kc-track"><div class="kc-fill" style="background:${k.barCol||k.ac};width:${k.bar}%"></div></div>`:""}
     </div>`).join("");
-  document.getElementById("updBadge").textContent="Updated: "+D.lastUpdated;
-  document.getElementById("juneTotalLbl").textContent="Total: "+INR(derive().achieved);
-  document.getElementById("junLogTot").textContent=INR(derive().achieved);
+  document.getElementById("updBadge").textContent = "Updated: "+D.lastUpdated;
+  document.getElementById("juneTotalLbl").textContent = "Total: "+INR(derive().achieved);
+  document.getElementById("junLogTot").textContent = INR(derive().achieved);
 }
 
 function renderLeaderboard(){
-  const el=D.june.daysElapsed;
   const ranked=D.agents.map((ag,i)=>({...ag,i,tot:agentTotal(ag)})).sort((a,b)=>b.tot/b.target-a.tot/a.target);
   const maxTot=ranked[0]?.tot||1;
   const posClass=i=>i===0?"gold":i===1?"silver":i===2?"bronze":"rest";
   const medals=["🥇","🥈","🥉"];
   document.getElementById("lbWrap").innerHTML=ranked.map((ag,i)=>{
-    const bc=pCol(ag.tot/ag.target*100);
-    const barW=Math.min(ag.tot/maxTot*100,100).toFixed(1);
+    const bc=pCol(ag.tot/ag.target*100),barW=Math.min(ag.tot/maxTot*100,100).toFixed(1);
     return`<div class="lb-row" style="animation-delay:${i*30}ms">
       <div class="lb-pos ${posClass(i)}">${i<3?medals[i]:"#"+(i+1)}</div>
       <div class="lb-avatar" style="background:${avColor(ag.i)}">${initials(ag.name)}</div>
@@ -772,7 +865,7 @@ function renderLeaderboard(){
       <div class="lb-right"><div class="lb-rev" style="color:${bc}">${INR(ag.tot)}</div><div class="lb-pct">${Pct(ag.tot/ag.target*100)} of target</div><span class="lb-pill ${pillCls(ag.tot/ag.target*100)}">${pillTxt(ag.tot/ag.target*100)}</span></div>
     </div>`;
   }).join("");
-  document.getElementById("lbDate").textContent="As of Jun "+el+", 2026 · "+ranked.length+" agents";
+  document.getElementById("lbDate").textContent="As of Jun "+D.june.daysElapsed+", 2026 · "+ranked.length+" agents";
 }
 
 let fcChart=null;
@@ -784,18 +877,17 @@ function renderForecast(){
     <div class="fc-sc opt"><div class="fc-sc-label opt">🚀 Optimistic (+20% DRR)</div><div class="fc-sc-val opt">${INR(optFc)}</div><div class="fc-sc-pct">${Pct(optFc/target*100)} of target</div></div>
     <div class="fc-sc base"><div class="fc-sc-label base">📊 Base (current DRR)</div><div class="fc-sc-val base">${INR(baseFc)}</div><div class="fc-sc-pct">${Pct(baseFc/target*100)} of target</div></div>
     <div class="fc-sc cons"><div class="fc-sc-label cons">⚠️ Conservative (−20%)</div><div class="fc-sc-val cons">${INR(consFc)}</div><div class="fc-sc-pct">${Pct(consFc/target*100)} of target</div></div>`;
-  const wkFc=Math.round(actualDrr*7);
   document.getElementById("fcChips").innerHTML=[
     {l:"Daily Target",v:INR(dayTarget)},{l:"Actual DRR",v:INR(Math.round(actualDrr))},
     {l:"DRR Required",v:INR(Math.round(drr))},{l:"DRR Gap",v:(drr>actualDrr?"+":"")+S(Math.round(drr-actualDrr))},
-    {l:"Weekly Forecast",v:INR(wkFc)},{l:"Days Remaining",v:daysLeft+" days"},
+    {l:"Weekly Forecast",v:INR(Math.round(actualDrr*7))},{l:"Days Remaining",v:daysLeft+" days"},
   ].map(c=>`<div class="fc-chip"><div class="fc-chip-lbl">${c.l}</div><div class="fc-chip-val">${c.v}</div></div>`).join("");
   const labels=Array.from({length:daysTotal},(_,i)=>i+1);
   let cum=0;
-  const actLine=labels.map((_,i)=>{ if(i<daysElapsed){cum+=daily[i];return cum;}return null; });
+  const actLine=labels.map((_,i)=>{if(i<daysElapsed){cum+=daily[i];return cum;}return null;});
   let fc2=achieved,opt2=achieved;
-  const baseLine=labels.map((_,i)=>{ if(i<daysElapsed)return null; fc2+=drr; return Math.round(fc2); });
-  const optLine=labels.map((_,i)=>{ if(i<daysElapsed)return null; opt2+=actualDrr*1.2; return Math.round(opt2); });
+  const baseLine=labels.map((_,i)=>{if(i<daysElapsed)return null;fc2+=drr;return Math.round(fc2);});
+  const optLine=labels.map((_,i)=>{if(i<daysElapsed)return null;opt2+=actualDrr*1.2;return Math.round(opt2);});
   const tgtLine=labels.map((_,i)=>Math.round(dayTarget*(i+1)));
   const ctx=document.getElementById("fcChart").getContext("2d");
   if(fcChart)fcChart.destroy();
@@ -804,7 +896,7 @@ function renderForecast(){
     {label:"Forecast",data:baseLine,borderColor:"#2563eb",backgroundColor:"rgba(37,99,235,.05)",borderWidth:2,pointRadius:0,tension:.3,borderDash:[5,4],fill:true},
     {label:"Optimistic",data:optLine,borderColor:"#16a34a",borderWidth:1.5,pointRadius:0,tension:.3,borderDash:[3,3],fill:false,backgroundColor:"transparent"},
     {label:"Target",data:tgtLine,borderColor:"rgba(22,163,74,.35)",borderWidth:1.5,pointRadius:0,tension:0,borderDash:[2,4],fill:false}
-  ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700,easing:"easeInOutQuart"},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": "+INR(c.parsed.y||0),title:c=>"Jun "+c[0].label}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": "+INR(c.parsed.y||0),title:c=>"Jun "+c[0].label}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
 }
 
 let juneChart=null;
@@ -818,24 +910,20 @@ function renderJuneChart(){
 let cmpChart=null;
 function renderCmpChart(){
   const jun=D.june.daily;
-  const labels=D.mayDaily.map(r=>r.d.replace("-May",""));
   const ctx=document.getElementById("cmpChart").getContext("2d");
   if(cmpChart)cmpChart.destroy();
-  cmpChart=new Chart(ctx,{type:"bar",data:{labels,datasets:[{label:"May",data:D.mayDaily.map(r=>r.v),backgroundColor:"rgba(37,99,235,.72)",borderRadius:2,borderSkipped:false},{label:"June",data:D.mayDaily.map((_,i)=>i<jun.length?jun[i]:0),backgroundColor:"rgba(220,38,38,.72)",borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+  cmpChart=new Chart(ctx,{type:"bar",data:{labels:D.mayDaily.map(r=>r.d.replace("-May","")),datasets:[{label:"May",data:D.mayDaily.map(r=>r.v),backgroundColor:"rgba(37,99,235,.72)",borderRadius:2,borderSkipped:false},{label:"June",data:D.mayDaily.map((_,i)=>i<jun.length?jun[i]:0),backgroundColor:"rgba(220,38,38,.72)",borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
 }
 
 function renderWeekly(){
-  const mTot=D.mayWeekly.reduce((s,r)=>s+r.revenue,0);
-  const mTgt=D.mayWeekly.reduce((s,r)=>s+r.target,0);
+  const mTot=D.mayWeekly.reduce((s,r)=>s+r.revenue,0),mTgt=D.mayWeekly.reduce((s,r)=>s+r.target,0);
   document.getElementById("mayWkBody").innerHTML=D.mayWeekly.map((r,i)=>{
     const def=r.revenue-r.target,prev=i>0?D.mayWeekly[i-1].revenue:null;
     const wow=prev&&prev>0?((r.revenue-prev)/prev*100).toFixed(0)+"%":"—";
-    const share=mTot>0?Pct(r.revenue/mTot*100,0):"0%";
-    return`<tr><td><strong>${r.week}</strong></td><td class="mono">${INR(r.target)}</td><td class="mono">${INR(r.revenue)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td class="mono ${wow.startsWith("-")?"dn":"up"}">${wow}</td><td class="mono">${share}</td></tr>`;
+    return`<tr><td><strong>${r.week}</strong></td><td class="mono">${INR(r.target)}</td><td class="mono">${INR(r.revenue)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td class="mono ${wow.startsWith("-")?"dn":"up"}">${wow}</td><td class="mono">${mTot>0?Pct(r.revenue/mTot*100,0):"0%"}</td></tr>`;
   }).join("");
   document.getElementById("mayWkFoot").innerHTML=`<tr><td><strong>Total</strong></td><td class="mono">${INR(mTgt)}</td><td class="mono">${INR(mTot)}</td><td class="mono dn">${INR(mTot-mTgt)}</td><td colspan="2" class="mono">${Pct(mTot/mTgt*100)} of target</td></tr>`;
-  const jTot=D.juneWeekly.reduce((s,r)=>s+r.revenue,0);
-  const jTgt=D.juneWeekly.reduce((s,r)=>s+r.target,0);
+  const jTot=D.juneWeekly.reduce((s,r)=>s+r.revenue,0),jTgt=D.juneWeekly.reduce((s,r)=>s+r.target,0);
   document.getElementById("junWkBody").innerHTML=D.juneWeekly.map((r,i)=>{
     const def=r.revenue-r.target,share=jTot>0?Pct(r.revenue/jTot*100,0):"0%";
     const mayRev=D.mayWeekly[i]?.revenue||0,vsMay=mayRev>0?r.revenue-mayRev:null;
@@ -893,21 +981,20 @@ function renderInsights(){
   const {target,daysTotal,daysElapsed,daily}=D.june;
   const {achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc,optFc,consFc}=derive();
   const alerts=[];
-  const todayIdx=daysElapsed-1;
-  const zeroToday=D.agents.filter(ag=>(ag.daily[todayIdx]||0)===0);
-  const activeToday=D.agents.length-zeroToday.length;
   if(daysElapsed>0){
+    const todayIdx=daysElapsed-1,zeroToday=D.agents.filter(ag=>(ag.daily[todayIdx]||0)===0);
+    const activeToday=D.agents.length-zeroToday.length;
     const sev=zeroToday.length>=Math.ceil(D.agents.length*0.6)?"critical":zeroToday.length>=3?"warn":"ok";
     alerts.push({sev,icon:sev==="ok"?"✅":"🚨",badge:sev==="ok"?"All Active":"Zero Revenue Today",
       title:sev==="ok"?`All ${activeToday} agents logged revenue on Jun ${daysElapsed}`:`${zeroToday.length} of ${D.agents.length} agents had ₹0 on Jun ${daysElapsed}`,
       val:zeroToday.length>0?zeroToday.length+"":null,valColor:sev==="ok"?"green":"red",
-      desc:zeroToday.length===0?"Every agent contributed today — ideal day for lead momentum.":`${zeroToday.length} agent${zeroToday.length>1?"s":""} contributed nothing on the last logged day. Each idle agent costs ~${INR(dayTarget)} in missed daily quota.`,
+      desc:zeroToday.length===0?"Every agent contributed today — ideal day for lead momentum.":`${zeroToday.length} agent${zeroToday.length>1?"s":""} contributed nothing. Each idle agent costs ~${INR(dayTarget)} in missed daily quota.`,
       names:zeroToday.map(a=>a.name)});
   }
   const drrGap=drr-actualDrr,drrGapPct=actualDrr>0?(drrGap/actualDrr*100):0;
   const drrSev=drrGap>actualDrr*0.5?"critical":drrGap>0?"warn":"ok";
   alerts.push({sev:drrSev,icon:drrSev==="ok"?"🟢":"📉",badge:drrSev==="ok"?"On Pace":drrGapPct>50?"Critical DRR Gap":"DRR Behind Target",
-    title:drrSev==="ok"?"Team DRR is ahead of required pace":`Team needs ${INR(Math.round(drr))}/day but is averaging ${INR(Math.round(actualDrr))}/day`,
+    title:drrSev==="ok"?"Team DRR is ahead of required pace":`Team needs ${INR(Math.round(drr))}/day but averaging ${INR(Math.round(actualDrr))}/day`,
     val:(drrGap>0?"+":"")+INR(Math.round(Math.abs(drrGap))),valColor:drrSev==="ok"?"green":drrSev==="critical"?"red":"amber",
     desc:drrSev==="ok"?`Actual DRR (${INR(Math.round(actualDrr))}) exceeds required DRR (${INR(Math.round(drr))}). Keep this pace.`:`Gap of ${INR(Math.round(drrGap))}/day (${drrGapPct.toFixed(0)}% shortfall). Base forecast: ${INR(baseFc)} — ${Pct(baseFc/target*100)} of target.`,
     names:[]});
@@ -918,8 +1005,7 @@ function renderInsights(){
     desc:`${zeroMonth.map(a=>a.name.split(" ")[0]).join(", ")} ${zeroMonth.length>1?"have":"has"} not logged a single rupee in ${daysElapsed} elapsed days.`,
     names:zeroMonth.map(a=>a.name)});
   const sortedAg=[...D.agents].map(ag=>({...ag,tot:agentTotal(ag)})).sort((a,b)=>b.tot-a.tot);
-  const top3Tot=sortedAg.slice(0,3).reduce((s,a)=>s+a.tot,0);
-  const concPct=achieved>0?top3Tot/achieved*100:0;
+  const top3Tot=sortedAg.slice(0,3).reduce((s,a)=>s+a.tot,0),concPct=achieved>0?top3Tot/achieved*100:0;
   const concSev=concPct>75?"critical":concPct>60?"warn":"ok";
   alerts.push({sev:concSev,icon:concSev==="ok"?"⚖️":"⚠️",badge:concSev==="ok"?"Balanced Load":"High Concentration Risk",
     title:`Top 3 agents account for ${Pct(concPct,0)} of all June revenue`,
@@ -945,7 +1031,7 @@ function renderInsights(){
   if(critAgents.length>0) alerts.push({sev:"warn",icon:"🎙️",badge:"Coaching Priority",
     title:`${critAgents.length} agent${critAgents.length>1?"s":""} below 10% monthly achievement`,
     val:critAgents.length+"",valColor:"amber",
-    desc:`These agents need immediate coaching intervention. Combined target capacity: ${INR(critAgents.reduce((s,a)=>s+a.target,0))}.`,
+    desc:`Immediate coaching needed. Combined untapped target: ${INR(critAgents.reduce((s,a)=>s+a.target,0))}.`,
     names:critAgents.map(a=>a.name)});
   if(daysElapsed>=3){
     const last3=daily.slice(Math.max(0,daysElapsed-3),daysElapsed).filter(v=>v>0);
@@ -986,9 +1072,14 @@ function renderAll(){
 }
 
 /* ═══════════════════════════════════════════
-   MODALS & EDIT UI
+   MODALS & EDIT
 ═══════════════════════════════════════════ */
-function toast(msg){ const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3500); }
+function toast(msg){
+  const t=document.getElementById("toast");
+  document.getElementById("toastMsg").textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3500);
+}
 function openLogin(){ document.getElementById("loginOvl").classList.add("on");const pw=document.getElementById("loginPw");pw.value="";document.getElementById("loginErr").style.display="none";setTimeout(()=>pw.focus(),120); }
 function closeLogin(){ document.getElementById("loginOvl").classList.remove("on"); }
 function doLogin(){ if(btoa(document.getElementById("loginPw").value)===ADMIN_B64){closeLogin();openEdit();}else document.getElementById("loginErr").style.display="block"; }
@@ -996,18 +1087,77 @@ function openEdit(){ populateEdit();document.getElementById("editOvl").classList
 function closeEdit(){ document.getElementById("editOvl").classList.remove("on"); }
 function swTab(id,idx){ document.querySelectorAll(".tp").forEach(p=>p.classList.remove("on"));document.querySelectorAll(".m-tab").forEach(t=>t.classList.remove("on"));document.getElementById(id).classList.add("on");document.querySelectorAll(".m-tab")[idx].classList.add("on"); }
 
+/* Auto-calc days elapsed when admin changes date */
+function autoCalcDaysElapsed(){
+  const dateVal = document.getElementById("eUpdated").value;
+  const days = computeDaysElapsed(dateVal);
+  document.getElementById("eDaysElapsed").value = days;
+  livePreview();
+}
+
 function populateEdit(){
   document.getElementById("eTarget").value=D.june.target;
   document.getElementById("eDaysTotal").value=D.june.daysTotal;
   document.getElementById("eDaysElapsed").value=D.june.daysElapsed;
   document.getElementById("eUpdated").value=D.lastUpdated;
   document.getElementById("juneDayGrid").innerHTML=D.june.daily.map((v,i)=>`<div class="dw"><span>Jun ${i+1}</span><input type="number" id="jd${i}" value="${v}" oninput="livePreview()"></div>`).join("");
-  const sel=document.getElementById("agSel");
-  sel.innerHTML=D.agents.map((a,i)=>`<option value="${i}">${a.name}</option>`).join("");
-  loadAgEdit();
+
+  // ── Render ALL agents at once ──
+  const daysTotal = D.june.daysTotal;
+  document.getElementById("allAgentsWrap").innerHTML = D.agents.map((ag,ai)=>{
+    const tot = ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+v,0);
+    const pct = ag.target>0?((tot/ag.target)*100).toFixed(1):0;
+    const bc  = tot/ag.target>=1?"#16a34a":tot/ag.target>=0.6?"#d97706":"#dc2626";
+    return `
+      <div style="border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;">
+        <div style="background:var(--n50);padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none" onclick="toggleAgSection(${ai})">
+          <div style="width:26px;height:26px;border-radius:50%;background:${avColor(ai)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${initials(ag.name)}</div>
+          <strong style="font-size:12px;flex:1">${ag.name}</strong>
+          <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:${bc};font-weight:700">${INR(tot)}</span>
+          <span style="font-size:10px;color:var(--muted)">${pct}%</span>
+          <span id="agArrow${ai}" style="font-size:11px;color:var(--muted);transition:transform .2s">▼</span>
+        </div>
+        <div id="agSection${ai}" style="display:none;padding:10px 12px;border-top:1px solid var(--border)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div class="fg" style="margin-bottom:0"><label>Monthly Target (₹)</label><input type="number" id="agt${ai}" value="${ag.target}" oninput="refreshAgLive(${ai})"></div>
+            <div style="background:var(--n50);border-radius:var(--r);padding:6px 10px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;justify-content:center">
+              Total: <strong id="agliveTot${ai}" style="font-family:'JetBrains Mono',monospace;color:var(--text)">${INR(tot)}</strong>
+              Achv: <strong id="aglivePct${ai}" style="font-family:'JetBrains Mono',monospace;color:${bc}">${pct}%</strong>
+            </div>
+          </div>
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Daily Revenue — June</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px">
+            ${ag.daily.slice(0,daysTotal).map((v,d)=>`
+              <div><span style="display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600">Jun ${d+1}</span>
+              <input type="number" id="agd${ai}_${d}" value="${v}" oninput="refreshAgLive(${ai})"
+                style="width:100%;padding:4px 5px;font-size:11px;border:1px solid ${d<D.june.daysElapsed?"var(--border)":"var(--n200)"};border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;background:${d<D.june.daysElapsed?"#fff":"var(--n50)"}"></div>`).join("")}
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+
   document.getElementById("mayWkInputs").innerHTML=D.mayWeekly.map((w,i)=>`<div class="fg"><label>May ${w.week} Revenue</label><input type="number" id="mw${i}" value="${w.revenue}"></div>`).join("");
   document.getElementById("junWkInputs").innerHTML=D.juneWeekly.map((w,i)=>`<div class="fg"><label>June ${w.week} Revenue</label><input type="number" id="jw${i}" value="${w.revenue}"></div>`).join("");
   livePreview();
+}
+
+function toggleAgSection(ai){
+  const sec = document.getElementById("agSection"+ai);
+  const arrow = document.getElementById("agArrow"+ai);
+  const isOpen = sec.style.display !== "none";
+  sec.style.display = isOpen ? "none" : "block";
+  arrow.style.transform = isOpen ? "" : "rotate(180deg)";
+}
+
+function refreshAgLive(ai){
+  const ag = D.agents[ai];
+  let sum = 0;
+  ag.daily.forEach((_,d)=>{ const e=document.getElementById(`agd${ai}_${d}`); if(e) sum+=parseInt(e.value)||0; });
+  const tgt = parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target;
+  const pct = tgt>0?((sum/tgt)*100).toFixed(1):0;
+  const bc  = sum/tgt>=1?"#16a34a":sum/tgt>=0.6?"#d97706":"#dc2626";
+  const totEl=document.getElementById(`agliveTot${ai}`); if(totEl) totEl.textContent=INR(sum);
+  const pctEl=document.getElementById(`aglivePct${ai}`); if(pctEl){ pctEl.textContent=pct+"%"; pctEl.style.color=bc; }
 }
 
 function livePreview(){
@@ -1015,69 +1165,47 @@ function livePreview(){
   const el=parseInt(document.getElementById("eDaysElapsed")?.value)||D.june.daysElapsed;
   const dt=parseInt(document.getElementById("eDaysTotal")?.value)||D.june.daysTotal;
   let sum=0; D.june.daily.forEach((_,i)=>{const e=document.getElementById("jd"+i);if(e)sum+=parseInt(e.value)||0;});
-  const drr=el>0?sum/el:0,fc=Math.round(drr*dt),pct=tgt>0?sum/tgt*100:0;
+  const drr=el>0?sum/el:0,fc=Math.round(drr*dt),p=tgt>0?sum/tgt*100:0;
   document.getElementById("lvTotal").textContent=INR(sum);
   document.getElementById("lvDrr").textContent=INR(Math.round(drr));
   document.getElementById("lvFc").textContent=INR(fc);
-  document.getElementById("lvPct").textContent=Pct(pct);
+  document.getElementById("lvPct").textContent=Pct(p);
   document.getElementById("lvRem").textContent=INR(Math.max(0,tgt-sum));
 }
 
-function loadAgEdit(){
-  const idx=parseInt(document.getElementById("agSel").value),ag=D.agents[idx];
-  document.getElementById("agDayGrid").innerHTML=ag.daily.slice(0,D.june.daysTotal).map((v,i)=>`<div class="dw"><span>Jun ${i+1}</span><input type="number" id="agd${i}" value="${v}" oninput="updateAgLive()"></div>`).join("");
-  document.getElementById("agTgt").value=ag.target;
-  updateAgLive();
-}
-
-function updateAgLive(){
-  const idx=parseInt(document.getElementById("agSel").value),ag=D.agents[idx];
-  let sum=0; ag.daily.forEach((_,i)=>{const e=document.getElementById("agd"+i);if(e)sum+=parseInt(e.value)||0;});
-  const tgt=parseInt(document.getElementById("agTgt")?.value)||ag.target,pct=tgt>0?sum/tgt*100:0;
-  const el=D.june.daysElapsed,dt=D.june.daysTotal,dLeft=dt-el,agDrr=dLeft>0?(tgt-sum)/dLeft:0;
-  document.getElementById("agLiveTot").textContent=INR(sum);
-  document.getElementById("agLivePct").textContent=Pct(pct);
-  document.getElementById("agLiveDrr").textContent=INR(Math.max(0,agDrr));
-}
-
 /* ═══════════════════════════════════════════
-   SAVE — writes to Firebase, triggers live sync
+   SAVE → FIREBASE  (saves ALL agents)
 ═══════════════════════════════════════════ */
 function saveData(){
-  // Collect form values into a new data object
-  const newD = JSON.parse(JSON.stringify(D)); // deep copy current state
+  const newD = JSON.parse(JSON.stringify(D));
+  newD.june.target      = parseInt(document.getElementById("eTarget").value)||D.june.target;
+  newD.june.daysTotal   = parseInt(document.getElementById("eDaysTotal").value)||30;
+  newD.lastUpdated      = document.getElementById("eUpdated").value;
+  newD.june.daysElapsed = computeDaysElapsed(newD.lastUpdated);
+  newD.june.daily       = newD.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0);
 
-  newD.june.target     = parseInt(document.getElementById("eTarget").value)||D.june.target;
-  newD.june.daysTotal  = parseInt(document.getElementById("eDaysTotal").value)||30;
-  newD.june.daysElapsed= parseInt(document.getElementById("eDaysElapsed").value)||0;
-  newD.lastUpdated     = document.getElementById("eUpdated").value;
-  newD.june.daily      = newD.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0);
-
-  const agIdx = parseInt(document.getElementById("agSel").value);
-  newD.agents[agIdx].target = parseInt(document.getElementById("agTgt").value)||D.agents[agIdx].target;
-  newD.agents[agIdx].daily  = newD.agents[agIdx].daily.map((_,i)=>parseInt(document.getElementById("agd"+i)?.value)||0);
+  // ── Save ALL agents (not just selected one) ──
+  newD.agents = D.agents.map((ag,ai)=>({
+    ...ag,
+    target: parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target,
+    daily:  ag.daily.map((_,d)=>parseInt(document.getElementById(`agd${ai}_${d}`)?.value)||0)
+  }));
 
   newD.mayWeekly.forEach((_,i)=>{ newD.mayWeekly[i].revenue=parseInt(document.getElementById("mw"+i)?.value)||0; });
   newD.juneWeekly.forEach((_,i)=>{ newD.juneWeekly[i].revenue=parseInt(document.getElementById("jw"+i)?.value)||0; });
 
   closeEdit();
-
-  // Show saving overlay
   document.getElementById("savingOverlay").classList.add("on");
-  setSyncStatus("connecting","Saving to Firebase…");
 
-  // Write to Firebase — the realtime listener will pick it up and renderAll()
   db.ref(DB_KEY).set(newD)
     .then(()=>{
       document.getElementById("savingOverlay").classList.remove("on");
       toast("☁️ Saved & synced to all viewers!");
-      setSyncStatus("live","🟢 Live · last updated "+newD.lastUpdated);
     })
     .catch(err=>{
       document.getElementById("savingOverlay").classList.remove("on");
       setSyncStatus("error","Save failed: "+err.message);
-      toast("❌ Save failed: "+err.message);
-      // Fallback: update locally so the admin still sees their change
+      toast("❌ Save failed — check connection");
       D = newD;
       renderAll();
     });
@@ -1086,6 +1214,7 @@ function saveData(){
 /* ═══════════════════════════════════════════
    BOOT
 ═══════════════════════════════════════════ */
+updateDaysLeftBadge();
 connectFirebase();
 </script>
 </body>
