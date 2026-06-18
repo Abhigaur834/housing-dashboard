@@ -6,7 +6,6 @@
 <title>Housing.com · Sales Command Centre</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<!-- Firebase Compat SDK — loads synchronously, no module issues -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
@@ -18,9 +17,8 @@
   --amber:#d97706;--amber-l:#fffbeb;--amber-m:#fcd34d;--amber-d:#78350f;
   --blue:#2563eb;--blue-l:#eff6ff;--blue-m:#93c5fd;--blue-d:#1e3a8a;
   --violet:#7c3aed;--teal:#0d9488;
-  --n0:#fff;--n50:#fafaf8;--n100:#f4f3ef;--n200:#e8e6df;
-  --n300:#d0cdc4;--n400:#9e9b92;--n500:#6b6860;--n600:#514e47;
-  --n700:#35322c;--n800:#1e1c18;--n900:#0f0e0b;
+  --n0:#fff;--n50:#fafaf8;--n100:#f4f3ef;--n200:#e8e6df;--n300:#d0cdc4;
+  --n400:#9e9b92;--n500:#6b6860;--n600:#514e47;--n700:#35322c;--n800:#1e1c18;
   --page:#f2f1ec;--surface:#fff;--border:#e0ddd5;--text:#0f0e0b;--muted:#6b6860;
   --r-sm:6px;--r:10px;--r-lg:14px;
   --sh-sm:0 1px 3px rgba(0,0,0,.07);--sh:0 2px 8px rgba(0,0,0,.09);
@@ -31,27 +29,29 @@
 html{scroll-behavior:smooth;}
 body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);font-size:14px;min-height:100vh;-webkit-font-smoothing:antialiased;}
 ::selection{background:rgba(247,195,26,.25);}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
+@keyframes fade-up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+@keyframes modal-in{from{transform:scale(.92) translateY(20px);opacity:0;}to{transform:none;opacity:1;}}
 
-/* ── SYNC STATUS BAR ── */
+/* ── SYNC BAR ── */
 .sync-bar{background:linear-gradient(90deg,#052e16,#0a3d1e);border-bottom:1px solid rgba(247,195,26,.15);padding:0 28px;height:32px;display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);position:sticky;top:0;z-index:400;}
 .sync-bar.err{background:linear-gradient(90deg,#450a0a,#5c1a1a);}
-.sync-bar.warn{background:linear-gradient(90deg,#431407,#5c2a10);}
-.sdot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;transition:background .3s;}
-.sdot.blink{animation:blink .7s ease-in-out infinite;}
-.sdot.err{background:#ef4444;}
-.sdot.warn{background:#fbbf24;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
-.sync-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
-.sync-clock{font-size:10px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.4);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;transition:background .3s;}
+.sync-dot.connecting{background:#fbbf24;animation:blink .8s ease-in-out infinite;}
+.sync-dot.error{background:#ef4444;}
+.sync-right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+.sync-clock{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);}
 .sync-clock strong{color:rgba(255,255,255,.75);}
-.days-chip{display:flex;align-items:center;gap:5px;background:rgba(247,195,26,.12);border:1px solid rgba(247,195,26,.25);padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;color:var(--hgold);}
+.sync-days-left{display:flex;align-items:center;gap:5px;background:rgba(247,195,26,.12);border:1px solid rgba(247,195,26,.2);padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;color:var(--hgold);}
 
 /* ── TOPBAR ── */
-.topbar{background:var(--hblack);color:#fff;height:62px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:32px;z-index:300;box-shadow:0 2px 0 var(--hgold),0 4px 24px rgba(0,0,0,.5);}
+.topbar{background:var(--hblack);height:62px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:32px;z-index:300;box-shadow:0 2px 0 var(--hgold),0 4px 24px rgba(0,0,0,.5);}
 .tb-left{display:flex;align-items:center;}
-.tb-housing{display:flex;align-items:center;flex-shrink:0;}
 .tb-tri{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:15px solid var(--hgold);margin-right:9px;flex-shrink:0;}
-.tb-wm{font-size:18px;font-weight:900;color:#fff;letter-spacing:-.5px;line-height:1;}
+.tb-wm{font-size:18px;font-weight:900;color:#fff;letter-spacing:-.5px;}
 .tb-wm span{color:var(--hgold);}
 .tb-sep{width:1px;height:28px;background:rgba(255,255,255,.15);margin:0 18px;flex-shrink:0;}
 .tb-ocube{display:flex;align-items:center;gap:8px;flex-shrink:0;}
@@ -60,20 +60,30 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .tb-sep2{width:1px;height:22px;background:rgba(255,255,255,.12);margin:0 14px;flex-shrink:0;}
 .tb-title{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.8px;text-transform:uppercase;}
 .tb-right{display:flex;align-items:center;gap:10px;}
-.live-pill{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.55);background:rgba(255,255,255,.06);padding:4px 13px;border-radius:20px;border:1px solid rgba(255,255,255,.1);}
-.live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pdot 2s ease-in-out infinite;}
-@keyframes pdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.65);}}
-.btn-update{background:var(--hgold);color:#000;border:none;padding:8px 18px;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s var(--ease-out);box-shadow:0 2px 12px rgba(247,195,26,.3);}
+.tb-live{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pulse-dot 2s ease-in-out infinite;}
+.btn-update{background:var(--hgold);color:#000;border:none;padding:8px 18px;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;box-shadow:0 2px 12px rgba(247,195,26,.3);}
 .btn-update:hover{background:var(--hgold-d);transform:translateY(-1px);}
 .btn-update svg{width:13px;height:13px;}
+.btn-newmonth{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.25);padding:8px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.btn-newmonth:hover{background:rgba(255,255,255,.2);}
+.btn-newmonth svg{width:13px;height:13px;}
 
 /* ── NAV BAR ── */
-.nav-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none;position:sticky;top:94px;z-index:200;box-shadow:var(--sh-sm);}
+.nav-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;position:sticky;top:94px;z-index:200;box-shadow:var(--sh-sm);}
 .nav-bar::-webkit-scrollbar{display:none;}
 .nav-item{display:flex;align-items:center;gap:6px;padding:11px 14px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;flex-shrink:0;user-select:none;}
 .nav-item:hover{color:var(--text);border-bottom-color:var(--n300);}
 .nav-item.active{color:var(--hblack);border-bottom-color:var(--hgold);font-weight:700;}
 .nav-item svg{width:13px;height:13px;opacity:.7;}
+.scroll-top{position:fixed;bottom:24px;left:24px;z-index:999;width:40px;height:40px;border-radius:10px;background:var(--hblack);border:2px solid rgba(247,195,26,.3);color:var(--hgold);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(20px);transition:all .3s;box-shadow:var(--sh-md);}
+.scroll-top.show{opacity:1;transform:translateY(0);}
+.scroll-top:hover{background:var(--hgold);color:#000;}
+
+/* ── REFRESH BANNER ── */
+.refresh-banner{display:none;background:linear-gradient(90deg,#1e3a8a,#1d4ed8);color:#fff;padding:8px 28px;font-size:11px;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.1);}
+.refresh-banner.show{display:flex;}
+.refresh-banner strong{color:#fcd34d;}
 
 /* ── LAYOUT ── */
 .wrap{max-width:1500px;margin:0 auto;padding:24px 28px;}
@@ -84,13 +94,52 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .sec:first-child{margin-top:0;}
 
 /* ── SKELETON ── */
-.sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin-bottom:14px;}
-.sk-kpi{background:#fff;border-radius:var(--r-lg);border:1px solid var(--border);border-top:3px solid var(--n200);padding:16px 18px;height:108px;overflow:hidden;}
-.sk,.sk-h,.sk-v{border-radius:4px;background:linear-gradient(90deg,#f0ede6 25%,#e8e6df 50%,#f0ede6 75%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite;}
-@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-.sk-h{height:9px;margin-bottom:8px;}
-.sk-v{height:22px;width:65%;margin-bottom:8px;}
-.sk-row{height:52px;border-radius:var(--r);margin-bottom:8px;}
+.skeleton-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin-bottom:4px;}
+.sk-card{background:var(--surface);border-radius:var(--r-lg);padding:16px 18px 14px;border:1px solid var(--border);border-top:3px solid var(--n200);height:110px;overflow:hidden;position:relative;}
+.sk-card::after,.sk-line::after,.sk-block::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.6) 50%,transparent 100%);animation:shimmer 1.4s infinite;}
+.sk-line{height:10px;border-radius:4px;background:var(--n200);margin-bottom:8px;position:relative;overflow:hidden;}
+.sk-block{height:24px;border-radius:4px;background:var(--n200);width:70%;margin-bottom:8px;position:relative;overflow:hidden;}
+.sk-lb{height:60px;border-radius:var(--r);background:var(--n100);margin-bottom:8px;position:relative;overflow:hidden;}
+
+/* ── DAYS BANNER ── */
+.days-banner{display:flex;align-items:center;gap:18px;background:var(--hblack);border-radius:var(--r-lg);padding:16px 22px;margin-bottom:14px;border:1px solid rgba(247,195,26,.12);}
+.days-ring-wrap{position:relative;width:72px;height:72px;flex-shrink:0;}
+.days-ring-wrap svg{width:72px;height:72px;transform:rotate(-90deg);}
+.dr-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:5;}
+.dr-fill{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1s var(--ease-spring);}
+.dr-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.dr-text .big{font-size:20px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;}
+.dr-text .sm{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:rgba(255,255,255,.4);}
+.days-info{flex:1;}
+.days-info-lbl{font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px;}
+.days-info-sub{font-size:13px;color:rgba(255,255,255,.8);font-weight:500;}
+.days-pct-wrap{text-align:right;}
+.days-pct-wrap span{display:block;font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.days-pct-wrap strong{font-size:20px;font-weight:900;font-family:'JetBrains Mono',monospace;}
+
+/* ── HEALTH BAR ── */
+.health-bar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;background:var(--hblack);border-radius:var(--r-lg);padding:16px 22px;margin-bottom:14px;border:1px solid rgba(247,195,26,.12);}
+.health-ring{position:relative;width:64px;height:64px;flex-shrink:0;}
+.health-ring svg{width:64px;height:64px;transform:rotate(-90deg);}
+.h-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:5;}
+.h-fill{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1.2s var(--ease-spring);}
+.h-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.h-num .big{font-size:18px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;}
+.h-num .sm{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.4);}
+.health-info{display:flex;align-items:center;gap:14px;}
+.health-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
+.health-sub{font-size:11px;color:rgba(255,255,255,.5);}
+.health-metrics{display:flex;gap:20px;flex-wrap:wrap;}
+.hm{text-align:center;}
+.hm-val{font-size:15px;font-weight:800;font-family:'JetBrains Mono',monospace;display:block;line-height:1.2;}
+.hm-lbl{font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.h-div{width:1px;background:rgba(255,255,255,.08);align-self:stretch;}
+
+/* ── STAT PILLS ── */
+.stat-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.stat-pill{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;color:var(--text);}
+.stat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.stat-pill em{color:var(--muted);font-style:normal;font-weight:400;margin-left:2px;}
 
 /* ── KPI GRID ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin-bottom:4px;}
@@ -106,47 +155,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .kc-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:7px;}
 .tag-ok{background:var(--green-l);color:var(--green-d);}
 .tag-warn{background:var(--red-l);color:var(--red-d);}
-
-/* ── HEALTH SCORE BAR ── */
-.health-bar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;background:var(--hblack);border-radius:var(--r-lg);padding:16px 22px;margin-bottom:14px;border:1px solid rgba(247,195,26,.12);}
-.health-ring{position:relative;width:64px;height:64px;flex-shrink:0;}
-.health-ring svg{width:64px;height:64px;transform:rotate(-90deg);}
-.h-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:5;}
-.h-fill{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1.2s var(--ease-spring);}
-.health-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.health-num span:first-child{font-size:18px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;}
-.health-num span:last-child{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.4;color:#fff;}
-.health-info{display:flex;align-items:center;gap:14px;}
-.health-label-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
-.health-label-sub{font-size:11px;color:rgba(255,255,255,.5);}
-.health-metrics{display:flex;gap:20px;flex-wrap:wrap;}
-.hm{text-align:center;}
-.hm-val{font-size:15px;font-weight:800;font-family:'JetBrains Mono',monospace;display:block;line-height:1.2;}
-.hm-lbl{font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
-.h-div{width:1px;background:rgba(255,255,255,.08);align-self:stretch;}
-@media(max-width:640px){.health-bar{grid-template-columns:1fr;gap:12px;}.h-div{display:none;}}
-
-/* ── DAYS BANNER ── */
-.days-banner{display:flex;align-items:center;gap:18px;background:var(--hblack);border-radius:var(--r-lg);padding:16px 22px;margin-bottom:14px;border:1px solid rgba(247,195,26,.12);}
-.days-ring-wrap{position:relative;width:72px;height:72px;flex-shrink:0;}
-.days-ring-wrap svg{width:72px;height:72px;transform:rotate(-90deg);}
-.dr-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:5;}
-.dr-fill{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1s var(--ease-spring);}
-.dr-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.dr-text span:first-child{font-size:20px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;}
-.dr-text span:last-child{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:rgba(255,255,255,.4);}
-.days-info{flex:1;}
-.days-info-label{font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px;}
-.days-info-sub{font-size:13px;color:rgba(255,255,255,.8);font-weight:500;}
-.days-pct{text-align:right;}
-.days-pct span{display:block;font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.days-pct strong{font-size:20px;font-weight:900;font-family:'JetBrains Mono',monospace;}
-
-/* ── STAT PILLS ── */
-.stat-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
-.stat-pill{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;color:var(--text);}
-.stat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.stat-pill em{color:var(--muted);font-style:normal;font-weight:400;margin-left:2px;}
 
 /* ── CARD ── */
 .card{background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh-sm);transition:box-shadow .2s;}
@@ -168,7 +176,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .lb-row.r1{background:linear-gradient(90deg,rgba(247,195,26,.07),transparent);}
 .lb-row.r2{background:linear-gradient(90deg,rgba(148,163,184,.05),transparent);}
 .lb-row.r3{background:linear-gradient(90deg,rgba(180,83,9,.05),transparent);}
-@keyframes fade-up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 .lb-pos{font-size:14px;font-weight:900;width:34px;text-align:center;font-family:'JetBrains Mono',monospace;flex-shrink:0;}
 .lb-pos.gold{color:#d97706;}.lb-pos.silver{color:#94a3b8;}.lb-pos.bronze{color:#b45309;}.lb-pos.rest{color:var(--n400);font-size:12px;}
 .lb-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
@@ -219,6 +226,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .chip{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;}
 .chip-g{background:var(--green-l);color:var(--green-d);}
 .chip-r{background:var(--red-l);color:var(--red-d);}
+.chip-n{background:var(--n100);color:var(--muted);}
 .zebra tbody tr:nth-child(even){background:var(--n50);}
 .zebra tbody tr:nth-child(even):hover{background:var(--n100);}
 
@@ -231,7 +239,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .ap-badge.date{background:var(--n100);color:var(--n700);border:1px solid var(--border);}
 .ap-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media(max-width:860px){.ap-grid{grid-template-columns:1fr;}}
-.ap-item{display:flex;gap:12px;padding:13px 15px;border-radius:var(--r);border:1px solid var(--border);background:var(--n50);transition:box-shadow .18s,border-color .18s;}
+.ap-item{display:flex;gap:12px;padding:13px 15px;border-radius:var(--r);border:1px solid var(--border);background:var(--n50);transition:box-shadow .18s;}
 .ap-item:hover{box-shadow:var(--sh);border-color:var(--n300);}
 .ap-item.highlight{background:#fef2f2;border-color:var(--red-m);}
 .ap-item.strategic{background:var(--blue-l);border-color:var(--blue-m);}
@@ -249,7 +257,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .ap-summary-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;}
 .ap-summary-text{font-size:12px;color:rgba(255,255,255,.62);line-height:1.65;}
 
-/* ── INTEL CARDS ── */
+/* ── INTEL ── */
 .intel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:16px 18px 20px;}
 .intel-card{border-radius:var(--r);border:1px solid transparent;padding:13px 15px;display:flex;gap:11px;transition:box-shadow .18s;}
 .intel-card:hover{box-shadow:var(--sh);}
@@ -273,34 +281,84 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .intel-names{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
 .intel-name-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;background:rgba(0,0,0,.07);color:var(--text);}
 
-/* ── TOAST ── */
+/* ── TEAM ROSTER ── */
+.roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;padding:16px 18px 20px;}
+.agent-card{border-radius:var(--r-lg);border:1px solid var(--border);padding:16px;background:var(--surface);transition:all .2s;position:relative;overflow:hidden;}
+.agent-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--ac,var(--hgold));}
+.agent-card.inactive{opacity:.55;background:var(--n50);}
+.agent-card.inactive::before{background:var(--n300);}
+.agent-card:hover{box-shadow:var(--sh-md);}
+.ac-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.ac-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;position:relative;}
+.ac-status-dot{position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;border:2px solid var(--surface);}
+.ac-status-dot.active{background:#22c55e;}
+.ac-status-dot.inactive{background:#94a3b8;}
+.ac-name{font-size:13px;font-weight:700;flex:1;line-height:1.3;}
+.ac-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;}
+.ac-badge.active{background:#dcfce7;color:#14532d;}
+.ac-badge.inactive{background:#f1f5f9;color:#64748b;}
+.ac-badge.oc{background:var(--blue-l);color:var(--blue-d);}
+.ac-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.ac-stat{background:var(--n50);border-radius:var(--r-sm);padding:7px 10px;}
+.ac-stat-val{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.2;}
+.ac-stat-lbl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.ac-prog{margin-bottom:10px;}
+.ac-prog-lbl{display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px;}
+.ac-prog-lbl span{color:var(--muted);}
+.ac-prog-bar{height:5px;background:var(--n200);border-radius:3px;overflow:hidden;}
+.ac-prog-fill{height:100%;border-radius:3px;transition:width .8s var(--ease-spring);}
+.ac-toggle{width:100%;padding:7px;border-radius:var(--r-sm);border:1.5px solid var(--border);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;}
+.ac-toggle.mark-inactive{color:var(--red-d);border-color:var(--red-m);}
+.ac-toggle.mark-inactive:hover{background:var(--red-l);}
+.ac-toggle.mark-active{color:var(--green-d);border-color:var(--green-m);}
+.ac-toggle.mark-active:hover{background:var(--green-l);}
+.roster-summary{display:flex;gap:10px;padding:14px 18px 0;flex-wrap:wrap;}
+.rs-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--r-lg);border:1px solid var(--border);background:var(--surface);font-size:12px;}
+.rs-chip-num{font-size:18px;font-weight:900;font-family:'JetBrains Mono',monospace;}
+
+/* ── MoM ── */
+.mom-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);}
+.mom-kpi{background:var(--n50);border-radius:var(--r-lg);padding:14px 16px;border:1px solid var(--border);}
+.mom-kpi-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
+.mom-kpi-val{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.2;}
+.mom-kpi-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+.mom-trend{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:12px;margin-left:6px;vertical-align:middle;}
+.mom-trend.up{background:#dcfce7;color:#15803d;}
+.mom-trend.dn{background:#fee2e2;color:#b91c1c;}
+.mom-tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);padding:0 18px;scrollbar-width:none;}
+.mom-tabs::-webkit-scrollbar{display:none;}
+.mom-tab{padding:10px 16px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+.mom-tab.active{color:var(--hblack);border-bottom-color:var(--hgold);font-weight:700;}
+
+/* ── NEW MONTH MODAL ── */
+.nm-progress{display:flex;gap:0;margin-bottom:22px;}
+.nm-step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;}
+.nm-step-dot::before{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:var(--border);z-index:0;}
+.nm-step-dot:last-child::before{display:none;}
+.nm-circle{width:28px;height:28px;border-radius:50%;background:var(--n200);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);z-index:1;transition:all .3s;}
+.nm-circle.done{background:var(--green);color:#fff;}
+.nm-circle.current{background:var(--hgold);color:#000;}
+.nm-step-lbl{font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;text-align:center;}
+.nm-step{display:none;}.nm-step.on{display:block;}
+.nm-card{background:var(--n50);border-radius:var(--r-lg);border:1px solid var(--border);padding:14px 18px;margin-bottom:12px;}
+.nm-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--n100);font-size:12px;}
+.nm-row:last-child{border-bottom:none;font-weight:700;}
+.nm-warn{background:#fef2f2;border:1px solid var(--red-m);border-radius:var(--r);padding:10px 14px;font-size:11px;color:var(--red-d);margin-bottom:12px;}
+.nm-info{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:10px 14px;font-size:11px;color:var(--blue-d);margin-bottom:12px;}
+
+/* ── TOAST / MODALS / SAVING ── */
 .toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--n800);color:#fff;padding:12px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:10px;transform:translateY(100px);opacity:0;transition:all .4s var(--ease-spring);pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
-
-/* ── SAVING OVERLAY ── */
-.sov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
-.sov.on{display:flex;}
-.sov-box{background:#fff;border-radius:var(--r-lg);padding:22px 30px;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;box-shadow:var(--sh-lg);}
-.spinner{width:22px;height:22px;border:3px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* ── SCROLL TOP ── */
-.scroll-top{position:fixed;bottom:24px;left:24px;z-index:999;width:40px;height:40px;border-radius:50%;background:var(--hblack);border:2px solid rgba(247,195,26,.3);color:var(--hgold);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(20px);transition:all .3s var(--ease-out);box-shadow:var(--sh-md);}
-.scroll-top.show{opacity:1;transform:translateY(0);}
-.scroll-top:hover{background:var(--hgold);color:#000;border-color:var(--hgold);}
-
-/* ── MODAL ── */
 .ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .ovl.on{display:flex;}
 .modal{background:var(--surface);border-radius:var(--r-lg);padding:26px 28px;width:440px;max-width:95vw;box-shadow:var(--sh-lg);max-height:90vh;overflow-y:auto;animation:modal-in .3s var(--ease-spring) both;}
 .modal.wide{width:660px;}
-@keyframes modal-in{from{transform:scale(.92) translateY(20px);opacity:0;}to{transform:none;opacity:1;}}
 .modal h2{font-size:17px;font-weight:800;margin-bottom:5px;}
 .modal>p{font-size:13px;color:var(--muted);margin-bottom:20px;}
 .fg{margin-bottom:13px;}
 .fg label{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
-.fg input,.fg select{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;font-family:'Inter',sans-serif;color:var(--text);background:var(--surface);outline:none;transition:border .2s,box-shadow .2s;}
-.fg input:focus,.fg select:focus{border-color:var(--hgold);box-shadow:0 0 0 3px rgba(247,195,26,.15);}
+.fg input,.fg select{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;font-family:'Inter',sans-serif;color:var(--text);background:var(--surface);outline:none;transition:border .2s;}
+.fg input:focus{border-color:var(--hgold);box-shadow:0 0 0 3px rgba(247,195,26,.15);}
 .m-act{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
 .btn-primary{background:var(--hgold);color:#000;border:none;padding:10px 22px;border-radius:var(--r);font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;}
 .btn-primary:hover{background:var(--hgold-d);}
@@ -313,278 +371,61 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .tp{display:none;}.tp.on{display:block;}
 .day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
 .dw span{display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600;}
-.dw input{width:100%;padding:5px 6px;font-size:11px;border:1px solid var(--border);border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;transition:border .15s;}
+.dw input{width:100%;padding:5px 6px;font-size:11px;border:1px solid var(--border);border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;}
 .dw input:focus{border-color:var(--hgold);}
-.ag-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;}
 .two-inp{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .divider{height:1px;background:var(--border);margin:12px 0 16px;}
 .sub-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;}
 .live-bar{background:var(--hgold-l);border:1px solid var(--hgold-m);border-radius:var(--r);padding:10px 14px;margin-top:12px;display:flex;gap:20px;flex-wrap:wrap;}
 .live-item span{display:block;font-size:9px;color:#78620a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
 .live-item strong{font-size:13px;font-family:'JetBrains Mono',monospace;color:#3d3000;}
-.info-note{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r-sm);padding:8px 12px;font-size:11px;color:var(--blue-d);margin-bottom:12px;}
+.saving-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+.saving-overlay.on{display:flex;}
+.saving-box{background:#fff;border-radius:var(--r-lg);padding:24px 32px;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;box-shadow:var(--sh-lg);}
+.saving-spinner{width:22px;height:22px;border:3px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
 
-@media print{.sync-bar,.topbar,.nav-bar,.btn-update,.scroll-top,.toast,.ovl,.sov{display:none!important;}.wrap{padding:0;}.card{break-inside:avoid;}}
-
-
-/* ── TEAM ROSTER ── */
-.roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;padding:16px 18px 20px;}
-.agent-card{border-radius:var(--r-lg);border:1px solid var(--border);padding:16px;background:var(--surface);transition:all .2s;position:relative;overflow:hidden;}
-.agent-card.inactive{opacity:.55;background:var(--n50);}
-.agent-card:hover{box-shadow:var(--sh-md);}
-.agent-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--ac,var(--hgold));}
-.agent-card.inactive::before{background:var(--n300);}
-.ac-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.ac-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;position:relative;}
-.ac-avatar .status-dot{position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;border:2px solid var(--surface);}
-.ac-avatar .status-dot.active{background:#22c55e;}
-.ac-avatar .status-dot.inactive{background:#94a3b8;}
-.ac-name{font-size:13px;font-weight:700;flex:1;line-height:1.3;}
-.ac-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;}
-.ac-badge.active{background:#dcfce7;color:#14532d;}
-.ac-badge.inactive{background:#f1f5f9;color:#64748b;}
-.ac-badge.oc{background:#eff6ff;color:#1e40af;}
-.ac-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-.ac-stat{background:var(--n50);border-radius:var(--r-sm);padding:7px 10px;}
-.ac-stat-val{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.2;}
-.ac-stat-lbl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
-.ac-progress{margin-bottom:10px;}
-.ac-progress-lbl{display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px;}
-.ac-progress-lbl span{color:var(--muted);}
-.ac-progress-lbl strong{font-weight:700;}
-.ac-bar{height:5px;background:var(--n200);border-radius:3px;overflow:hidden;}
-.ac-bar-fill{height:100%;border-radius:3px;transition:width .8s var(--ease-spring);}
-.ac-toggle{width:100%;padding:7px;border-radius:var(--r-sm);border:1.5px solid var(--border);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;}
-.ac-toggle.mark-inactive{color:var(--red-d);border-color:var(--red-m);}
-.ac-toggle.mark-inactive:hover{background:var(--red-l);border-color:var(--red-d);}
-.ac-toggle.mark-active{color:var(--green-d);border-color:var(--green-m);}
-.ac-toggle.mark-active:hover{background:var(--green-l);border-color:var(--green-d);}
-.ac-note{font-size:10px;color:var(--muted);font-style:italic;margin-top:6px;padding:5px 8px;background:var(--n100);border-radius:var(--r-sm);}
-.roster-summary{display:flex;gap:10px;padding:14px 18px 0;flex-wrap:wrap;}
-.rs-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--r-lg);border:1px solid var(--border);background:var(--surface);font-size:12px;}
-.rs-chip-num{font-size:18px;font-weight:900;font-family:'JetBrains Mono',monospace;}
-
-/* ── IMPROVED KPI CARDS ── */
-.kpi-grid{gap:14px;}
-.kc{border-radius:var(--r-lg);padding:18px 20px 16px;}
-.kc-val{font-size:22px;}
-
-/* ── IMPROVED SECTION HEADERS ── */
-.sec{font-size:11px;letter-spacing:1.6px;margin:32px 0 16px;}
-
-/* ── CARD HEADER IMPROVEMENT ── */
-.card-hdr{padding:14px 20px;}
-
-/* ── IMPROVED DAYS BANNER ── */
-.days-banner{border-radius:var(--r-lg);padding:20px 26px;}
-
-/* ── HEALTH BAR ── */
-.health-bar{border-radius:var(--r-lg);padding:18px 24px;}
-
-
-/* ══ UI IMPROVEMENTS ══ */
-
-/* Gradient page background */
-body{background:linear-gradient(180deg,#ede9e0 0%,#f2f1ec 300px);}
-
-/* Better sync bar */
-.sync-bar{height:34px;font-size:11.5px;letter-spacing:.1px;}
-
-/* Topbar subtle separator */
-.topbar{box-shadow:0 2px 0 var(--hgold),0 6px 30px rgba(0,0,0,.6);}
-
-/* Nav — cleaner active state */
-.nav-item{padding:12px 16px;font-size:11.5px;letter-spacing:.1px;}
-.nav-item.active{background:rgba(247,195,26,.05);}
-
-/* KPI cards — richer */
-.kc{box-shadow:var(--sh-sm);border-top-width:3px;}
-.kc-lbl{font-size:9.5px;letter-spacing:.8px;}
-.kc-val{font-size:21px;letter-spacing:-.5px;}
-.kc-sub{font-size:10.5px;}
-
-/* Section headers — bolder gold accent */
-.sec::before{width:4px;height:14px;background:linear-gradient(180deg,var(--hgold),var(--hgold-d));}
-
-/* Cards — deeper shadow on hover */
-.card:hover{box-shadow:0 4px 20px rgba(0,0,0,.1);}
-.card-hdr{padding:15px 20px;}
-.card-hdr h3{font-size:13.5px;letter-spacing:.1px;}
-
-/* Leaderboard rows */
-.lb-row{padding:12px 20px;}
-.lb-avatar{width:34px;height:34px;font-size:12px;}
-.lb-name{font-size:13.5px;}
-
-/* Intelligence alerts — better padding */
-.intel-card{padding:15px 16px;}
-.intel-title{font-size:12.5px;}
-.intel-desc{font-size:11px;line-height:1.65;}
-
-/* Days banner improvements */
-.days-info-sub{font-size:14px;font-weight:600;}
-.days-pct strong{font-size:22px;}
-
-/* Health bar */
-.health-label-title{font-size:15px;}
-.health-label-sub{font-size:12px;}
-.hm-val{font-size:16px;}
-.hm-lbl{font-size:9.5px;}
-
-/* Stat pills */
-.stat-pill{font-size:11.5px;padding:7px 16px;border-radius:22px;}
-.stat-dot{width:9px;height:9px;}
-
-/* Forecast chips */
-.fc-chip{padding:10px 14px;border-radius:var(--r-lg);}
-.fc-chip-val{font-size:15px;letter-spacing:-.3px;}
-
-/* Tables — improved readability */
-thead th{font-size:9.5px;letter-spacing:.8px;padding:10px 13px;}
-tbody td{padding:10px 13px;font-size:12.5px;}
-tfoot td{padding:10px 13px;}
-
-/* Footer */
-.footer-text{font-size:11.5px;}
-
-/* Action plan */
-.ap-title{font-size:13.5px;}
-.ap-desc{font-size:11.5px;line-height:1.65;}
-
-/* Scroll to top  */
-.scroll-top{width:44px;height:44px;border-radius:12px;bottom:28px;left:28px;}
-
-/* ── IMPROVED TOAST ── */
-.toast{bottom:28px;right:28px;padding:14px 22px;font-size:13.5px;border-radius:var(--r-lg);}
-
-/* Print improvements */
-@media print{
-  body{background:#fff;}
-  .sync-bar,.topbar,.nav-bar,.btn-update,.scroll-top,.toast,.ovl,.sov{display:none!important;}
-  .wrap{padding:12px;}
-  .card{break-inside:avoid;margin-bottom:20px;}
-  .sec{margin:20px 0 12px;}
-}
-
-/* Mobile */
-@media(max-width:768px){
-  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
-  .two-col{grid-template-columns:1fr;}
-  .health-bar{grid-template-columns:1fr;gap:14px;}
-  .h-div{display:none;}
-  .days-banner{flex-wrap:wrap;gap:12px;}
-  .fc-scenarios{grid-template-columns:1fr;}
-  .roster-grid{grid-template-columns:1fr;}
-  .ap-grid{grid-template-columns:1fr;}
-  .wrap{padding:14px 16px;}
-}
-
-
-/* ══ MONTH-ON-MONTH ANALYSIS ══ */
-.mom-header-bar{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);}
-.mom-kpi{background:var(--n50);border-radius:var(--r-lg);padding:14px 16px;border:1px solid var(--border);}
-.mom-kpi-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
-.mom-kpi-val{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.2;}
-.mom-kpi-sub{font-size:10px;color:var(--muted);margin-top:3px;}
-.mom-trend{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:12px;margin-left:6px;}
-.mom-trend.up{background:#dcfce7;color:#15803d;}
-.mom-trend.dn{background:#fee2e2;color:#b91c1c;}
-.mom-trend.flat{background:var(--n100);color:var(--n600);}
-.mom-agent-table{width:100%;border-collapse:collapse;}
-.mom-agent-table thead th{background:var(--hblack-2);color:rgba(255,255,255,.7);padding:9px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;}
-.mom-agent-table tbody tr:nth-child(even){background:var(--n50);}
-.mom-agent-table tbody td{padding:9px 14px;font-size:12px;border-bottom:1px solid var(--n100);}
-.mom-agent-table tfoot td{padding:9px 14px;font-weight:700;background:var(--n100);border-top:2px solid var(--n200);}
-.mom-month-tab{display:flex;gap:0;overflow-x:auto;border-bottom:1px solid var(--border);padding:0 20px;scrollbar-width:none;}
-.mom-month-tab::-webkit-scrollbar{display:none;}
-.mom-mtab{padding:10px 16px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;flex-shrink:0;}
-.mom-mtab.active{color:var(--hblack);border-bottom-color:var(--hgold);font-weight:700;}
-.mom-mtab:hover{color:var(--text);}
-
-/* ══ NEW MONTH MODAL ══ */
-.nm-step{display:none;}.nm-step.on{display:block;}
-.nm-progress{display:flex;gap:0;margin-bottom:22px;}
-.nm-step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;}
-.nm-step-dot::before{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:var(--border);z-index:0;}
-.nm-step-dot:last-child::before{display:none;}
-.nm-step-circle{width:28px;height:28px;border-radius:50%;background:var(--n200);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);z-index:1;transition:all .3s;}
-.nm-step-circle.done{background:var(--green);color:#fff;}
-.nm-step-circle.current{background:var(--hgold);color:#000;}
-.nm-step-label{font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;text-align:center;}
-.nm-summary-card{background:var(--n50);border-radius:var(--r-lg);border:1px solid var(--border);padding:14px 18px;margin-bottom:12px;}
-.nm-summary-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--n100);font-size:12px;}
-.nm-summary-row:last-child{border-bottom:none;font-weight:700;}
-.nm-warning{background:#fef2f2;border:1px solid var(--red-m);border-radius:var(--r);padding:10px 14px;font-size:11px;color:var(--red-d);margin-bottom:12px;}
-.nm-info{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:10px 14px;font-size:11px;color:var(--blue-d);margin-bottom:12px;}
-
-.btn-newmonth{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.25);padding:8px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;}
-.btn-newmonth:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);}
+@media print{.sync-bar,.topbar,.nav-bar,.btn-update,.btn-newmonth,.scroll-top,.toast,.ovl,.saving-overlay{display:none!important;}.wrap{padding:0;}.card{break-inside:avoid;}}
+@media(max-width:640px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.health-bar{grid-template-columns:1fr;gap:14px;}.h-div{display:none;}.days-banner{flex-wrap:wrap;gap:12px;}.roster-grid{grid-template-columns:1fr;}.ap-grid{grid-template-columns:1fr;}.fc-scenarios{grid-template-columns:1fr;}.mom-kpis{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-
-<!-- LOADING OVERLAY (covers content while Firebase connects) -->
-<div id="loadingOverlay" style="position:fixed;inset:0;background:var(--page);z-index:150;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .5s;">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-      <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:15px solid var(--hgold)"></div>
-      <span style="font-size:20px;font-weight:900;color:var(--hblack);letter-spacing:-.5px">HOUSING<span style="color:var(--hgold)">.com</span></span>
-    </div>
-    <div style="width:44px;height:44px;border:4px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .8s linear infinite"></div>
-    <div style="font-size:14px;font-weight:600;color:var(--muted)">Loading Sales Command Centre…</div>
-    <div style="font-size:11px;color:var(--n400)" id="loadingMsg">Connecting to Firebase</div>
-    <div id="loadingSlowMsg" style="display:none;font-size:11px;color:var(--amber);margin-top:8px;text-align:center">
-      Taking longer than usual…<br>
-      <span style="cursor:pointer;text-decoration:underline;color:var(--hgold)" onclick="forceShowDash()">Click here to load with cached data</span>
-    </div>
-  </div>
+<div class="refresh-banner" id="refreshBanner">
+  <span>🔄</span>
+  <span>Firebase listener offline. Auto-refresh in <strong id="refreshCountdown">60:00</strong>.</span>
+  <button onclick="manualRefresh()" style="margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-weight:600;">Refresh Now</button>
 </div>
 
-<!-- SYNC STATUS BAR -->
 <div class="sync-bar" id="syncBar">
-  <div class="sdot blink" id="sdot"></div>
+  <div class="sync-dot connecting" id="syncDot"></div>
   <span id="syncMsg">Connecting to Firebase…</span>
   <div class="sync-right">
-    <span class="sync-clock">Synced: <strong id="syncClock">—</strong></span>
-    <span class="days-chip" id="daysChip">⏳ — days left</span>
+    <span class="sync-clock">Last synced: <strong id="lastSyncedClock">—</strong></span>
+    <span class="sync-days-left" id="daysLeftBadge">⏳ — days left</span>
   </div>
 </div>
 
-<!-- TOPBAR -->
 <div class="topbar">
   <div class="tb-left">
-    <div class="tb-housing">
+    <div style="display:flex;align-items:center;flex-shrink:0">
       <div class="tb-tri"></div>
       <div class="tb-wm">HOUSING<span>.com</span></div>
     </div>
     <div class="tb-sep"></div>
     <div class="tb-ocube">
       <svg viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="4" r="2" fill="white" opacity="1"/>
-        <circle cx="28.3" cy="6.3" r="1.8" fill="white" opacity=".9"/>
-        <circle cx="34.5" cy="12" r="1.7" fill="white" opacity=".8"/>
-        <circle cx="37.5" cy="19.5" r="1.6" fill="white" opacity=".7"/>
-        <circle cx="36" cy="27.5" r="1.5" fill="white" opacity=".6"/>
-        <circle cx="30.5" cy="33.8" r="1.4" fill="white" opacity=".55"/>
-        <circle cx="22.5" cy="37.5" r="1.3" fill="white" opacity=".5"/>
-        <circle cx="14" cy="37" r="1.2" fill="white" opacity=".45"/>
-        <circle cx="7" cy="33" r="1.2" fill="white" opacity=".4"/>
-        <circle cx="3" cy="26.5" r="1.1" fill="white" opacity=".35"/>
-        <circle cx="2.5" cy="18.5" r="1.1" fill="white" opacity=".3"/>
-        <circle cx="5.5" cy="11" r="1.2" fill="white" opacity=".35"/>
-        <circle cx="11.5" cy="5.5" r="1.3" fill="white" opacity=".4"/>
-        <circle cx="20" cy="9" r="1.4" fill="white" opacity=".7"/>
-        <circle cx="26" cy="11" r="1.3" fill="white" opacity=".65"/>
-        <circle cx="30" cy="16" r="1.2" fill="white" opacity=".6"/>
-        <circle cx="31" cy="22" r="1.2" fill="white" opacity=".55"/>
-        <circle cx="28" cy="28" r="1.1" fill="white" opacity=".5"/>
-        <circle cx="22.5" cy="31.5" r="1.1" fill="white" opacity=".45"/>
-        <circle cx="16.5" cy="31" r="1" fill="white" opacity=".4"/>
-        <circle cx="11.5" cy="27.5" r="1" fill="white" opacity=".35"/>
-        <circle cx="9.5" cy="22" r="1" fill="white" opacity=".35"/>
-        <circle cx="10" cy="15.5" r="1.1" fill="white" opacity=".4"/>
-        <circle cx="14" cy="10.5" r="1.2" fill="white" opacity=".45"/>
+        <circle cx="20" cy="4" r="2" fill="white" opacity="1"/><circle cx="28.3" cy="6.3" r="1.8" fill="white" opacity=".9"/>
+        <circle cx="34.5" cy="12" r="1.7" fill="white" opacity=".8"/><circle cx="37.5" cy="19.5" r="1.6" fill="white" opacity=".7"/>
+        <circle cx="36" cy="27.5" r="1.5" fill="white" opacity=".6"/><circle cx="30.5" cy="33.8" r="1.4" fill="white" opacity=".55"/>
+        <circle cx="22.5" cy="37.5" r="1.3" fill="white" opacity=".5"/><circle cx="14" cy="37" r="1.2" fill="white" opacity=".45"/>
+        <circle cx="7" cy="33" r="1.2" fill="white" opacity=".4"/><circle cx="3" cy="26.5" r="1.1" fill="white" opacity=".35"/>
+        <circle cx="2.5" cy="18.5" r="1.1" fill="white" opacity=".3"/><circle cx="5.5" cy="11" r="1.2" fill="white" opacity=".35"/>
+        <circle cx="11.5" cy="5.5" r="1.3" fill="white" opacity=".4"/><circle cx="20" cy="9" r="1.4" fill="white" opacity=".7"/>
+        <circle cx="26" cy="11" r="1.3" fill="white" opacity=".65"/><circle cx="30" cy="16" r="1.2" fill="white" opacity=".6"/>
+        <circle cx="31" cy="22" r="1.2" fill="white" opacity=".55"/><circle cx="28" cy="28" r="1.1" fill="white" opacity=".5"/>
+        <circle cx="22.5" cy="31.5" r="1.1" fill="white" opacity=".45"/><circle cx="16.5" cy="31" r="1" fill="white" opacity=".4"/>
+        <circle cx="11.5" cy="27.5" r="1" fill="white" opacity=".35"/><circle cx="9.5" cy="22" r="1" fill="white" opacity=".35"/>
+        <circle cx="10" cy="15.5" r="1.1" fill="white" opacity=".4"/><circle cx="14" cy="10.5" r="1.2" fill="white" opacity=".45"/>
       </svg>
       <div class="tb-ocube-word">cube</div>
     </div>
@@ -592,244 +433,231 @@ tfoot td{padding:10px 13px;}
     <span class="tb-title">Sales Command Centre</span>
   </div>
   <div class="tb-right">
-    <span class="live-pill"><span class="live-dot"></span><span id="updBadge">Connecting…</span></span>
+    <span class="tb-live"><span class="live-dot"></span><span id="updBadge">Connecting…</span></span>
+    <button class="btn-newmonth" onclick="openNewMonth()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+      New Month
+    </button>
     <button class="btn-update" onclick="openLogin()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
       Update Data
     </button>
-    <button class="btn-newmonth" onclick="openNewMonth()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
-      New Month
-    </button>
   </div>
 </div>
 
-
-
-<!-- SCROLL TOP -->
-<div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
-</div>
-
-<!-- NAV BAR -->
 <nav class="nav-bar" id="navBar">
-  <div class="nav-item active" onclick="navTo(this,'secSnapshot')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Snapshot</div>
-  <div class="nav-item" onclick="navTo(this,'secLeader')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>Leaderboard</div>
+  <div class="nav-item active" onclick="navTo(this,'secSnap')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Snapshot</div>
+  <div class="nav-item" onclick="navTo(this,'secLB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>Leaderboard</div>
   <div class="nav-item" onclick="navTo(this,'secForecast')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Forecast</div>
   <div class="nav-item" onclick="navTo(this,'secDaily')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Daily</div>
   <div class="nav-item" onclick="navTo(this,'secWeekly')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Weekly</div>
   <div class="nav-item" onclick="navTo(this,'secAgents')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Agents</div>
   <div class="nav-item" onclick="navTo(this,'secCompare')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>May vs June</div>
   <div class="nav-item" onclick="navTo(this,'secAction')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Action Plan</div>
-  <div class="nav-item" onclick="navTo(this,'secMoM')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/><line x1="2" y1="20" x2="22" y2="20"/></svg>MoM</div>
+  <div class="nav-item" onclick="navTo(this,'secMoM')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>MoM</div>
   <div class="nav-item" onclick="navTo(this,'secTeam')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><circle cx="20" cy="8" r="3"/><path d="M22 20c0-3-1.8-5.5-4-6.3"/></svg>Team Roster</div>
 </nav>
-  <div class="sk-grid">
-    <div class="sk-kpi"><div class="sk-h w40" style="width:45%;background:var(--n200);border-radius:4px;height:9px;margin-bottom:10px"></div><div style="height:22px;width:65%;background:var(--n200);border-radius:4px;margin-bottom:8px;animation:shimmer 1.4s ease-in-out infinite;background-size:200% 100%;background-image:linear-gradient(90deg,#f0ede6 25%,#e8e6df 50%,#f0ede6 75%)"></div><div style="height:9px;width:50%;background:var(--n200);border-radius:4px"></div></div>
-    <div class="sk-kpi"><div style="height:9px;width:55%;background:var(--n200);border-radius:4px;margin-bottom:10px"></div><div style="height:22px;width:70%;background:var(--n200);border-radius:4px;margin-bottom:8px"></div><div style="height:3px;background:var(--n200);border-radius:4px;margin-top:14px"></div></div>
-    <div class="sk-kpi"></div><div class="sk-kpi"></div><div class="sk-kpi"></div><div class="sk-kpi"></div><div class="sk-kpi"></div><div class="sk-kpi"></div>
-  </div>
-  <div class="card"><div class="card-hdr"><h3>Loading agent rankings…</h3></div>
-    <div style="padding:14px 18px"><div class="sk-row sk"></div><div class="sk-row sk"></div><div class="sk-row sk"></div><div class="sk-row sk"></div><div class="sk-row sk"></div></div>
-  </div>
-  <div style="text-align:center;padding:20px;font-size:12px;color:var(--muted)">Connecting to Firebase Realtime Database…</div>
+
+<div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
 </div>
 
-<!-- MAIN DASHBOARD (hidden until Firebase responds) -->
 <div class="wrap" id="mainWrap">
 
-  <!-- DAYS BANNER -->
-  <div class="days-banner">
-    <div class="days-ring-wrap">
-      <svg viewBox="0 0 72 72"><circle class="dr-bg" cx="36" cy="36" r="30"/><circle class="dr-fill" id="drFill" cx="36" cy="36" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5"/></svg>
-      <div class="dr-text"><span id="daysLeftNum" style="color:var(--hgold)">—</span><span>days</span></div>
+  <!-- SKELETON -->
+  <div id="skeletonView">
+    <div class="sec" style="margin-top:0">June 2026 — Monthly Snapshot</div>
+    <div class="skeleton-grid">
+      <div class="sk-card"><div class="sk-line" style="width:45%"></div><div class="sk-block"></div><div class="sk-line" style="width:60%"></div><div class="sk-line" style="height:3px;margin-top:14px;width:80%"></div></div>
+      <div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div>
+      <div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div>
     </div>
-    <div class="days-info">
-      <div class="days-info-label">Days Remaining in June 2026</div>
-      <div class="days-info-sub" id="daysSub">—</div>
+    <div class="sec">Performance Leaderboard</div>
+    <div class="card"><div class="card-hdr"><h3>🏆 Agent Rankings</h3></div>
+      <div style="padding:12px 18px"><div class="sk-lb"></div><div class="sk-lb"></div><div class="sk-lb"></div><div class="sk-lb"></div><div class="sk-lb"></div></div>
     </div>
-    <div class="h-div"></div>
-    <div class="days-pct"><span>Month Progress</span><strong id="daysPct" style="color:var(--hgold)">—</strong></div>
+    <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">
+      <div style="width:32px;height:32px;border:3px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px"></div>
+      Connecting to Firebase…
+    </div>
   </div>
 
-  <!-- HEALTH SCORE -->
-  <div class="health-bar">
-    <div class="health-info">
-      <div class="health-ring">
-        <svg viewBox="0 0 64 64"><circle class="h-bg" cx="32" cy="32" r="26"/><circle class="h-fill" id="hFill" cx="32" cy="32" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4"/></svg>
-        <div class="health-num"><span id="healthScore" style="color:var(--hgold)">—</span><span>/100</span></div>
+  <!-- MAIN DASHBOARD (hidden until Firebase responds) -->
+  <div id="dashView" style="display:none">
+
+    <!-- DAYS BANNER -->
+    <div class="days-banner">
+      <div class="days-ring-wrap">
+        <svg viewBox="0 0 72 72"><circle class="dr-bg" cx="36" cy="36" r="30"/><circle class="dr-fill" id="drFill" cx="36" cy="36" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5"/></svg>
+        <div class="dr-text"><span class="big" id="daysLeftNum" style="color:var(--hgold)">—</span><span class="sm">days</span></div>
       </div>
-      <div>
-        <div class="health-label-title" id="healthTitle">Team Health</div>
-        <div class="health-label-sub" id="healthSub">Computing…</div>
+      <div class="days-info">
+        <div class="days-info-lbl">Days Remaining in June 2026</div>
+        <div class="days-info-sub" id="daysSub">—</div>
       </div>
+      <div class="h-div"></div>
+      <div class="days-pct-wrap"><span>Month Progress</span><strong id="daysPct" style="color:var(--hgold)">—</strong></div>
     </div>
-    <div class="h-div"></div>
-    <div class="health-metrics" id="healthMetrics"></div>
-  </div>
 
-  <div id="secSnapshot"></div>
-  <div class="sec">June 2026 — Monthly Snapshot</div>
-  <div class="stat-row" id="statRow"></div>
-  <div class="kpi-grid" id="kpiGrid"></div>
-
-  <div id="secLeader"></div>
-  <div class="sec">Performance Leaderboard — June 2026</div>
-  <div class="card">
-    <div class="card-hdr"><h3>🏆 Agent Rankings</h3><aside id="lbDate">—</aside></div>
-    <div class="lb-wrap" id="lbWrap"></div>
-  </div>
-
-  <div id="secForecast"></div>
-  <div class="sec">Sales Forecast &amp; Projections</div>
-  <div class="card">
-    <div class="card-hdr"><h3>📡 Month-End Scenarios</h3><aside>Auto-calculated from current DRR</aside></div>
-    <div class="fc-scenarios" id="fcScenarios"></div>
-    <div class="fc-chips" id="fcChips"></div>
-    <div class="leg">
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#2563eb;opacity:.7"></span>Forecast</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#16a34a;opacity:.6"></span>Optimistic</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#16a34a;opacity:.25"></span>Target</span>
-    </div>
-    <div class="chart-pad"><div style="position:relative;height:230px"><canvas id="fcChart"></canvas></div></div>
-  </div>
-
-  <div id="secDaily"></div>
-  <div class="sec">June 2026 — Daily Revenue</div>
-  <div class="card">
-    <div class="card-hdr"><h3>Day-wise Collection</h3><aside id="juneTotalLbl">—</aside></div>
-    <div class="leg">
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#e2e8f0"></span>Future</span>
-    </div>
-    <div class="chart-pad"><div style="position:relative;height:220px"><canvas id="juneChart"></canvas></div></div>
-  </div>
-
-  <div id="secWeekly"></div>
-  <div class="sec">Weekly Breakdown — May vs June</div>
-  <div class="two-col">
-    <div class="card" style="margin-bottom:0">
-      <div class="card-hdr"><h3>May 2026 — Weekly</h3><aside>₹2,21,250 / week target</aside></div>
-      <div class="tbl-wrap"><table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ</th><th>WoW</th><th>Share</th></tr></thead><tbody id="mayWkBody"></tbody><tfoot id="mayWkFoot"></tfoot></table></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="card-hdr"><h3>June 2026 — Weekly</h3><aside>In progress</aside></div>
-      <div class="tbl-wrap"><table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ</th><th>Share</th><th>vs May</th></tr></thead><tbody id="junWkBody"></tbody><tfoot id="junWkFoot"></tfoot></table></div>
-    </div>
-  </div>
-
-  <div id="secAgents"></div>
-  <div class="sec">Agent-wise Performance — June 2026</div>
-  <div class="card">
-    <div class="card-hdr"><h3>Individual Daily Tracker</h3><aside>Auto-sorted by achievement %</aside></div>
-    <div class="tbl-wrap"><table class="zebra"><thead><tr id="agHdr"></tr></thead><tbody id="agBody"></tbody><tfoot id="agFoot"></tfoot></table></div>
-  </div>
-
-  <div id="secCompare"></div>
-  <div class="sec">May &amp; June 2026 — Daily Comparison</div>
-  <div class="card">
-    <div class="card-hdr"><h3>Day-wise Revenue Side-by-Side</h3><aside>May: ₹3,82,739 | June: <span id="junLogTot">—</span></aside></div>
-    <div class="leg">
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(37,99,235,.75)"></span>May 2026</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(220,38,38,.75)"></span>June 2026</span>
-    </div>
-    <div class="chart-pad"><div style="position:relative;height:200px"><canvas id="cmpChart"></canvas></div></div>
-  </div>
-  <div class="card">
-    <div class="card-hdr"><h3>Daily Revenue Log — May &amp; June 2026</h3><aside>May total: ₹3,82,739</aside></div>
-    <div class="tbl-wrap"><table class="zebra"><thead><tr><th>Week</th><th>Date</th><th>May Revenue</th><th>June Revenue</th><th>MoD Δ</th></tr></thead><tbody id="dailyBody"></tbody><tfoot id="dailyFoot"></tfoot></table></div>
-  </div>
-
-  <div id="secAction"></div>
-  <div class="sec">Action Plan — June 2026 Recovery</div>
-  <div class="card">
-    <div class="card-hdr"><h3>📋 Team Action Plan</h3><aside>Housing Owner Process · Effective immediately</aside></div>
-    <div class="ap-wrap">
-      <div class="ap-meta">
-        <span class="ap-badge status">⚡ In Execution</span>
-        <span class="ap-badge priority">🎯 High Priority</span>
-        <span class="ap-badge date">📅 June 2026</span>
-      </div>
-      <div class="ap-grid">
-        <div class="ap-divider">People &amp; Coaching</div>
-        <div class="ap-item highlight"><div class="ap-icon">🎙️</div><div><span class="ap-tag people">People</span><div class="ap-title">Daily Performance Reviews</div><div class="ap-desc">Structured daily check-ins with low-performing and non-performing agents to identify blockers, set daily commitments, and track follow-through.</div></div></div>
-        <div class="ap-item highlight"><div class="ap-icon">🧠</div><div><span class="ap-tag people">People</span><div class="ap-title">Focused Skill Coaching</div><div class="ap-desc">Targeted coaching on conversion techniques, objection handling, and closing skills — particularly for agents below 10% achievement.</div></div></div>
-        <div class="ap-divider">Process &amp; Execution</div>
-        <div class="ap-item"><div class="ap-icon">🔥</div><div><span class="ap-tag process">Process</span><div class="ap-title">Hot Lead Follow-Up Blitz</div><div class="ap-desc">Increased follow-up on hot and payment-ready leads. Closures and daily target commitments monitored rigorously by TLs.</div></div></div>
-        <div class="ap-item"><div class="ap-icon">⚖️</div><div><span class="ap-tag process">Process</span><div class="ap-title">Reduce Top-Performer Dependency</div><div class="ap-desc">Focus on improving contributions from underperforming agents to distribute revenue load more evenly.</div></div></div>
-        <div class="ap-divider">Lead Intelligence &amp; Observations</div>
-      </div>
-      <div style="margin-top:4px">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:0 2px 10px;display:flex;align-items:center;justify-content:space-between">
-          <span>Auto-computed alerts · live from Firebase</span>
-          <span id="intelTS" style="font-weight:400;color:var(--n400)"></span>
+    <!-- HEALTH SCORE -->
+    <div class="health-bar">
+      <div class="health-info">
+        <div class="health-ring">
+          <svg viewBox="0 0 64 64"><circle class="h-bg" cx="32" cy="32" r="26"/><circle class="h-fill" id="hFill" cx="32" cy="32" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4"/></svg>
+          <div class="h-num"><span class="big" id="healthScore" style="color:var(--hgold)">—</span><span class="sm">/100</span></div>
         </div>
-        <div class="intel-grid" id="intelGrid"></div>
-      </div>
-      <div class="ap-grid" style="margin-top:4px">
-        <div class="ap-divider">Strategic Initiative</div>
-        <div class="ap-item strategic"><div class="ap-icon">🌅</div><div><span class="ap-tag strategy">Strategy</span><div class="ap-title">Early-Login Initiative</div><div class="ap-desc">Team members log in early each morning to access fresh leads before other centres — exploiting the FIFO lead allocation sequence.</div></div></div>
-        <div class="ap-item strategic"><div class="ap-icon">🔁</div><div><span class="ap-tag strategy">Strategy</span><div class="ap-title">Regular Effectiveness Reviews</div><div class="ap-desc">Strategy reviewed regularly. Improvements based on lead quality trends, contactability rates, and conversion outcomes.</div></div></div>
-        <div class="ap-summary">
-          <div class="ap-summary-icon">🎯</div>
-          <div><div class="ap-summary-title">Bottom Line</div><div class="ap-summary-text">The team is tracking below the June DRR target. Priority: activate zero-revenue agents, exploit FIFO advantage through early logins, compress the gap on hot leads before month-end. Every day of delay costs approximately <strong style="color:#fcd34d">₹14,000+</strong> against target.</div></div>
+        <div>
+          <div class="health-title" id="healthTitle">Team Health</div>
+          <div class="health-sub" id="healthSub">Computing…</div>
         </div>
       </div>
+      <div class="h-div"></div>
+      <div class="health-metrics" id="healthMetrics"></div>
     </div>
-  </div>
 
+    <div id="secSnap"></div>
+    <div class="sec">June 2026 — Monthly Snapshot</div>
+    <div class="stat-row" id="statRow"></div>
+    <div class="kpi-grid" id="kpiGrid"></div>
 
-  <div id="secMoM"></div>
-  <div class="sec">Month-on-Month Performance Analysis</div>
-  <div class="card">
-    <div class="card-hdr">
-      <h3>📈 Revenue Trend — Month on Month</h3>
-      <aside id="momMonthRange">—</aside>
+    <div id="secLB"></div>
+    <div class="sec">Performance Leaderboard — June 2026</div>
+    <div class="card">
+      <div class="card-hdr"><h3>🏆 Agent Rankings</h3><aside id="lbDate">—</aside></div>
+      <div class="lb-wrap" id="lbWrap"></div>
     </div>
-    <div class="mom-header-bar" id="momKpis"></div>
-    <div class="leg" style="padding:12px 20px 0">
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#2563eb;opacity:.8"></span>Previous months</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Current month</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(247,195,26,.6)"></span>Target</span>
-    </div>
-    <div class="chart-pad"><div style="position:relative;height:240px"><canvas id="momChart"></canvas></div></div>
-  </div>
 
-  <div class="card">
-    <div class="card-hdr"><h3>📊 Month-wise Summary Table</h3><aside>All months · Revenue vs Target</aside></div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Month</th><th>Days</th><th>Target</th><th>Revenue</th><th>Achievement</th><th>Avg DRR</th><th>vs Prev Month</th><th>Status</th></tr></thead>
-        <tbody id="momTableBody"></tbody>
-        <tfoot id="momTableFoot"></tfoot>
-      </table>
+    <div id="secForecast"></div>
+    <div class="sec">Sales Forecast &amp; Projections</div>
+    <div class="card">
+      <div class="card-hdr"><h3>📡 Month-End Scenarios</h3><aside>Auto-calculated from current DRR</aside></div>
+      <div class="fc-scenarios" id="fcScenarios"></div>
+      <div class="fc-chips" id="fcChips"></div>
+      <div class="leg">
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#2563eb;opacity:.7"></span>Forecast</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#16a34a;opacity:.6"></span>Optimistic</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#16a34a;opacity:.25"></span>Target</span>
+      </div>
+      <div class="chart-pad"><div style="position:relative;height:230px"><canvas id="fcChart"></canvas></div></div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-hdr"><h3>👤 Agent Month-on-Month Comparison</h3><aside>Select month to compare</aside></div>
-    <div class="mom-month-tab" id="momAgentTabs"></div>
-    <div class="tbl-wrap">
-      <table class="zebra">
-        <thead><tr><th>#</th><th>Agent</th><th>This Month Rev</th><th>This Month %</th><th>Prev Month Rev</th><th>Prev Month %</th><th>Change</th><th>Trend</th></tr></thead>
-        <tbody id="momAgentBody"></tbody>
-      </table>
+    <div id="secDaily"></div>
+    <div class="sec">June 2026 — Daily Revenue</div>
+    <div class="card">
+      <div class="card-hdr"><h3>Day-wise Collection</h3><aside id="juneTotalLbl">—</aside></div>
+      <div class="leg">
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#e2e8f0"></span>Future</span>
+      </div>
+      <div class="chart-pad"><div style="position:relative;height:220px"><canvas id="juneChart"></canvas></div></div>
     </div>
-  </div>
 
-  <div id="secTeam"></div>
-  <div class="sec">Team Roster — Agent Status Management</div>
-  <div class="card">
-    <div class="card-hdr">
-      <h3>👥 Agent Roster &amp; Status</h3>
-      <aside>Click to mark agents active / inactive</aside>
+    <div id="secWeekly"></div>
+    <div class="sec">Weekly Breakdown — May vs June</div>
+    <div class="two-col">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-hdr"><h3>May 2026 — Weekly</h3><aside>₹2,21,250 / week target</aside></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ</th><th>WoW</th><th>Share</th></tr></thead><tbody id="mayWkBody"></tbody><tfoot id="mayWkFoot"></tfoot></table></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-hdr"><h3>June 2026 — Weekly</h3><aside>In progress</aside></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ</th><th>Share</th><th>vs May</th></tr></thead><tbody id="junWkBody"></tbody><tfoot id="junWkFoot"></tfoot></table></div>
+      </div>
     </div>
-    <div class="roster-summary" id="rosterSummary"></div>
-    <div class="roster-grid" id="rosterGrid"></div>
-  </div>
 
-</div><!-- /mainWrap -->
+    <div id="secAgents"></div>
+    <div class="sec">Agent-wise Performance — June 2026</div>
+    <div class="card">
+      <div class="card-hdr"><h3>Individual Daily Tracker</h3><aside>Auto-sorted by achievement %</aside></div>
+      <div class="tbl-wrap"><table class="zebra"><thead><tr id="agHdr"></tr></thead><tbody id="agBody"></tbody><tfoot id="agFoot"></tfoot></table></div>
+    </div>
+
+    <div id="secCompare"></div>
+    <div class="sec">May &amp; June 2026 — Daily Comparison</div>
+    <div class="card">
+      <div class="card-hdr"><h3>Day-wise Revenue Side-by-Side</h3><aside>May: ₹3,82,739 | June: <span id="junLogTot">—</span></aside></div>
+      <div class="leg">
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(37,99,235,.75)"></span>May 2026</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(220,38,38,.75)"></span>June 2026</span>
+      </div>
+      <div class="chart-pad"><div style="position:relative;height:200px"><canvas id="cmpChart"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><h3>Daily Revenue Log — May &amp; June 2026</h3><aside>May total: ₹3,82,739</aside></div>
+      <div class="tbl-wrap"><table class="zebra"><thead><tr><th>Week</th><th>Date</th><th>May Revenue</th><th>June Revenue</th><th>MoD Δ</th></tr></thead><tbody id="dailyBody"></tbody><tfoot id="dailyFoot"></tfoot></table></div>
+    </div>
+
+    <div id="secAction"></div>
+    <div class="sec">Action Plan — June 2026 Recovery</div>
+    <div class="card">
+      <div class="card-hdr"><h3>📋 Team Action Plan</h3><aside>Housing Owner Process · Effective immediately</aside></div>
+      <div class="ap-wrap">
+        <div class="ap-meta">
+          <span class="ap-badge status">⚡ In Execution</span>
+          <span class="ap-badge priority">🎯 High Priority</span>
+          <span class="ap-badge date">📅 June 2026</span>
+        </div>
+        <div class="ap-grid">
+          <div class="ap-divider">People &amp; Coaching</div>
+          <div class="ap-item highlight"><div class="ap-icon">🎙️</div><div><span class="ap-tag people">People</span><div class="ap-title">Daily Performance Reviews</div><div class="ap-desc">Structured daily check-ins with low-performing agents to identify blockers, set daily commitments, and track follow-through.</div></div></div>
+          <div class="ap-item highlight"><div class="ap-icon">🧠</div><div><span class="ap-tag people">People</span><div class="ap-title">Focused Skill Coaching</div><div class="ap-desc">Targeted coaching on conversion techniques, objection handling, and closing skills — particularly for agents below 10% achievement.</div></div></div>
+          <div class="ap-divider">Process &amp; Execution</div>
+          <div class="ap-item"><div class="ap-icon">🔥</div><div><span class="ap-tag process">Process</span><div class="ap-title">Hot Lead Follow-Up Blitz</div><div class="ap-desc">Increased follow-up on hot and payment-ready leads. Closures monitored rigorously by TLs.</div></div></div>
+          <div class="ap-item"><div class="ap-icon">⚖️</div><div><span class="ap-tag process">Process</span><div class="ap-title">Reduce Top-Performer Dependency</div><div class="ap-desc">Focus on improving contributions from underperforming agents to distribute revenue load more evenly.</div></div></div>
+          <div class="ap-divider">Lead Intelligence &amp; Observations</div>
+        </div>
+        <div style="margin-top:4px">
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:0 2px 10px;display:flex;align-items:center;justify-content:space-between">
+            <span>Auto-computed alerts · live from Firebase</span>
+            <span id="intelTimestamp" style="font-weight:400;color:var(--n400)"></span>
+          </div>
+          <div class="intel-grid" id="intelGrid"></div>
+        </div>
+        <div class="ap-grid" style="margin-top:4px">
+          <div class="ap-divider">Strategic Initiative</div>
+          <div class="ap-item strategic"><div class="ap-icon">🌅</div><div><span class="ap-tag strategy">Strategy</span><div class="ap-title">Early-Login Initiative</div><div class="ap-desc">Team logs in early each morning to access fresh leads via FIFO allocation before other centres engage.</div></div></div>
+          <div class="ap-item strategic"><div class="ap-icon">🔁</div><div><span class="ap-tag strategy">Strategy</span><div class="ap-title">Regular Effectiveness Reviews</div><div class="ap-desc">Strategy reviewed regularly based on lead quality trends, contactability rates, and conversion outcomes.</div></div></div>
+          <div class="ap-summary">
+            <div class="ap-summary-icon">🎯</div>
+            <div><div class="ap-summary-title">Bottom Line</div><div class="ap-summary-text">Team is tracking below June DRR target. Priority: activate zero-revenue agents, exploit FIFO advantage, compress gap on hot leads. Every day of delay costs approximately <strong style="color:#fcd34d">₹14,000+</strong> against target.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="secMoM"></div>
+    <div class="sec">Month-on-Month Performance Analysis</div>
+    <div class="card">
+      <div class="card-hdr"><h3>📈 Revenue Trend — Month on Month</h3><aside id="momRange">—</aside></div>
+      <div class="mom-kpis" id="momKpis"></div>
+      <div class="leg" style="padding:12px 20px 0">
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#2563eb;opacity:.8"></span>Previous months</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Current month</span>
+        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(247,195,26,.7)"></span>Target</span>
+      </div>
+      <div class="chart-pad"><div style="position:relative;height:240px"><canvas id="momChart"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><h3>📊 Month-wise Summary</h3><aside>All months · Revenue vs Target</aside></div>
+      <div class="tbl-wrap"><table><thead><tr><th>Month</th><th>Days</th><th>Target</th><th>Revenue</th><th>Achievement</th><th>Avg DRR</th><th>vs Prev</th><th>Status</th></tr></thead><tbody id="momTableBody"></tbody><tfoot id="momTableFoot"></tfoot></table></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><h3>👤 Agent Month-on-Month</h3><aside>Select month tab to compare</aside></div>
+      <div class="mom-tabs" id="momTabs"></div>
+      <div class="tbl-wrap"><table class="zebra"><thead><tr><th>#</th><th>Agent</th><th>This Month</th><th>Achv%</th><th>Prev Month</th><th>Prev%</th><th>Change</th><th>Trend</th></tr></thead><tbody id="momAgentBody"></tbody></table></div>
+    </div>
+
+    <div id="secTeam"></div>
+    <div class="sec">Team Roster — Agent Status Management</div>
+    <div class="card">
+      <div class="card-hdr"><h3>👥 Agent Roster &amp; Status</h3><aside>Click to mark agents active / inactive</aside></div>
+      <div class="roster-summary" id="rosterSummary"></div>
+      <div class="roster-grid" id="rosterGrid"></div>
+    </div>
+
+  </div><!-- /dashView -->
+</div><!-- /wrap -->
 
 <div style="background:var(--hblack);color:rgba(255,255,255,.35);padding:20px 28px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:11px;letter-spacing:.3px;flex-wrap:wrap;">
   <span style="color:var(--hgold);font-weight:800;font-size:13px">▲</span>
@@ -841,13 +669,12 @@ tfoot td{padding:10px 13px;}
 </div>
 
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
-<div class="sov" id="sovl"><div class="sov-box"><div class="spinner"></div><span>Saving to Firebase…</span></div></div>
+<div class="saving-overlay" id="savingOverlay"><div class="saving-box"><div class="saving-spinner"></div><span>Saving to Firebase…</span></div></div>
 
 <!-- LOGIN -->
 <div class="ovl" id="loginOvl">
   <div class="modal">
-    <h2>🔐 Admin Login</h2>
-    <p>Enter your password to update dashboard data.</p>
+    <h2>🔐 Admin Login</h2><p>Enter your password to update data.</p>
     <div class="fg"><label>Password</label><input type="password" id="loginPw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"><div class="err" id="loginErr">Incorrect password.</div></div>
     <div class="m-act"><button class="btn-sec" onclick="closeLogin()">Cancel</button><button class="btn-primary" onclick="doLogin()">Login</button></div>
   </div>
@@ -856,20 +683,18 @@ tfoot td{padding:10px 13px;}
 <!-- EDIT -->
 <div class="ovl" id="editOvl">
   <div class="modal wide">
-    <h2>✏️ Update Dashboard</h2>
-    <p>Saves to Firebase — all viewers see changes <strong>instantly</strong>.</p>
+    <h2>✏️ Update Dashboard</h2><p>Saves to Firebase — all viewers update <strong>instantly</strong>.</p>
     <div class="m-tabs">
       <button class="m-tab on" onclick="swTab('tpJune',0)">June KPIs</button>
       <button class="m-tab" onclick="swTab('tpAgents',1)">All Agents</button>
       <button class="m-tab" onclick="swTab('tpWeekly',2)">Weekly</button>
     </div>
-
     <div class="tp on" id="tpJune">
-      <div class="info-note">💡 <strong>Days Elapsed auto-sets</strong> from the Last Updated date — just change the date to today.</div>
+      <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--blue-d);">💡 <strong>Days Elapsed auto-calculates</strong> from the Last Updated date — just set date = today.</div>
       <div class="two-inp">
         <div class="fg"><label>Monthly Target (₹)</label><input type="number" id="eTarget" oninput="livePreview()"></div>
         <div class="fg"><label>Days in Month</label><input type="number" id="eDaysTotal" oninput="livePreview()"></div>
-        <div class="fg"><label>Last Updated → sets Days Elapsed</label><input type="date" id="eUpdated" oninput="autoCalcDays()"></div>
+        <div class="fg"><label>Last Updated</label><input type="date" id="eUpdated" oninput="autoCalcDaysElapsed()"></div>
         <div class="fg"><label>Days Elapsed <span style="color:var(--hgold);font-size:9px">(auto)</span></label><input type="number" id="eDaysElapsed" readonly style="background:var(--hgold-l);color:var(--n700)"></div>
       </div>
       <div class="divider"></div>
@@ -881,35 +706,72 @@ tfoot td{padding:10px 13px;}
         <div class="live-item"><span>Forecast</span><strong id="lvFc">₹0</strong></div>
         <div class="live-item"><span>Achievement</span><strong id="lvPct">0%</strong></div>
         <div class="live-item"><span>Remaining</span><strong id="lvRem">₹0</strong></div>
-        <div class="live-item"><span>Days Left</span><strong id="lvDL">—</strong></div>
       </div>
     </div>
-
     <div class="tp" id="tpAgents">
-      <div class="info-note">💡 All agents shown. Click an agent to expand and edit their daily revenue.</div>
-      <div id="allAgWrap"></div>
+      <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--blue-d);">💡 Click any agent to expand and edit daily revenue.</div>
+      <div id="allAgentsWrap"></div>
     </div>
-
     <div class="tp" id="tpWeekly">
       <div class="sub-lbl">May Weekly Revenue (₹)</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="mayWkIn"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="mayWkInputs"></div>
       <div class="divider"></div>
       <div class="sub-lbl">June Weekly Revenue (₹)</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="junWkIn"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="junWkInputs"></div>
     </div>
+    <div class="m-act"><button class="btn-sec" onclick="closeEdit()">Cancel</button><button class="btn-primary" onclick="saveData()">☁️ Save &amp; Sync All</button></div>
+  </div>
+</div>
 
-    <div class="m-act">
-      <button class="btn-sec" onclick="closeEdit()">Cancel</button>
-      <button class="btn-primary" id="saveBtn" onclick="saveData()">☁️ Save &amp; Sync All</button>
+<!-- NEW MONTH MODAL -->
+<div class="ovl" id="newMonthOvl">
+  <div class="modal wide">
+    <h2>📅 Start New Month</h2><p>Archive the current month and configure fresh targets.</p>
+    <div class="nm-progress">
+      <div class="nm-step-dot"><div class="nm-circle current" id="nmDot0">1</div><div class="nm-step-lbl">Review</div></div>
+      <div class="nm-step-dot"><div class="nm-circle" id="nmDot1">2</div><div class="nm-step-lbl">Archive</div></div>
+      <div class="nm-step-dot"><div class="nm-circle" id="nmDot2">3</div><div class="nm-step-lbl">Configure</div></div>
+      <div class="nm-step-dot"><div class="nm-circle" id="nmDot3">✓</div><div class="nm-step-lbl">Done</div></div>
+    </div>
+    <div class="nm-step on" id="nmStep0">
+      <div class="nm-info">💡 Review the current month's performance before archiving.</div>
+      <div class="nm-card" id="nmCurrentSummary"></div>
+      <div class="nm-warn">⚠️ Once you proceed, this month is locked in history and agent dailies reset to zero.</div>
+    </div>
+    <div class="nm-step" id="nmStep1">
+      <div class="nm-info">✅ Current month will be saved to history and visible in MoM analysis.</div>
+      <div class="fg"><label>Top Performer Note (optional)</label><input type="text" id="nmTopNote" placeholder="e.g. Lucky Malik led with ₹X"></div>
+      <div class="fg"><label>Month-end Observations</label><input type="text" id="nmMonthNote" placeholder="e.g. MCN overlap impacted last week leads"></div>
+    </div>
+    <div class="nm-step" id="nmStep2">
+      <div class="nm-info">🚀 Configure the new month. Agent targets will be distributed equally from team target.</div>
+      <div class="two-inp">
+        <div class="fg"><label>New Month Name</label><input type="text" id="nmLabel" placeholder="e.g. July 2026"></div>
+        <div class="fg"><label>Month Key (no spaces)</label><input type="text" id="nmKey" placeholder="e.g. July-2026"></div>
+        <div class="fg"><label>Days in Month</label><input type="number" id="nmDays" placeholder="31"></div>
+        <div class="fg"><label>Team Monthly Target (₹)</label><input type="number" id="nmTarget" placeholder="885000"></div>
+      </div>
+      <div class="fg"><label>Start Date</label><input type="date" id="nmStart"></div>
+    </div>
+    <div class="nm-step" id="nmStep3">
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:48px;margin-bottom:12px">🎉</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:8px" id="nmDoneTitle">New month started!</div>
+        <div style="font-size:13px;color:var(--muted)" id="nmDoneDesc">Dashboard reset. Previous month archived.</div>
+      </div>
+    </div>
+    <div class="m-act" id="nmActions">
+      <button class="btn-sec" onclick="closeNewMonth()">Cancel</button>
+      <button class="btn-primary" id="nmBtn" onclick="nmNext()">Review &amp; Continue →</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ═══════════════════════════════════════
-   FIREBASE — compat SDK (synchronous)
-═══════════════════════════════════════ */
-firebase.initializeApp({
+/* ═══════════════════════════════════════════
+   FIREBASE — exact pattern from working code
+═══════════════════════════════════════════ */
+const firebaseConfig = {
   apiKey:"AIzaSyATL9HIa5E_j69DAa-novWcz8lmA__IliM",
   authDomain:"housing-dashboard-6ab66.firebaseapp.com",
   databaseURL:"https://housing-dashboard-6ab66-default-rtdb.firebaseio.com",
@@ -917,30 +779,50 @@ firebase.initializeApp({
   storageBucket:"housing-dashboard-6ab66.firebasestorage.app",
   messagingSenderId:"1020378573497",
   appId:"1:1020378573497:web:bf3f8c0e2011ca4ce84968"
-});
+};
+firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const DB_REF = db.ref("housing_dashboard_v1");
+const DB_KEY = "housing_dashboard_v1";
 
-/* ═══════════════════════════════════════
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function computeDaysElapsed(dateStr) {
+  if(!dateStr) return 0;
+  const d = new Date(dateStr + "T00:00:00");
+  if(d.getFullYear()!==2026 || d.getMonth()!==5) return 0;
+  return Math.min(d.getDate(), 30);
+}
+function computeDaysLeft() {
+  const t = new Date();
+  if(t.getFullYear()!==2026 || t.getMonth()!==5) return t<new Date(2026,5,1)?30:0;
+  return Math.max(0, 30 - t.getDate() + 1);
+}
+const toArr = v => v && !Array.isArray(v) ? Object.values(v) : (v||[]);
+const INR = n => "₹"+Math.round(n).toLocaleString("en-IN");
+const S   = n => { const a=Math.abs(n),sg=n<0?"-":""; return a>=1e5?sg+"₹"+(a/1e5).toFixed(1)+"L":a>=1000?sg+"₹"+(a/1000).toFixed(0)+"K":sg+"₹"+Math.round(a); };
+const Pct = (n,d=1) => n.toFixed(d)+"%";
+const pCol = p => p>=100?"#16a34a":p>=60?"#d97706":"#dc2626";
+const pillCls = p => p>=100?"pill-g":p>=60?"pill-a":"pill-r";
+const pillTxt = p => p>=100?"✓ On Track":p>=60?"▲ Halfway":"✗ Behind";
+const AV = ["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c","#ea580c","#4f46e5","#0284c7","#65a30d","#9333ea","#db2777"];
+const avC = i => AV[i%AV.length];
+const ini = n => n.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+
+/* ═══════════════════════════════════════════
    DEFAULT DATA
-═══════════════════════════════════════ */
+═══════════════════════════════════════════ */
 let D = {
-  lastUpdated:"2026-06-14",
+  lastUpdated:"2026-06-18",
   activeMonth:"June-2026",
-  history:[
-    {
-      month:"May-2026", label:"May 2026", daysTotal:31, daysInMonth:31,
-      target:885000, totalRevenue:382739, achievement:43.3,
-      agentTarget:68077,
-      weekly:[{week:"Wk-1",target:221250,revenue:113338},{week:"Wk-2",target:221250,revenue:55807},{week:"Wk-3",target:221250,revenue:72355},{week:"Wk-4",target:221250,revenue:141239}],
-      topAgent:{name:"Lucky Malik",revenue:52000},
-      avgDRR:12346,
-      closedAt:"2026-05-31"
-    }
-  ],
-  june:{ target:885000, daysTotal:30, daysElapsed:14,
-    daily:[26428,11245,38262,11229,11346,12823,2000,7903,15029,13055,19820,0,0,0,
-           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+  history:[{
+    month:"May-2026",label:"May 2026",daysTotal:31,daysInMonth:31,
+    target:885000,totalRevenue:382739,achievement:43.3,agentTarget:68077,
+    avgDRR:12346,closedAt:"2026-05-31",
+    agentData:[]
+  }],
+  june:{target:885000,daysTotal:30,daysElapsed:18,
+    daily:[26428,11245,38262,11229,11346,12823,2000,7903,15029,13055,19820,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
   },
   mayWeekly:[{week:"Wk-1",target:221250,revenue:113338},{week:"Wk-2",target:221250,revenue:55807},{week:"Wk-3",target:221250,revenue:72355},{week:"Wk-4",target:221250,revenue:141239}],
   juneWeekly:[{week:"Wk-1",target:221250,revenue:112333},{week:"Wk-2",target:221250,revenue:56812},{week:"Wk-3",target:221250,revenue:0},{week:"Wk-4",target:221250,revenue:0}],
@@ -952,186 +834,144 @@ let D = {
   ],
   agents:[
     {name:"Lucky Malik",active:true,note:"",target:68077,daily:[8554,3834,2757,4152,3067,2359,0,0,3244,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Md Mehtab",         target:68077,daily:[10619,0,20175,2004,0,0,0,5899,2724,0,8556,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Km Kashish Sengar", target:68077,daily:[0,4021,6489,0,0,0,0,0,2831,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Uqba Suhail OC",    target:68077,daily:[0,0,0,5073,0,6039,0,0,2662,0,2831,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Aman Tyagi OC",     target:68077,daily:[0,0,2831,0,0,0,0,2004,0,3568,2004,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Shivani Pal OC",    target:68077,daily:[0,3390,3179,0,0,0,0,0,0,3244,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Atul Kumar",        target:68077,daily:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Teena Pal OC",      target:68077,daily:[0,0,0,0,2831,0,0,0,0,2233,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Cally Richard OC",  target:68077,daily:[0,0,0,0,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Neha Sharma",       target:68077,daily:[0,0,0,0,0,0,2000,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Priyanka Saini OC", target:68077,daily:[0,0,2831,0,2724,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Mohit Batra OC",    target:68077,daily:[0,0,0,0,2724,0,0,0,3568,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Altmas OC",         target:68077,daily:[7255,0,0,0,0,0,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
+    {name:"Md Mehtab",active:true,note:"",target:68077,daily:[10619,0,20175,2004,0,0,0,5899,2724,0,8556,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Km Kashish Sengar",active:true,note:"",target:68077,daily:[0,4021,6489,0,0,0,0,0,2831,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Uqba Suhail OC",active:true,note:"",target:68077,daily:[0,0,0,5073,0,6039,0,0,2662,0,2831,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Aman Tyagi OC",active:true,note:"",target:68077,daily:[0,0,2831,0,0,0,0,2004,0,3568,2004,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Shivani Pal OC",active:true,note:"",target:68077,daily:[0,3390,3179,0,0,0,0,0,0,3244,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Atul Kumar",active:true,note:"",target:68077,daily:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Teena Pal OC",active:true,note:"",target:68077,daily:[0,0,0,0,2831,0,0,0,0,2233,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Cally Richard OC",active:true,note:"",target:68077,daily:[0,0,0,0,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Neha Sharma",active:true,note:"",target:68077,daily:[0,0,0,0,0,0,2000,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Priyanka Saini OC",active:true,note:"",target:68077,daily:[0,0,2831,0,2724,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Mohit Batra OC",active:true,note:"",target:68077,daily:[0,0,0,0,2724,0,0,0,3568,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Altmas OC",active:true,note:"",target:68077,daily:[7255,0,0,0,0,0,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
   ]
 };
 const ADMIN_B64 = btoa("housing2026");
 
-/* ═══════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════ */
-const INR=n=>"₹"+Math.round(n).toLocaleString("en-IN");
-const S=n=>{const a=Math.abs(n),sg=n<0?"-":"";return a>=1e5?sg+"₹"+(a/1e5).toFixed(1)+"L":a>=1000?sg+"₹"+(a/1000).toFixed(0)+"K":sg+"₹"+Math.round(a);};
-const Pct=(n,d=1)=>n.toFixed(d)+"%";
-const pCol=p=>p>=100?"#16a34a":p>=60?"#d97706":"#dc2626";
-const pillCls=p=>p>=100?"pill-g":p>=60?"pill-a":"pill-r";
-const pillTxt=p=>p>=100?"✓ On Track":p>=60?"▲ Halfway":"✗ Behind";
-const AV=["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c","#ea580c","#4f46e5","#0284c7","#65a30d","#9333ea","#db2777"];
-const avC=i=>AV[i%AV.length];
-const ini=n=>n.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+/* ═══════════════════════════════════════════
+   SYNC STATE — exact from working code
+═══════════════════════════════════════════ */
+let lastSyncedAt=null,fbListenerActive=false,autoRefreshTimer=null,refreshCountdownSec=3600,clockInterval=null;
 
-function calcDE(s,dt){if(!s)return 0;const p=s.split("-");if(p.length!==3)return 0;const d=new Date(+p[0],+p[1]-1,+p[2]);return Math.min(Math.max(d.getDate(),0),dt||30);}
-
-function toArr(v){return v&&!Array.isArray(v)?Object.values(v):(v||[]);}
-
-function derive(){
-  const{target,daysTotal,daysElapsed,daily}=D.june;
-  const achieved=daily.reduce((s,v)=>s+v,0);
-  const remaining=target-achieved;
-  const daysLeft=daysTotal-daysElapsed;
-  const drr=daysLeft>0?remaining/daysLeft:0;
-  const actualDrr=daysElapsed>0?achieved/daysElapsed:0;
-  const dayTarget=Math.round(target/daysTotal);
-  const pct=target>0?achieved/target*100:0;
-  const baseFc=Math.round(actualDrr*daysTotal);
-  const optFc=Math.round(achieved+actualDrr*1.2*daysLeft);
-  const consFc=Math.round(achieved+actualDrr*0.8*daysLeft);
-  return{achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc,optFc,consFc};
-}
-function agTot(ag){return ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+v,0);}
-
-/* ═══════════════════════════════════════
-   SYNC STATUS
-═══════════════════════════════════════ */
-let _syncTime=null,_clockInt=null;
 function setSyncStatus(state,msg){
-  const lm = document.getElementById("loadingMsg");
-  if(lm && state==="connecting") lm.textContent = msg||"Connecting to Firebase…";
-
-  const bar=document.getElementById("syncBar"),dot=document.getElementById("sdot"),txt=document.getElementById("syncMsg");
-  dot.className="sdot";bar.className="sync-bar";
+  const bar=document.getElementById("syncBar"),dot=document.getElementById("syncDot"),txt=document.getElementById("syncMsg");
+  dot.className="sync-dot"; bar.className="sync-bar";
   if(state==="live"){
-    _syncTime=Date.now();txt.textContent=msg||"🟢 Firebase live sync active";
-    startClock(); updateDaysChip();
-  }else if(state==="connecting"){dot.classList.add("blink");txt.textContent=msg||"Connecting…";}
-  else if(state==="error"){dot.classList.add("err");bar.classList.add("err");txt.textContent=msg||"⚠ Firebase offline";}
-}
-function startClock(){
-  if(_clockInt)clearInterval(_clockInt);
-  const el=document.getElementById("syncClock");
-  el.textContent="just now";
-  _clockInt=setInterval(()=>{
-    if(!_syncTime)return;
-    const s=Math.floor((Date.now()-_syncTime)/1000);
-    el.textContent=s<60?s+"s ago":s<3600?Math.floor(s/60)+"m ago":Math.floor(s/3600)+"h ago";
-  },10000);
-}
-function updateDaysChip(){
-  const{daysTotal,daysElapsed}=D.june;
-  const left=daysTotal-daysElapsed;
-  const el=document.getElementById("daysChip");
-  if(el)el.textContent=`⏳ ${left} day${left!==1?"s":""} left`;
-}
-
-/* ═══════════════════════════════════════
-   SHOW DASHBOARD
-═══════════════════════════════════════ */
-function showDash(){
-  const overlay = document.getElementById("loadingOverlay");
-  if(overlay){
-    overlay.style.opacity="0";
-    setTimeout(()=>{ overlay.style.display="none"; }, 500);
+    txt.textContent=msg||"🟢 Firebase connected — live sync active";
+    lastSyncedAt=Date.now(); startSyncClock(); hideRefreshBanner();
+  }else if(state==="connecting"){
+    dot.classList.add("connecting"); txt.textContent=msg||"Connecting to Firebase…";
+  }else if(state==="error"){
+    dot.classList.add("error"); bar.classList.add("err");
+    txt.textContent=msg||"⚠️ Firebase offline — auto-refresh active";
+    startAutoRefreshCountdown();
   }
 }
+function startSyncClock(){
+  if(clockInterval) clearInterval(clockInterval);
+  clockInterval=setInterval(()=>{
+    if(!lastSyncedAt) return;
+    const sec=Math.floor((Date.now()-lastSyncedAt)/1000);
+    const el=document.getElementById("lastSyncedClock"); if(!el) return;
+    el.textContent=sec<60?sec+"s ago":sec<3600?Math.floor(sec/60)+"m ago":Math.floor(sec/3600)+"h ago";
+  },5000);
+  document.getElementById("lastSyncedClock").textContent="just now";
+}
+function updateDaysLeftBadge(){
+  const dl=computeDaysLeft();
+  const el=document.getElementById("daysLeftBadge");
+  if(el) el.textContent="⏳ "+dl+" day"+(dl!==1?"s":"")+" left";
+}
+function startAutoRefreshCountdown(){
+  document.getElementById("refreshBanner").classList.add("show");
+  refreshCountdownSec=3600; if(autoRefreshTimer) clearInterval(autoRefreshTimer);
+  autoRefreshTimer=setInterval(()=>{
+    refreshCountdownSec--;
+    const m=String(Math.floor(refreshCountdownSec/60)).padStart(2,"0"),s=String(refreshCountdownSec%60).padStart(2,"0");
+    const el=document.getElementById("refreshCountdown"); if(el) el.textContent=m+":"+s;
+    if(refreshCountdownSec<=0){ clearInterval(autoRefreshTimer); manualRefresh(); }
+  },1000);
+}
+function hideRefreshBanner(){ document.getElementById("refreshBanner").classList.remove("show"); if(autoRefreshTimer){clearInterval(autoRefreshTimer);autoRefreshTimer=null;} }
+function manualRefresh(){ setSyncStatus("connecting","Reconnecting…"); connectFirebase(); }
 
-/* ═══════════════════════════════════════
-   FIREBASE CONNECT
-═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   FIREBASE CONNECT — exact from working code
+═══════════════════════════════════════════ */
 function connectFirebase(){
-  setSyncStatus("connecting");
-  
-  /* Hard timeout: show dashboard after 8s regardless of Firebase */
-  const fbTimeout = setTimeout(()=>{
-    showDash();
-    try { renderAll(); } catch(e){ console.error("Render error:", e); }
-    setSyncStatus("error","⚠ Firebase timeout — showing cached data");
-  }, 8000);
+  const ref = db.ref(DB_KEY);
+  ref.once("value").then(snap=>{
+    if(!snap.exists()) ref.set(D);
+  }).catch(err=>{ setSyncStatus("error","⚠️ Cannot reach Firebase: "+err.message); });
 
-  DB_REF.on("value", snap=>{
-    clearTimeout(fbTimeout);
+  ref.on("value", snap=>{
+    fbListenerActive=true;
     if(snap.exists()){
-      const v = snap.val();
-      try {
-        if(v.june)v.june.daily = toArr(v.june.daily);
-        v.mayDaily    = toArr(v.mayDaily||[]);
-        v.mayWeekly   = toArr(v.mayWeekly||[]);
-        v.juneWeekly  = toArr(v.juneWeekly||[]);
-        v.agents      = toArr(v.agents||[]);
-        v.agents.forEach(a=>{
-          a.daily  = toArr(a.daily||[]);
-          if(a.active===undefined) a.active = true;
-        });
-        v.history = toArr(v.history||[]);
-        if(v.lastUpdated) v.june.daysElapsed = calcDE(v.lastUpdated, v.june.daysTotal);
-        D = v;
-        /* Seed missing fields if old data */
-        if(!D.activeMonth) D.activeMonth = "June-2026";
-        if(!D.history) D.history = [];
-      } catch(e){ console.error("Data parse error:", e); }
-    } else {
-      /* No data in Firebase yet — seed with defaults */
-      DB_REF.set(D).catch(()=>{});
+      const fresh=snap.val();
+      if(fresh.june) fresh.june.daily=toArr(fresh.june.daily);
+      fresh.mayDaily=toArr(fresh.mayDaily); fresh.mayWeekly=toArr(fresh.mayWeekly);
+      fresh.juneWeekly=toArr(fresh.juneWeekly); fresh.agents=toArr(fresh.agents);
+      fresh.agents.forEach(ag=>{ ag.daily=toArr(ag.daily); if(ag.active===undefined)ag.active=true; });
+      fresh.history=toArr(fresh.history||[]);
+      if(!fresh.activeMonth) fresh.activeMonth="June-2026";
+      if(fresh.lastUpdated) fresh.june.daysElapsed=computeDaysElapsed(fresh.lastUpdated);
+      D=fresh;
     }
-    showDash();
-    try { renderAll(); } catch(e){ console.error("Render error:", e); }
-    setSyncStatus("live");
+    showDashboard(); renderAll(); setSyncStatus("live"); updateDaysLeftBadge();
   }, err=>{
-    clearTimeout(fbTimeout);
-    console.error("Firebase error:", err);
-    showDash();
-    try { renderAll(); } catch(e){ console.error("Render error:", e); }
-    setSyncStatus("error","⚠ Firebase: "+err.message);
+    setSyncStatus("error","⚠️ Firebase error: "+err.message);
+    showDashboard(); renderAll();
   });
 }
+function showDashboard(){
+  document.getElementById("skeletonView").style.display="none";
+  document.getElementById("dashView").style.display="block";
+}
 
-/* Auto-refresh fallback every hour */
-setInterval(()=>connectFirebase(),3600000);
+/* ═══════════════════════════════════════════
+   DERIVE
+═══════════════════════════════════════════ */
+function derive(){
+  const{target,daysTotal,daysElapsed,daily}=D.june;
+  const achieved=daily.reduce((s,v)=>s+v,0),remaining=target-achieved;
+  const daysLeft=daysTotal-daysElapsed,drr=daysLeft>0?remaining/daysLeft:0;
+  const actualDrr=daysElapsed>0?achieved/daysElapsed:0,dayTarget=Math.round(target/daysTotal);
+  const pct=target>0?achieved/target*100:0,baseFc=Math.round(actualDrr*daysTotal);
+  const optFc=Math.round(achieved+actualDrr*1.2*daysLeft),consFc=Math.round(achieved+actualDrr*0.8*daysLeft);
+  return{achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc,optFc,consFc};
+}
+function agTot(ag){ return ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+(v||0),0); }
 
-/* ═══════════════════════════════════════
-   RENDER FUNCTIONS
-═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   RENDER — Days Banner
+═══════════════════════════════════════════ */
 function renderDaysBanner(){
-  const{daysTotal,daysElapsed}=D.june;
-  const left=daysTotal-daysElapsed,pct=Math.round(daysElapsed/daysTotal*100);
+  const{daysTotal,daysElapsed}=D.june,left=daysTotal-daysElapsed,pct=Math.round(daysElapsed/daysTotal*100);
   const col=left<=5?"#f87171":left<=10?"#F7C31A":"#22c55e";
   document.getElementById("daysLeftNum").textContent=left;
   document.getElementById("daysLeftNum").style.color=col;
-  document.getElementById("daysSub").textContent=`Day ${daysElapsed} of ${daysTotal} · Data as of ${D.lastUpdated}`;
+  document.getElementById("daysSub").textContent="Day "+daysElapsed+" of "+daysTotal+" · Data as of "+D.lastUpdated;
   document.getElementById("daysPct").textContent=pct+"%";
   document.getElementById("daysPct").style.color=col;
-  const ring=document.getElementById("drFill");
-  if(ring){ring.style.stroke=col;setTimeout(()=>ring.style.strokeDashoffset=188.5*(pct/100),100);}
+  const r=document.getElementById("drFill");
+  if(r){r.style.stroke=col;setTimeout(()=>r.style.strokeDashoffset=188.5*(pct/100),100);}
 }
 
+/* RENDER — Health Score */
 function renderHealth(){
-  const{daysTotal,daysElapsed}=D.june;
-  const{achieved,daysLeft,drr,actualDrr,pct,baseFc,baseFc:bf}=derive();
-  const activeAg=D.agents.filter(ag=>agTot(ag)>0).length;
-  const score=Math.round(
-    (actualDrr>=drr?100:Math.max(0,actualDrr/drr*100))*.3+
-    Math.min(pct,100)*.25+
-    (D.agents.length>0?activeAg/D.agents.length*100:0)*.25+
-    Math.min(D.june.target>0?baseFc/D.june.target*100:0,100)*.2
-  );
+  const{daysLeft,drr,actualDrr,pct,baseFc}=derive();
+  const activeAg=D.agents.filter(ag=>ag.active!==false).length;
+  const score=Math.round((actualDrr>=drr?100:Math.max(0,actualDrr/drr*100))*.3+Math.min(pct,100)*.25+(D.agents.length>0?activeAg/D.agents.length*100:0)*.25+Math.min(D.june.target>0?baseFc/D.june.target*100:0,100)*.2);
   const col=score>=70?"#22c55e":score>=45?"#F7C31A":"#f87171";
   const lbl=score>=70?"On Track 🟢":score>=45?"Needs Push 🟡":"At Risk 🔴";
   document.getElementById("healthScore").textContent=score;
   document.getElementById("healthScore").style.color=col;
   document.getElementById("healthTitle").textContent=lbl;
   document.getElementById("healthSub").textContent=score>=70?"Team pacing well toward target.":score>=45?"Key gaps in DRR and activity.":"Immediate intervention required.";
-  const ring=document.getElementById("hFill");
-  if(ring){ring.style.stroke=col;setTimeout(()=>ring.style.strokeDashoffset=163.4-(163.4*score/100),120);}
+  const r=document.getElementById("hFill");
+  if(r){r.style.stroke=col;setTimeout(()=>r.style.strokeDashoffset=163.4-(163.4*score/100),120);}
   document.getElementById("healthMetrics").innerHTML=[
     {v:activeAg+"/"+D.agents.length,l:"Active",c:"#22c55e"},
     {v:Pct(Math.min(pct,100),0),l:"Achievement",c:pCol(pct)},
@@ -1140,10 +980,10 @@ function renderHealth(){
   ].map(m=>`<div class="hm"><span class="hm-val" style="color:${m.c}">${m.v}</span><div class="hm-lbl">${m.l}</div></div>`).join("");
 }
 
+/* RENDER — Stat Row */
 function renderStatRow(){
-  const{achieved,remaining,drr,actualDrr,pct}=derive();
-  const activeAg=D.agents.filter(ag=>agTot(ag)>0).length;
-  const gap=drr-actualDrr;
+  const{remaining,drr,actualDrr,pct}=derive();
+  const activeAg=D.agents.filter(ag=>ag.active!==false).length,gap=drr-actualDrr;
   document.getElementById("statRow").innerHTML=[
     {c:pCol(pct),l:"Achievement",v:Pct(pct,0)},
     {c:"#7c3aed",l:"Active Agents",v:activeAg+"/"+D.agents.length},
@@ -1153,81 +993,116 @@ function renderStatRow(){
   ].map(p=>`<div class="stat-pill"><div class="stat-dot" style="background:${p.c}"></div><strong>${p.v}</strong><em>${p.l}</em></div>`).join("");
 }
 
+/* RENDER — KPIs */
 function renderKPIs(){
   const{target,daysTotal,daysElapsed}=D.june;
   const{achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc}=derive();
-  const gap=drr-actualDrr;
-  const tag=actualDrr>0?(gap>0?`<span class="kc-tag tag-warn">⚠ Need +${S(gap)}/day</span>`:`<span class="kc-tag tag-ok">✓ Ahead of pace</span>`):"";
+  const gap=drr-actualDrr,tag=actualDrr>0?(gap>0?`<span class="kc-tag tag-warn">⚠ Need +${S(gap)}/day</span>`:`<span class="kc-tag tag-ok">✓ Ahead of pace</span>`):"";
   const kpis=[
-    {icon:"🎯",lbl:"Monthly Target",val:INR(target),sub:"June 2026",ac:"#dc2626"},
-    {icon:"💰",lbl:"Total Achievement",val:INR(achieved),sub:Pct(pct)+" of target",ac:"#16a34a",bar:Math.min(pct,100),bc:pCol(pct)},
-    {icon:"⏳",lbl:"Remaining",val:INR(remaining),sub:daysLeft+" days left",ac:"#d97706"},
-    {icon:"📈",lbl:"DRR Required",val:INR(drr),sub:"To close the month",ac:"#2563eb",ex:tag},
-    {icon:"📅",lbl:"Days Elapsed",val:daysElapsed,sub:"of "+daysTotal+" days",ac:"#7c3aed",bar:Math.round(daysElapsed/daysTotal*100),bc:"#7c3aed"},
-    {icon:"⚡",lbl:"Actual DRR",val:INR(actualDrr),sub:"Average so far",ac:"#0d9488"},
-    {icon:"📊",lbl:"May Revenue",val:"₹3,82,739",sub:"77% of May target",ac:"#c2255c",bar:77,bc:"#c2255c"},
-    {icon:"🔮",lbl:"Month-End Forecast",val:INR(baseFc),sub:Pct(baseFc/target*100)+" of target",ac:"#5f3dc4",bar:Math.min(baseFc/target*100,100),bc:"#5f3dc4"},
+    {icon:"🎯",label:"Monthly Target",val:INR(target),sub:"June 2026",ac:"#dc2626"},
+    {icon:"💰",label:"Total Achievement",val:INR(achieved),sub:Pct(pct)+" of target",ac:"#16a34a",bar:Math.min(pct,100),bc:pCol(pct)},
+    {icon:"⏳",label:"Remaining",val:INR(remaining),sub:daysLeft+" days left",ac:"#d97706"},
+    {icon:"📈",label:"DRR Required",val:INR(drr),sub:"To close the month",ac:"#2563eb",ex:tag},
+    {icon:"📅",label:"Days Elapsed",val:daysElapsed,sub:"of "+daysTotal+" days",ac:"#7c3aed",bar:Math.round(daysElapsed/daysTotal*100),bc:"#7c3aed"},
+    {icon:"⚡",label:"Actual DRR",val:INR(actualDrr),sub:"Average so far",ac:"#0d9488"},
+    {icon:"📊",label:"May Revenue",val:"₹3,82,739",sub:"77% of May target",ac:"#c2255c",bar:77,bc:"#c2255c"},
+    {icon:"🔮",label:"Month-End Forecast",val:INR(baseFc),sub:Pct(baseFc/target*100)+" of target",ac:"#5f3dc4",bar:Math.min(baseFc/target*100,100),bc:"#5f3dc4"},
   ];
-  document.getElementById("kpiGrid").innerHTML=kpis.map((k,i)=>`
-    <div class="kc" style="--ac:${k.ac};--ac-glow:${k.ac}18">
-      <span class="kc-icon">${k.icon}</span>
-      <div class="kc-lbl">${k.lbl}</div>
-      <div class="kc-val">${k.val}</div>
-      <div class="kc-sub">${k.sub}</div>
-      ${k.ex||""}
-      ${k.bar!=null?`<div class="kc-track"><div class="kc-fill" style="background:${k.bc};width:${k.bar}%"></div></div>`:""}
-    </div>`).join("");
+  document.getElementById("kpiGrid").innerHTML=kpis.map(k=>`<div class="kc" style="--ac:${k.ac};--ac-glow:${k.ac}18"><span class="kc-icon">${k.icon}</span><div class="kc-lbl">${k.label}</div><div class="kc-val">${k.val}</div><div class="kc-sub">${k.sub}</div>${k.ex||""}${k.bar!=null?`<div class="kc-track"><div class="kc-fill" style="background:${k.bc};width:${k.bar}%"></div></div>`:""}</div>`).join("");
   document.getElementById("updBadge").textContent="Updated: "+D.lastUpdated;
   document.getElementById("juneTotalLbl").textContent="Total: "+INR(derive().achieved);
   document.getElementById("junLogTot").textContent=INR(derive().achieved);
 }
 
+/* RENDER — Leaderboard */
 function renderLeaderboard(){
   const ranked=D.agents.map((ag,i)=>({...ag,i,tot:agTot(ag)})).sort((a,b)=>b.tot/b.target-a.tot/a.target);
   const maxTot=ranked[0]?.tot||1;
-  const medals=["🥇","🥈","🥉"],pc=i=>i===0?"gold":i===1?"silver":i===2?"bronze":"rest";
-  const rankCls=i=>i===0?"r1":i===1?"r2":i===2?"r3":"";
-  document.getElementById("lbWrap").innerHTML=ranked.map((ag,i)=>{
-    const bc=pCol(ag.tot/ag.target*100);
-    return`<div class="lb-row ${rankCls(i)}" style="animation-delay:${i*30}ms">
-      <div class="lb-pos ${pc(i)}">${i<3?medals[i]:"#"+(i+1)}</div>
-      <div class="lb-avatar" style="background:${avC(ag.i)}">${ini(ag.name)}</div>
-      <div class="lb-info"><div class="lb-name">${ag.name}</div><div class="lb-meta">${INR(ag.tot)} · ${Pct(ag.tot/ag.target*100)} achieved</div></div>
-      <div class="lb-bar-track"><div class="lb-bar-fill" style="width:${Math.min(ag.tot/maxTot*100,100).toFixed(1)}%;background:${bc}"></div></div>
-      <div class="lb-right"><div class="lb-rev" style="color:${bc}">${INR(ag.tot)}</div><div class="lb-pct">${Pct(ag.tot/ag.target*100)} of target</div><span class="lb-pill ${pillCls(ag.tot/ag.target*100)}">${pillTxt(ag.tot/ag.target*100)}</span></div>
-    </div>`;
-  }).join("");
-  document.getElementById("lbDate").textContent=`As of Jun ${D.june.daysElapsed}, 2026 · ${ranked.length} agents`;
+  const medals=["🥇","🥈","🥉"],pc=i=>i===0?"gold":i===1?"silver":i===2?"bronze":"rest",rc=i=>i===0?"r1":i===1?"r2":i===2?"r3":"";
+  document.getElementById("lbWrap").innerHTML=ranked.map((ag,i)=>`<div class="lb-row ${rc(i)}" style="animation-delay:${i*30}ms"><div class="lb-pos ${pc(i)}">${i<3?medals[i]:"#"+(i+1)}</div><div class="lb-avatar" style="background:${avC(ag.i)}">${ini(ag.name)}</div><div class="lb-info"><div class="lb-name">${ag.name}</div><div class="lb-meta">${INR(ag.tot)} · ${Pct(ag.tot/ag.target*100)} achieved</div></div><div class="lb-bar-track"><div class="lb-bar-fill" style="width:${Math.min(ag.tot/maxTot*100,100).toFixed(1)}%;background:${pCol(ag.tot/ag.target*100)}"></div></div><div class="lb-right"><div class="lb-rev" style="color:${pCol(ag.tot/ag.target*100)}">${INR(ag.tot)}</div><div class="lb-pct">${Pct(ag.tot/ag.target*100)} of target</div><span class="lb-pill ${pillCls(ag.tot/ag.target*100)}">${pillTxt(ag.tot/ag.target*100)}</span></div></div>`).join("");
+  document.getElementById("lbDate").textContent="As of Jun "+D.june.daysElapsed+", 2026 · "+ranked.length+" agents";
 }
 
+/* RENDER — Forecast Chart */
+let fcChart=null;
+function renderForecast(){
+  const{target,daysTotal,daysElapsed,daily}=D.june;
+  const{achieved,drr,actualDrr,dayTarget,baseFc,optFc,consFc}=derive();
+  const daysLeft=daysTotal-daysElapsed;
+  document.getElementById("fcScenarios").innerHTML=`<div class="fc-sc opt"><div class="fc-sc-label opt">🚀 Optimistic (+20%)</div><div class="fc-sc-val opt">${INR(optFc)}</div><div class="fc-sc-pct">${Pct(optFc/target*100)} of target</div></div><div class="fc-sc base"><div class="fc-sc-label base">📊 Base (current DRR)</div><div class="fc-sc-val base">${INR(baseFc)}</div><div class="fc-sc-pct">${Pct(baseFc/target*100)} of target</div></div><div class="fc-sc cons"><div class="fc-sc-label cons">⚠️ Conservative (−20%)</div><div class="fc-sc-val cons">${INR(consFc)}</div><div class="fc-sc-pct">${Pct(consFc/target*100)} of target</div></div>`;
+  document.getElementById("fcChips").innerHTML=[{l:"Daily Target",v:INR(dayTarget)},{l:"Actual DRR",v:INR(Math.round(actualDrr))},{l:"DRR Required",v:INR(Math.round(drr))},{l:"DRR Gap",v:(drr>actualDrr?"+":"")+S(Math.round(drr-actualDrr))},{l:"Weekly Forecast",v:INR(Math.round(actualDrr*7))},{l:"Days Left",v:daysLeft+" days"}].map(c=>`<div class="fc-chip"><div class="fc-chip-lbl">${c.l}</div><div class="fc-chip-val">${c.v}</div></div>`).join("");
+  const lbs=Array.from({length:daysTotal},(_,i)=>i+1);
+  let cum=0;
+  const aL=lbs.map((_,i)=>{if(i<daysElapsed){cum+=daily[i];return cum;}return null;});
+  let f2=achieved,o2=achieved;
+  const bL=lbs.map((_,i)=>{if(i<daysElapsed)return null;f2+=drr;return Math.round(f2);});
+  const oL=lbs.map((_,i)=>{if(i<daysElapsed)return null;o2+=actualDrr*1.2;return Math.round(o2);});
+  const tL=lbs.map((_,i)=>Math.round(dayTarget*(i+1)));
+  const ctx=document.getElementById("fcChart").getContext("2d");
+  if(fcChart)fcChart.destroy();
+  fcChart=new Chart(ctx,{type:"line",data:{labels:lbs,datasets:[{label:"Actual",data:aL,borderColor:"#dc2626",backgroundColor:"rgba(220,38,38,.08)",borderWidth:2.5,pointRadius:2.5,pointBackgroundColor:"#dc2626",tension:.3,fill:true},{label:"Forecast",data:bL,borderColor:"#2563eb",backgroundColor:"rgba(37,99,235,.05)",borderWidth:2,pointRadius:0,tension:.3,borderDash:[5,4],fill:true},{label:"Optimistic",data:oL,borderColor:"#16a34a",borderWidth:1.5,pointRadius:0,tension:.3,borderDash:[3,3],fill:false,backgroundColor:"transparent"},{label:"Target",data:tL,borderColor:"rgba(22,163,74,.35)",borderWidth:1.5,pointRadius:0,tension:0,borderDash:[2,4],fill:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": "+INR(c.parsed.y||0),title:c=>"Jun "+c[0].label}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+}
 
+/* RENDER — June Chart */
+let juneChart=null;
+function renderJuneChart(){
+  const{daily,daysElapsed}=D.june;
+  const ctx=document.getElementById("juneChart").getContext("2d");
+  if(juneChart)juneChart.destroy();
+  juneChart=new Chart(ctx,{type:"bar",data:{labels:daily.map((_,i)=>i+1),datasets:[{label:"Revenue",data:daily,backgroundColor:daily.map((v,i)=>i>=daysElapsed?"#e2e8f0":v>0?"rgba(220,38,38,.82)":"rgba(226,232,240,.6)"),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"₹"+c.parsed.y.toLocaleString("en-IN"),title:c=>"Jun "+c[0].label+" — "+(c[0].dataIndex<daysElapsed?"actual":"future")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:false,maxRotation:0}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+}
+
+/* RENDER — Compare Chart */
+let cmpChart=null;
+function renderCmpChart(){
+  const jun=D.june.daily;
+  const ctx=document.getElementById("cmpChart").getContext("2d");
+  if(cmpChart)cmpChart.destroy();
+  cmpChart=new Chart(ctx,{type:"bar",data:{labels:D.mayDaily.map(r=>r.d.replace("-May","")),datasets:[{label:"May",data:D.mayDaily.map(r=>r.v),backgroundColor:"rgba(37,99,235,.72)",borderRadius:2,borderSkipped:false},{label:"June",data:D.mayDaily.map((_,i)=>i<jun.length?jun[i]:0),backgroundColor:"rgba(220,38,38,.72)",borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+}
+
+/* RENDER — Weekly */
 function renderWeekly(){
   const mTot=D.mayWeekly.reduce((s,r)=>s+r.revenue,0),mTgt=D.mayWeekly.reduce((s,r)=>s+r.target,0);
-  document.getElementById("mayWkBody").innerHTML=D.mayWeekly.map((r,i)=>{const def=r.revenue-r.target,prev=i>0?D.mayWeekly[i-1].revenue:null;const wow=prev&&prev>0?((r.revenue-prev)/prev*100).toFixed(0)+"%":"—";return`<tr><td><strong>${r.week}</strong></td><td class="mono">${INR(r.target)}</td><td class="mono">${INR(r.revenue)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td class="mono">${wow}</td><td class="mono">${mTot>0?Pct(r.revenue/mTot*100,0):"0%"}</td></tr>`;}).join("");
+  document.getElementById("mayWkBody").innerHTML=D.mayWeekly.map((r,i)=>{const def=r.revenue-r.target,prev=i>0?D.mayWeekly[i-1].revenue:null,wow=prev&&prev>0?((r.revenue-prev)/prev*100).toFixed(0)+"%":"—";return`<tr><td><strong>${r.week}</strong></td><td class="mono">${INR(r.target)}</td><td class="mono">${INR(r.revenue)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td class="mono ${wow.startsWith("-")?"dn":"up"}">${wow}</td><td class="mono">${mTot>0?Pct(r.revenue/mTot*100,0):"0%"}</td></tr>`;}).join("");
   document.getElementById("mayWkFoot").innerHTML=`<tr><td><strong>Total</strong></td><td class="mono">${INR(mTgt)}</td><td class="mono">${INR(mTot)}</td><td class="mono dn">${INR(mTot-mTgt)}</td><td colspan="2" class="mono">${Pct(mTot/mTgt*100)} of target</td></tr>`;
   const jTot=D.juneWeekly.reduce((s,r)=>s+r.revenue,0),jTgt=D.juneWeekly.reduce((s,r)=>s+r.target,0);
-  document.getElementById("junWkBody").innerHTML=D.juneWeekly.map((r,i)=>{const def=r.revenue-r.target,share=jTot>0?Pct(r.revenue/jTot*100,0):"0%";const vM=D.mayWeekly[i]?.revenue||0,vm=vM>0?r.revenue-vM:null;return`<tr><td><strong>${r.week}</strong></td><td class="mono">${INR(r.target)}</td><td class="mono">${INR(r.revenue)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td class="mono">${share}</td><td>${vm!==null?`<span class="chip ${vm>=0?"chip-g":"chip-r"}">${vm>=0?"▲":"▼"}${S(Math.abs(vm))}</span>`:"—"}</td></tr>`;}).join("");
+  document.getElementById("junWkBody").innerHTML=D.juneWeekly.map((r,i)=>{const def=r.revenue-r.target,share=jTot>0?Pct(r.revenue/jTot*100,0):"0%",vM=D.mayWeekly[i]?.revenue||0,vm=vM>0?r.revenue-vM:null;return`<tr><td><strong>${r.week}</strong></td><td class="mono">${INR(r.target)}</td><td class="mono">${INR(r.revenue)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td class="mono">${share}</td><td>${vm!==null?`<span class="chip ${vm>=0?"chip-g":"chip-r"}">${vm>=0?"▲":"▼"}${S(Math.abs(vm))}</span>`:"—"}</td></tr>`;}).join("");
   document.getElementById("junWkFoot").innerHTML=`<tr><td><strong>Total</strong></td><td class="mono">${INR(jTgt)}</td><td class="mono">${INR(jTot)}</td><td class="mono dn">${INR(jTot-jTgt)}</td><td class="mono" colspan="2">${Pct(jTot/jTgt*100)} of target</td></tr>`;
 }
+
+/* RENDER — Agents Table */
 function renderAgents(){
-  const{daysElapsed,daysTotal}=D.june;let hdr="<th>#</th><th>Agent</th>";
-  for(let d=1;d<=daysElapsed;d++)hdr+=`<th style="min-width:40px">${d}</th>`;
-  hdr+="<th>Total</th><th>Target</th><th>Achv%</th><th>DRR Needed</th><th>Tgt Till Now</th><th>Deficit</th><th>Status</th>";
+  const{daysElapsed,daysTotal}=D.june;
+  let hdr=`<th>#</th><th>Agent</th>`;
+  for(let d=1;d<=daysElapsed;d++) hdr+=`<th style="min-width:40px">${d}</th>`;
+  hdr+=`<th>Total</th><th>Target</th><th>Achv%</th><th>DRR Needed</th><th>Tgt Till Now</th><th>Deficit</th><th>Status</th>`;
   document.getElementById("agHdr").innerHTML=hdr;
   const sorted=[...D.agents].map((ag,i)=>({...ag,_i:i,tot:agTot(ag)})).sort((a,b)=>b.tot/b.target-a.tot/a.target);
   let grand=0;
-  document.getElementById("agBody").innerHTML=sorted.map((ag,rank)=>{grand+=ag.tot;const pct=ag.target>0?ag.tot/ag.target*100:0,bc=pCol(pct),dTgt=Math.round(ag.target/daysTotal),dLeft=daysTotal-daysElapsed,agDrr=dLeft>0?(ag.target-ag.tot)/dLeft:0,ttn=dTgt*daysElapsed,def=ag.tot-ttn;let cells="";for(let d=0;d<daysElapsed;d++){const v=ag.daily[d]||0;cells+=`<td class="mono" style="color:${v>0?"var(--text)":"var(--n300)"}">${v>0?S(v):"—"}</td>`;}return`<tr><td style="color:var(--muted);font-size:11px;font-weight:600">${rank+1}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:${avC(ag._i)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">${ini(ag.name)}</div><span style="font-weight:600;font-size:12px">${ag.name}</span></div></td>${cells}<td style="font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px">${INR(ag.tot)}</td><td class="mono">${INR(ag.target)}</td><td><div style="display:flex;align-items:center;gap:6px"><div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(pct,100).toFixed(0)}%;background:${bc}"></div></div><span style="font-size:11px;font-weight:700;color:${bc}">${Pct(pct)}</span></div></td><td class="mono ${agDrr<dTgt?"up":"dn"}">${INR(agDrr)}</td><td class="mono">${INR(ttn)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td><span class="pill ${pillCls(pct)}">${pillTxt(pct)}</span></td></tr>`;}).join("");
-  let foot="<tr><td colspan='2'><strong>Total</strong></td>";
+  document.getElementById("agBody").innerHTML=sorted.map((ag,rank)=>{
+    grand+=ag.tot;
+    const pct=ag.target>0?ag.tot/ag.target*100:0,bc=pCol(pct),dTgt=Math.round(ag.target/daysTotal),dLeft=daysTotal-daysElapsed;
+    const agDrr=dLeft>0?(ag.target-ag.tot)/dLeft:0,ttn=dTgt*daysElapsed,def=ag.tot-ttn;
+    let cells="";
+    for(let d=0;d<daysElapsed;d++){const v=ag.daily[d]||0;cells+=`<td class="mono" style="color:${v>0?"var(--text)":"var(--n300)"}">${v>0?S(v):"—"}</td>`;}
+    return`<tr><td style="color:var(--muted);font-size:11px;font-weight:600">${rank+1}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:${avC(ag._i)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">${ini(ag.name)}</div><span style="font-weight:600;font-size:12px">${ag.name}</span></div></td>${cells}<td style="font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px">${INR(ag.tot)}</td><td class="mono">${INR(ag.target)}</td><td><div style="display:flex;align-items:center;gap:6px"><div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(pct,100).toFixed(0)}%;background:${bc}"></div></div><span style="font-size:11px;font-weight:700;color:${bc}">${Pct(pct)}</span></div></td><td class="mono ${agDrr<dTgt?"up":"dn"}">${INR(agDrr)}</td><td class="mono">${INR(ttn)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td><span class="pill ${pillCls(pct)}">${pillTxt(pct)}</span></td></tr>`;
+  }).join("");
+  let foot=`<tr><td colspan="2"><strong>Total</strong></td>`;
   for(let d=0;d<daysElapsed;d++){const dt=D.agents.reduce((s,ag)=>s+(ag.daily[d]||0),0);foot+=`<td class="mono">${S(dt)}</td>`;}
-  foot+=`<td style="font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px">${INR(grand)}</td><td colspan="6" style="color:var(--muted);font-size:11px">Team total</td></tr>`;
+  foot+=`<td style="font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px">${INR(grand)}</td><td colspan="6" style="color:var(--muted);font-size:11px">Team total — June 2026</td></tr>`;
   document.getElementById("agFoot").innerHTML=foot;
 }
+
+/* RENDER — Daily Log */
 function renderDaily(){
   const jun=D.june.daily;
   document.getElementById("dailyBody").innerHTML=D.mayDaily.map((r,i)=>{const jv=i<jun.length?jun[i]:0,diff=jv-r.v;return`<tr><td style="color:var(--muted);font-size:11px">${r.w}</td><td style="font-weight:500">${r.d}</td><td class="mono" style="color:${r.v>0?"#1e3a8a":"var(--muted)"}">${r.v>0?INR(r.v):"—"}</td><td class="mono" style="color:${jv>0?"#b91c1c":"var(--muted)"}">${jv>0?INR(jv):"—"}</td><td>${r.v>0&&jv>0?`<span class="chip ${diff>=0?"chip-g":"chip-r"}">${diff>=0?"▲":"▼"}${S(Math.abs(diff))}</span>`:"—"}</td></tr>`;}).join("");
   const mS=D.mayDaily.reduce((s,r)=>s+r.v,0),jS=jun.reduce((s,v)=>s+v,0);
   document.getElementById("dailyFoot").innerHTML=`<tr><td colspan="2"><strong>Total</strong></td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#1e3a8a">${INR(mS)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#b91c1c">${INR(jS)}</td><td></td></tr>`;
 }
+
+/* RENDER — Insights */
 function renderInsights(){
   const{target,daysTotal,daysElapsed,daily}=D.june;
   const{achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc,optFc,consFc}=derive();
@@ -1242,614 +1117,204 @@ function renderInsights(){
   alerts.push({sev:fs,icon:fs==="ok"?"🎯":"🔮",badge:fs==="ok"?"On Track":"Shortfall Risk",title:fs==="ok"?`Forecast ${INR(baseFc)} meets target`:`Short by ${INR(target-baseFc)}`,val:INR(baseFc),valColor:fs==="ok"?"green":fs==="critical"?"red":"amber",desc:`Optimistic: ${INR(optFc)}. Conservative: ${INR(consFc)}. ${daysLeft} days left.`,names:[]});
   const fd=daily.slice(0,daysElapsed).filter(v=>v>0);if(fd.length>0){const bv=Math.max(...fd),bd=daily.indexOf(bv)+1,av=fd.reduce((s,v)=>s+v,0)/fd.length;alerts.push({sev:"info",icon:"🏅",badge:"Best Day",title:`Jun ${bd} strongest — ${(bv/av).toFixed(1)}x avg`,val:INR(bv),valColor:"blue",desc:`Avg ${fd.length} days: ${INR(Math.round(av))}.`,names:[]});}
   const ca=D.agents.filter(ag=>{const t=agTot(ag);return ag.target>0&&t/ag.target*100<10;});if(ca.length>0)alerts.push({sev:"warn",icon:"🎙️",badge:"Coaching Priority",title:`${ca.length} agent${ca.length>1?"s":""} below 10%`,val:ca.length+"",valColor:"amber",desc:`Untapped: ${INR(ca.reduce((s,a)=>s+a.target,0))}.`,names:ca.map(a=>a.name)});
-  if(daysElapsed>=3){const l3=daily.slice(Math.max(0,daysElapsed-3),daysElapsed).filter(v=>v>0);if(l3.length===3){const up=l3[2]>l3[1]&&l3[1]>l3[0],dn=l3[2]<l3[1]&&l3[1]<l3[0];if(up||dn)alerts.push({sev:up?"ok":"warn",icon:up?"📈":"📉",badge:up?"3-Day Surge":"3-Day Decline",title:up?"Revenue up 3 days":"Revenue down 3 days",val:null,valColor:up?"green":"amber",desc:`${INR(l3[0])} to ${INR(l3[1])} to ${INR(l3[2])}.`,names:[]});}}
+  if(daysElapsed>=3){const l3=daily.slice(Math.max(0,daysElapsed-3),daysElapsed).filter(v=>v>0);if(l3.length===3){const up=l3[2]>l3[1]&&l3[1]>l3[0],dn=l3[2]<l3[1]&&l3[1]<l3[0];if(up||dn)alerts.push({sev:up?"ok":"warn",icon:up?"📈":"📉",badge:up?"3-Day Surge":"3-Day Decline",title:up?"Revenue up 3 days":"Revenue down 3 days",val:null,valColor:up?"green":"amber",desc:`${INR(l3[0])} → ${INR(l3[1])} → ${INR(l3[2])}.`,names:[]});}}
   alerts.push({sev:"neutral",icon:"📡",badge:"Observed",title:"MCN/SKN Lead Overlap",val:null,desc:"Significant leads already contacted by other centres, reducing contactability.",names:[]});
   alerts.push({sev:"neutral",icon:"🗂️",badge:"Observed",title:"FIFO Lead Allocation",val:null,desc:"Earlier login = fresher leads. Rationale behind early-login initiative.",names:[]});
-  const sevO={critical:0,warn:1,ok:2,info:3,neutral:4};const s2=[...alerts].sort((a,b)=>sevO[a.sev]-sevO[b.sev]);
+  const sevO={critical:0,warn:1,ok:2,info:3,neutral:4};
+  const s2=[...alerts].sort((a,b)=>sevO[a.sev]-sevO[b.sev]);
   const bc=s=>({critical:"badge-critical",warn:"badge-warn",ok:"badge-ok",info:"badge-info",neutral:"badge-neutral"}[s]);
   document.getElementById("intelGrid").innerHTML=s2.map(a=>`<div class="intel-card sev-${a.sev}"><div class="intel-icon">${a.icon}</div><div class="intel-body"><span class="intel-badge ${bc(a.sev)}">${a.badge}</span>${a.val!=null?`<div class="intel-val ${a.valColor||""}">${a.val}</div>`:""}<div class="intel-title">${a.title}</div><div class="intel-desc">${a.desc}</div>${a.names&&a.names.length?`<div class="intel-names">${a.names.map(n=>`<span class="intel-name-chip">${n}</span>`).join("")}</div>`:""}</div></div>`).join("");
-  document.getElementById("intelTS").textContent=`${D.lastUpdated} - ${s2.filter(a=>a.sev==="critical").length} critical - ${s2.filter(a=>a.sev==="warn").length} warnings`;
+  document.getElementById("intelTimestamp").textContent=D.lastUpdated+" · "+s2.filter(a=>a.sev==="critical").length+" critical · "+s2.filter(a=>a.sev==="warn").length+" warnings";
 }
+
+/* RENDER — Team Roster */
+function renderRoster(){
+  const agents=D.agents||[];
+  const active=agents.filter(ag=>ag.active!==false),inactive=agents.filter(ag=>ag.active===false);
+  document.getElementById("rosterSummary").innerHTML=`<div class="rs-chip"><span class="rs-chip-num" style="color:#22c55e">${active.length}</span><span>Active</span></div><div class="rs-chip"><span class="rs-chip-num" style="color:#94a3b8">${inactive.length}</span><span>Inactive</span></div><div class="rs-chip"><span class="rs-chip-num" style="color:var(--hgold)">${agents.length}</span><span>Total Roster</span></div><div class="rs-chip" style="margin-left:auto;background:var(--hgold-l);border-color:var(--hgold-m)"><span style="font-size:11px;color:var(--amber-d);font-weight:600">⚠ Inactive agents excluded from KPIs</span></div>`;
+  const de=D.june.daysElapsed;
+  document.getElementById("rosterGrid").innerHTML=agents.map((ag,i)=>{
+    const isAct=ag.active!==false,tot=ag.daily?ag.daily.slice(0,de).reduce((s,v)=>s+(v||0),0):0,pct=ag.target>0?(tot/ag.target*100):0,bc=pCol(pct),isOC=ag.name.includes("OC"),col=avC(i);
+    return`<div class="agent-card ${isAct?"":"inactive"}" style="--ac:${isAct?col:"#94a3b8"}"><div class="ac-top"><div class="ac-avatar" style="background:${isAct?col:"#94a3b8"}">${ini(ag.name)}<span class="ac-status-dot ${isAct?"active":"inactive"}"></span></div><div style="flex:1;min-width:0"><div class="ac-name">${ag.name.replace(" OC","")}</div><div style="display:flex;gap:5px;margin-top:4px;flex-wrap:wrap"><span class="ac-badge ${isAct?"active":"inactive"}">${isAct?"● Active":"○ Inactive"}</span>${isOC?'<span class="ac-badge oc">OC</span>':""}</div></div></div>${isAct?`<div class="ac-stats"><div class="ac-stat"><div class="ac-stat-val" style="color:${bc}">${INR(tot)}</div><div class="ac-stat-lbl">Jun Total</div></div><div class="ac-stat"><div class="ac-stat-val" style="color:${pct>=60?"#16a34a":"#dc2626"}">${Pct(pct,0)}</div><div class="ac-stat-lbl">Achievement</div></div></div><div class="ac-prog"><div class="ac-prog-lbl"><span>vs Target</span><strong style="color:${bc}">${INR(tot)} / ${INR(ag.target)}</strong></div><div class="ac-prog-bar"><div class="ac-prog-fill" style="width:${Math.min(pct,100).toFixed(0)}%;background:${bc}"></div></div></div>`:`<div style="padding:10px 0 6px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px"><span style="font-size:18px">🚪</span><span>Removed from active process${ag.note?": "+ag.note:""}</span></div>`}<button class="ac-toggle ${isAct?"mark-inactive":"mark-active"}" onclick="toggleAgentStatus(${i})">${isAct?"✕ Mark as Left Process":"✓ Mark as Active Again"}</button>${ag.inactiveDate?`<div style="font-size:10px;color:var(--muted);font-style:italic;margin-top:6px;padding:5px 8px;background:var(--n100);border-radius:var(--r-sm)">Inactive since: ${ag.inactiveDate}</div>`:""}</div>`;
+  }).join("");
+}
+
+function toggleAgentStatus(idx){
+  const ag=D.agents[idx],wasAct=ag.active!==false;
+  if(!confirm((wasAct?"Mark "+ag.name+" as left/inactive?":"Mark "+ag.name+" as active again?"))) return;
+  D.agents[idx].active=!wasAct;
+  if(!wasAct) D.agents[idx].inactiveDate=""; else D.agents[idx].inactiveDate=new Date().toISOString().split("T")[0];
+  document.getElementById("savingOverlay").classList.add("on");
+  db.ref(DB_KEY).set(D).then(()=>{document.getElementById("savingOverlay").classList.remove("on");renderRoster();renderAll();toast((wasAct?"🔴 ":"🟢 ")+ag.name+(wasAct?" marked inactive.":" marked active."));}).catch(err=>{document.getElementById("savingOverlay").classList.remove("on");toast("Save failed: "+err.message,5000);});
+}
+
+/* RENDER — MoM */
+let momChart=null,momSelIdx=null;
+function getAllMonths(){
+  const hist=(D.history||[]).slice();
+  const{target,daysTotal,daysElapsed}=D.june,achieved=D.june.daily.reduce((s,v)=>s+v,0);
+  hist.push({month:D.activeMonth||"June-2026",label:(D.activeMonth||"June-2026").replace("-"," "),daysTotal,daysInMonth:daysTotal,target,totalRevenue:achieved,achievement:target>0?(achieved/target*100):0,agentTarget:D.agents.length>0?Math.round(target/D.agents.length):0,avgDRR:daysElapsed>0?Math.round(achieved/daysElapsed):0,closedAt:null,isCurrent:true,agentData:D.agents.map(ag=>({name:ag.name,target:ag.target,total:ag.daily?ag.daily.slice(0,daysElapsed).reduce((s,v)=>s+(v||0),0):0}))});
+  return hist;
+}
+function renderMoM(){
+  const months=getAllMonths();
+  const cur=months[months.length-1],prev=months.length>1?months[months.length-2]:null;
+  document.getElementById("momRange").textContent=months.length>1?months[0].label+" – "+cur.label:cur.label;
+  const allRev=months.reduce((s,m)=>s+m.totalRevenue,0),best=[...months].sort((a,b)=>b.totalRevenue-a.totalRevenue)[0],avgAch=months.reduce((s,m)=>s+m.achievement,0)/months.length,momChg=prev?((cur.totalRevenue-prev.totalRevenue)/prev.totalRevenue*100):null;
+  const trendH=momChg!==null?`<span class="mom-trend ${momChg>=0?"up":"dn"}">${momChg>=0?"▲":"▼"}${Math.abs(momChg).toFixed(1)}%</span>`:"";
+  document.getElementById("momKpis").innerHTML=[{lbl:"Months Tracked",val:months.length+"",sub:"in history",col:"var(--hgold)"},{lbl:"Current Month",val:INR(cur.totalRevenue)+trendH,sub:cur.label,col:pCol(cur.achievement)},{lbl:"Best Month",val:INR(best.totalRevenue),sub:best.label,col:"#16a34a"},{lbl:"Avg Achievement",val:Pct(avgAch,1),sub:"across all months",col:pCol(avgAch)},{lbl:"Total Revenue",val:INR(allRev),sub:months.length+" months",col:"#7c3aed"},{lbl:"MoM Change",val:momChg!==null?(momChg>=0?"+":"")+momChg.toFixed(1)+"%":"N/A",sub:prev?"vs "+prev.label:"first month",col:momChg===null?"var(--muted)":momChg>=0?"#16a34a":"#dc2626"}].map(k=>`<div class="mom-kpi"><div class="mom-kpi-lbl">${k.lbl}</div><div class="mom-kpi-val" style="color:${k.col}">${k.val}</div><div class="mom-kpi-sub">${k.sub}</div></div>`).join("");
+  const ctx=document.getElementById("momChart").getContext("2d");
+  if(momChart)momChart.destroy();
+  momChart=new Chart(ctx,{type:"bar",data:{labels:months.map(m=>m.label.replace(" 20","'")),datasets:[{label:"Revenue",data:months.map(m=>m.totalRevenue),backgroundColor:months.map(m=>m.isCurrent?"rgba(220,38,38,.8)":"rgba(37,99,235,.72)"),borderRadius:6,borderSkipped:false,order:1},{label:"Target",data:months.map(m=>m.target),type:"line",borderColor:"rgba(247,195,26,.7)",borderWidth:2,pointRadius:4,pointBackgroundColor:"rgba(247,195,26,.9)",tension:.3,fill:false,order:0,borderDash:[5,3]}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": "+INR(c.parsed.y||0),afterBody:items=>{const i=items[0].dataIndex;return["Achievement: "+Pct(months[i].achievement,1)]}}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+  document.getElementById("momTableBody").innerHTML=months.map((m,i)=>{const p2=i>0?months[i-1]:null,chg=p2?m.totalRevenue-p2.totalRevenue:null,chgH=chg!==null?`<span class="chip ${chg>=0?"chip-g":"chip-r"}">${chg>=0?"▲":"▼"}${S(Math.abs(chg))}</span>`:"—",sb=m.isCurrent?"#fffbeb":m.achievement>=100?"#dcfce7":m.achievement>=75?var_blue_l:"#fef2f2",sc=m.isCurrent?"#92400e":m.achievement>=100?"#14532d":m.achievement>=75?"#1e40af":"#b91c1c",st=m.isCurrent?"In Progress":m.achievement>=100?"✓ Target Hit":m.achievement>=75?"Good":"Below Target";return`<tr><td><strong>${m.label}</strong>${m.isCurrent?'<span style="font-size:9px;background:var(--hgold-l);color:var(--amber-d);padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:700">CURRENT</span>':""}</td><td class="mono">${m.daysInMonth||m.daysTotal||"—"}</td><td class="mono">${INR(m.target)}</td><td class="mono" style="font-weight:700">${INR(m.totalRevenue)}</td><td><div style="display:flex;align-items:center;gap:6px"><div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(m.achievement,100).toFixed(0)}%;background:${pCol(m.achievement)}"></div></div><span style="font-size:11px;font-weight:700;color:${pCol(m.achievement)}">${Pct(m.achievement,1)}</span></div></td><td class="mono">${INR(m.avgDRR||0)}</td><td>${chgH}</td><td><span style="background:${sb};color:${sc};font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px">${st}</span></td></tr>`;}).join("");
+  const aRev=months.reduce((s,m)=>s+m.totalRevenue,0),aTgt=months.reduce((s,m)=>s+m.target,0);
+  document.getElementById("momTableFoot").innerHTML=`<tr><td><strong>Total</strong></td><td class="mono">${months.reduce((s,m)=>s+(m.daysInMonth||m.daysTotal||0),0)}</td><td class="mono">${INR(aTgt)}</td><td class="mono">${INR(aRev)}</td><td class="mono" colspan="4">Cumulative: ${Pct(aTgt>0?aRev/aTgt*100:0,1)}</td></tr>`;
+  if(momSelIdx===null) momSelIdx=months.length-1;
+  document.getElementById("momTabs").innerHTML=months.map((m,i)=>`<div class="mom-tab ${i===momSelIdx?"active":""}" onclick="setMomTab(${i})">${m.label.replace(" 20","'")}</div>`).join("");
+  renderMomAgentTable(months);
+}
+const var_blue_l="#eff6ff";
+function setMomTab(idx){momSelIdx=idx;renderMoM();}
+function renderMomAgentTable(months){
+  if(!months||months.length<1)return;
+  const si=momSelIdx!==null?momSelIdx:months.length-1,sel=months[si],prev=si>0?months[si-1]:null;
+  const getR=(mth,nm)=>{if(mth.isCurrent){const ag=D.agents.find(a=>a.name===nm);return ag?ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+(v||0),0):0;}if(mth.agentData){const ad=mth.agentData.find(a=>a.name===nm);return ad?ad.total:0;}return 0;};
+  const rows=D.agents.map((ag,i)=>{const agTgt=ag.target||sel.agentTarget||0,cR=getR(sel,ag.name),cP=agTgt>0?(cR/agTgt*100):0,pR=prev?getR(prev,ag.name):null,pP=prev&&agTgt>0?(pR/agTgt*100):null,chg=pR!==null?cR-pR:null;return{name:ag.name,i,cR,cP,pR,pP,chg};}).sort((a,b)=>b.cR-a.cR);
+  document.getElementById("momAgentBody").innerHTML=rows.map((r,rank)=>`<tr><td style="color:var(--muted);font-size:11px;font-weight:600">${rank+1}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:${avC(r.i)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">${ini(r.name)}</div><span style="font-weight:600;font-size:12px">${r.name}</span></div></td><td class="mono" style="font-weight:700;color:${pCol(r.cP)}">${INR(r.cR)}</td><td><span style="font-size:11px;font-weight:700;color:${pCol(r.cP)}">${Pct(r.cP,1)}</span></td><td class="mono" style="color:var(--muted)">${r.pR!==null?INR(r.pR):"—"}</td><td><span style="font-size:11px;color:var(--muted)">${r.pP!==null?Pct(r.pP,1):"—"}</span></td><td>${r.chg===null?"—":`<span class="chip ${r.chg>=0?"chip-g":"chip-r"}">${r.chg>=0?"▲":"▼"}${S(Math.abs(r.chg))}</span>`}</td><td style="font-size:16px">${r.chg===null?"—":r.chg>5000?"📈":r.chg<-5000?"📉":"➡️"}</td></tr>`).join("");
+}
+
+/* RENDER ALL */
 function renderAll(){
-  D.june.daysElapsed=calcDE(D.lastUpdated,D.june.daysTotal);
+  D.june.daysElapsed=computeDaysElapsed(D.lastUpdated);
   renderDaysBanner();renderHealth();renderStatRow();renderKPIs();
   renderLeaderboard();renderForecast();renderJuneChart();
-  renderWeekly();renderAgents();renderDaily();renderCmpChart();renderInsights();renderRoster();renderMoM();
+  renderWeekly();renderAgents();renderDaily();renderCmpChart();
+  renderInsights();renderRoster();renderMoM();
   updateDaysChip();
 }
-
-let fcC=null;
-function renderForecast(){
-  const{target,daysTotal,daysElapsed,daily}=D.june;
-  const{achieved,drr,actualDrr,dayTarget,baseFc,optFc,consFc}=derive();
-  const daysLeft=daysTotal-daysElapsed;
-  document.getElementById("fcScenarios").innerHTML=`<div class="fc-sc opt"><div class="fc-sc-label opt">Optimistic (+20%)</div><div class="fc-sc-val opt">${INR(optFc)}</div><div class="fc-sc-pct">${Pct(optFc/target*100)} of target</div></div><div class="fc-sc base"><div class="fc-sc-label base">Base (current DRR)</div><div class="fc-sc-val base">${INR(baseFc)}</div><div class="fc-sc-pct">${Pct(baseFc/target*100)} of target</div></div><div class="fc-sc cons"><div class="fc-sc-label cons">Conservative (-20%)</div><div class="fc-sc-val cons">${INR(consFc)}</div><div class="fc-sc-pct">${Pct(consFc/target*100)} of target</div></div>`;
-  document.getElementById("fcChips").innerHTML=[{l:"Daily Target",v:INR(dayTarget)},{l:"Actual DRR",v:INR(Math.round(actualDrr))},{l:"DRR Required",v:INR(Math.round(drr))},{l:"DRR Gap",v:(drr>actualDrr?"+":"")+S(Math.round(drr-actualDrr))},{l:"Weekly Forecast",v:INR(Math.round(actualDrr*7))},{l:"Days Left",v:daysLeft+" days"}].map(c=>`<div class="fc-chip"><div class="fc-chip-lbl">${c.l}</div><div class="fc-chip-val">${c.v}</div></div>`).join("");
-  const lbs=Array.from({length:daysTotal},(_,i)=>i+1);let cum=0;
-  const aL=lbs.map((_,i)=>{if(i<daysElapsed){cum+=daily[i];return cum;}return null;});
-  let f2=achieved,o2=achieved;
-  const bL=lbs.map((_,i)=>{if(i<daysElapsed)return null;f2+=drr;return Math.round(f2);});
-  const oL=lbs.map((_,i)=>{if(i<daysElapsed)return null;o2+=actualDrr*1.2;return Math.round(o2);});
-  const tL=lbs.map((_,i)=>Math.round(dayTarget*(i+1)));
-  const ctx=document.getElementById("fcChart").getContext("2d");
-  if(fcC)fcC.destroy();
-  fcC=new Chart(ctx,{type:"line",data:{labels:lbs,datasets:[{label:"Actual",data:aL,borderColor:"#dc2626",backgroundColor:"rgba(220,38,38,.08)",borderWidth:2.5,pointRadius:2.5,pointBackgroundColor:"#dc2626",tension:.3,fill:true},{label:"Forecast",data:bL,borderColor:"#2563eb",backgroundColor:"rgba(37,99,235,.05)",borderWidth:2,pointRadius:0,tension:.3,borderDash:[5,4],fill:true},{label:"Optimistic",data:oL,borderColor:"#16a34a",borderWidth:1.5,pointRadius:0,tension:.3,borderDash:[3,3],fill:false,backgroundColor:"transparent"},{label:"Target",data:tL,borderColor:"rgba(22,163,74,.35)",borderWidth:1.5,pointRadius:0,tension:0,borderDash:[2,4],fill:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": "+INR(c.parsed.y||0),title:c=>"Jun "+c[0].label}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
-}
-let jC=null;
-function renderJuneChart(){
-  const{daily,daysElapsed}=D.june;const ctx=document.getElementById("juneChart").getContext("2d");if(jC)jC.destroy();
-  jC=new Chart(ctx,{type:"bar",data:{labels:daily.map((_,i)=>i+1),datasets:[{label:"Revenue",data:daily,backgroundColor:daily.map((v,i)=>i>=daysElapsed?"#e2e8f0":v>0?"rgba(220,38,38,.82)":"rgba(226,232,240,.6)"),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"Rs"+c.parsed.y.toLocaleString("en-IN"),title:c=>"Jun "+c[0].label+" "+(c[0].dataIndex<daysElapsed?"actual":"future")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:false,maxRotation:0}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
-}
-let cC=null;
-function renderCmpChart(){
-  const jun=D.june.daily;const ctx=document.getElementById("cmpChart").getContext("2d");if(cC)cC.destroy();
-  cC=new Chart(ctx,{type:"bar",data:{labels:D.mayDaily.map(r=>r.d.replace("-May","")),datasets:[{label:"May",data:D.mayDaily.map(r=>r.v),backgroundColor:"rgba(37,99,235,.72)",borderRadius:2,borderSkipped:false},{label:"June",data:D.mayDaily.map((_,i)=>i<jun.length?jun[i]:0),backgroundColor:"rgba(220,38,38,.72)",borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": Rs"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+function updateDaysChip(){
+  const{daysTotal,daysElapsed}=D.june,left=daysTotal-daysElapsed;
+  const el=document.getElementById("daysLeftBadge");
+  if(el) el.textContent="⏳ "+left+" day"+(left!==1?"s":"")+" left";
 }
 
-/* AUTH */
+/* ═══════════════════════════════════════════
+   MODALS & EDIT
+═══════════════════════════════════════════ */
+function toast(msg,d=3500){const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),d);}
 function openLogin(){document.getElementById("loginOvl").classList.add("on");const pw=document.getElementById("loginPw");pw.value="";document.getElementById("loginErr").style.display="none";setTimeout(()=>pw.focus(),120);}
 function closeLogin(){document.getElementById("loginOvl").classList.remove("on");}
 function doLogin(){if(btoa(document.getElementById("loginPw").value)===ADMIN_B64){closeLogin();openEdit();}else document.getElementById("loginErr").style.display="block";}
 function openEdit(){populateEdit();document.getElementById("editOvl").classList.add("on");}
 function closeEdit(){document.getElementById("editOvl").classList.remove("on");}
-function swTab(id,i){document.querySelectorAll(".tp").forEach(p=>p.classList.remove("on"));document.querySelectorAll(".m-tab").forEach(t=>t.classList.remove("on"));document.getElementById(id).classList.add("on");document.querySelectorAll(".m-tab")[i].classList.add("on");}
-function autoCalcDays(){const v=document.getElementById("eUpdated").value,dt=parseInt(document.getElementById("eDaysTotal").value)||30;document.getElementById("eDaysElapsed").value=calcDE(v,dt);livePreview();}
-function toast(msg,d=3500){const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),d);}
+function swTab(id,idx){document.querySelectorAll(".tp").forEach(p=>p.classList.remove("on"));document.querySelectorAll(".m-tab").forEach(t=>t.classList.remove("on"));document.getElementById(id).classList.add("on");document.querySelectorAll(".m-tab")[idx].classList.add("on");}
+function autoCalcDaysElapsed(){const v=document.getElementById("eUpdated").value;document.getElementById("eDaysElapsed").value=computeDaysElapsed(v);livePreview();}
 function populateEdit(){
   document.getElementById("eTarget").value=D.june.target;
   document.getElementById("eDaysTotal").value=D.june.daysTotal;
   document.getElementById("eDaysElapsed").value=D.june.daysElapsed;
   document.getElementById("eUpdated").value=D.lastUpdated;
   document.getElementById("juneDayGrid").innerHTML=D.june.daily.map((v,i)=>`<div class="dw"><span>Jun ${i+1}</span><input type="number" id="jd${i}" value="${v}" oninput="livePreview()"></div>`).join("");
-  document.getElementById("allAgWrap").innerHTML=D.agents.map((ag,ai)=>{
+  const dt=D.june.daysTotal;
+  document.getElementById("allAgentsWrap").innerHTML=D.agents.map((ag,ai)=>{
     const tot=ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+v,0),pct=ag.target>0?((tot/ag.target)*100).toFixed(1):0,bc=tot/ag.target>=1?"#16a34a":tot/ag.target>=.6?"#d97706":"#dc2626";
-    return`<div style="border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden"><div style="background:var(--n50);padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="toggleAg(${ai})"><div style="width:26px;height:26px;border-radius:50%;background:${avC(ai)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${ini(ag.name)}</div><strong style="font-size:12px;flex:1">${ag.name}</strong><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:${bc};font-weight:700">${INR(tot)}</span><span style="font-size:10px;color:var(--muted)">${pct}%</span><span id="arr${ai}" style="font-size:11px;color:var(--muted);transition:transform .2s">v</span></div><div id="ags${ai}" style="display:none;padding:10px 12px;border-top:1px solid var(--border)"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin-bottom:0"><label>Target</label><input type="number" id="agt${ai}" value="${ag.target}" oninput="refreshAg(${ai})"></div><div style="background:var(--n50);border-radius:var(--r);padding:6px 10px;font-size:11px;color:var(--muted)">Total: <strong id="agtot${ai}" style="font-family:'JetBrains Mono',monospace">${INR(tot)}</strong><br>Achv: <strong id="agpct${ai}" style="color:${bc}">${pct}%</strong></div></div><div class="ag-grid-6">${ag.daily.slice(0,D.june.daysTotal).map((v,d)=>`<div><span style="display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600">Jun ${d+1}</span><input type="number" id="agd${ai}_${d}" value="${v}" oninput="refreshAg(${ai})" style="width:100%;padding:4px 5px;font-size:11px;border:1px solid ${d<D.june.daysElapsed?"var(--border)":"var(--n200)"};border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;background:${d<D.june.daysElapsed?"#fff":"var(--n50)"}"></div>`).join("")}</div></div></div>`;
+    return`<div style="border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden"><div style="background:var(--n50);padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="toggleAgSection(${ai})"><div style="width:26px;height:26px;border-radius:50%;background:${avC(ai)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${ini(ag.name)}</div><strong style="font-size:12px;flex:1">${ag.name}</strong><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:${bc};font-weight:700">${INR(tot)}</span><span style="font-size:10px;color:var(--muted)">${pct}%</span><span id="agArrow${ai}" style="font-size:11px;color:var(--muted);transition:transform .2s">▼</span></div><div id="agSection${ai}" style="display:none;padding:10px 12px;border-top:1px solid var(--border)"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin-bottom:0"><label>Target</label><input type="number" id="agt${ai}" value="${ag.target}" oninput="refreshAgLive(${ai})"></div><div style="background:var(--n50);border-radius:var(--r);padding:6px 10px;font-size:11px;color:var(--muted)">Total: <strong id="agliveTot${ai}" style="font-family:'JetBrains Mono',monospace">${INR(tot)}</strong><br>Achv: <strong id="aglivePct${ai}" style="color:${bc}">${pct}%</strong></div></div><div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Daily Revenue</div><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px">${ag.daily.slice(0,dt).map((v,d)=>`<div><span style="display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600">Jun ${d+1}</span><input type="number" id="agd${ai}_${d}" value="${v}" oninput="refreshAgLive(${ai})" style="width:100%;padding:4px 5px;font-size:11px;border:1px solid ${d<D.june.daysElapsed?"var(--border)":"var(--n200)"};border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;background:${d<D.june.daysElapsed?"#fff":"var(--n50)"}"></div>`).join("")}</div></div></div>`;
   }).join("");
-  document.getElementById("mayWkIn").innerHTML=D.mayWeekly.map((w,i)=>`<div class="fg"><label>May ${w.week}</label><input type="number" id="mw${i}" value="${w.revenue}"></div>`).join("");
-  document.getElementById("junWkIn").innerHTML=D.juneWeekly.map((w,i)=>`<div class="fg"><label>June ${w.week}</label><input type="number" id="jw${i}" value="${w.revenue}"></div>`).join("");
+  document.getElementById("mayWkInputs").innerHTML=D.mayWeekly.map((w,i)=>`<div class="fg"><label>May ${w.week}</label><input type="number" id="mw${i}" value="${w.revenue}"></div>`).join("");
+  document.getElementById("junWkInputs").innerHTML=D.juneWeekly.map((w,i)=>`<div class="fg"><label>June ${w.week}</label><input type="number" id="jw${i}" value="${w.revenue}"></div>`).join("");
   livePreview();
 }
-function toggleAg(ai){const s=document.getElementById("ags"+ai),a=document.getElementById("arr"+ai);const open=s.style.display!=="none";s.style.display=open?"none":"block";a.style.transform=open?"":"rotate(180deg)";}
-function refreshAg(ai){const ag=D.agents[ai];let sum=0;ag.daily.forEach((_,d)=>{const e=document.getElementById(`agd${ai}_${d}`);if(e)sum+=parseInt(e.value)||0;});const tgt=parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target,pct=tgt>0?((sum/tgt)*100).toFixed(1):0,bc=sum/tgt>=1?"#16a34a":sum/tgt>=.6?"#d97706":"#dc2626";const te=document.getElementById(`agtot${ai}`);if(te)te.textContent=INR(sum);const pe=document.getElementById(`agpct${ai}`);if(pe){pe.textContent=pct+"%";pe.style.color=bc;}}
-function livePreview(){const tgt=parseInt(document.getElementById("eTarget")?.value)||D.june.target,el=parseInt(document.getElementById("eDaysElapsed")?.value)||D.june.daysElapsed,dt=parseInt(document.getElementById("eDaysTotal")?.value)||D.june.daysTotal;let sum=0;D.june.daily.forEach((_,i)=>{const e=document.getElementById("jd"+i);if(e)sum+=parseInt(e.value)||0;});const drr=el>0?sum/el:0,fc=Math.round(drr*dt),p=tgt>0?sum/tgt*100:0;document.getElementById("lvTotal").textContent=INR(sum);document.getElementById("lvDrr").textContent=INR(Math.round(drr));document.getElementById("lvFc").textContent=INR(fc);document.getElementById("lvPct").textContent=Pct(p);document.getElementById("lvRem").textContent=INR(Math.max(0,tgt-sum));document.getElementById("lvDL").textContent=(dt-el)+" days";}
+function toggleAgSection(ai){const s=document.getElementById("agSection"+ai),a=document.getElementById("agArrow"+ai);const op=s.style.display!=="none";s.style.display=op?"none":"block";a.style.transform=op?"":"rotate(180deg)";}
+function refreshAgLive(ai){const ag=D.agents[ai];let sum=0;ag.daily.forEach((_,d)=>{const e=document.getElementById(`agd${ai}_${d}`);if(e)sum+=parseInt(e.value)||0;});const tgt=parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target,pct=tgt>0?((sum/tgt)*100).toFixed(1):0,bc=sum/tgt>=1?"#16a34a":sum/tgt>=.6?"#d97706":"#dc2626";const te=document.getElementById(`agliveTot${ai}`);if(te)te.textContent=INR(sum);const pe=document.getElementById(`aglivePct${ai}`);if(pe){pe.textContent=pct+"%";pe.style.color=bc;}}
+function livePreview(){const tgt=parseInt(document.getElementById("eTarget")?.value)||D.june.target,el=parseInt(document.getElementById("eDaysElapsed")?.value)||D.june.daysElapsed,dt=parseInt(document.getElementById("eDaysTotal")?.value)||D.june.daysTotal;let sum=0;D.june.daily.forEach((_,i)=>{const e=document.getElementById("jd"+i);if(e)sum+=parseInt(e.value)||0;});const drr=el>0?sum/el:0,fc=Math.round(drr*dt),p=tgt>0?sum/tgt*100:0;document.getElementById("lvTotal").textContent=INR(sum);document.getElementById("lvDrr").textContent=INR(Math.round(drr));document.getElementById("lvFc").textContent=INR(fc);document.getElementById("lvPct").textContent=Pct(p);document.getElementById("lvRem").textContent=INR(Math.max(0,tgt-sum));}
+
+/* SAVE */
 function saveData(){
   const newD=JSON.parse(JSON.stringify(D));
   newD.june.target=parseInt(document.getElementById("eTarget").value)||D.june.target;
   newD.june.daysTotal=parseInt(document.getElementById("eDaysTotal").value)||30;
   newD.lastUpdated=document.getElementById("eUpdated").value;
-  newD.june.daysElapsed=calcDE(newD.lastUpdated,newD.june.daysTotal);
+  newD.june.daysElapsed=computeDaysElapsed(newD.lastUpdated);
   newD.june.daily=newD.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0);
   newD.agents=D.agents.map((ag,ai)=>({...ag,target:parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target,daily:ag.daily.map((_,d)=>parseInt(document.getElementById(`agd${ai}_${d}`)?.value)||0)}));
   newD.mayWeekly.forEach((_,i)=>{newD.mayWeekly[i].revenue=parseInt(document.getElementById("mw"+i)?.value)||0;});
   newD.juneWeekly.forEach((_,i)=>{newD.juneWeekly[i].revenue=parseInt(document.getElementById("jw"+i)?.value)||0;});
-  closeEdit();document.getElementById("sovl").classList.add("on");
-  DB_REF.set(newD).then(()=>{document.getElementById("sovl").classList.remove("on");toast("Saved and synced to all viewers!");}).catch(err=>{document.getElementById("sovl").classList.remove("on");toast("Save failed: "+err.message,5000);});
-}
-
-/* ═══════════════════════════════════════════
-   NAV BAR + SCROLL SPY
-═══════════════════════════════════════════ */
-const NAV_SECTIONS = ['secSnapshot','secLeader','secForecast','secDaily','secWeekly','secAgents','secCompare','secAction','secMoM','secTeam'];
-
-function navTo(el, id) {
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  el.classList.add('active');
-  function tryScroll(attempts) {
-    const target = document.getElementById(id);
-    const main = document.getElementById('mainWrap') || document.getElementById('dashView');
-    if (!target || !main || main.style.display === 'none') {
-      if (attempts > 0) setTimeout(() => tryScroll(attempts - 1), 200);
-      return;
-    }
-    const stickyH = 32 + 62 + 46 + 8; // syncBar + topbar + navBar + gap
-    const top = target.getBoundingClientRect().top + window.scrollY - stickyH;
-    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-  }
-  tryScroll(15);
-}
-
-/* Scroll spy */
-window.addEventListener('scroll', function() {
-  const st = document.getElementById('scrollTop');
-  if (st) st.classList.toggle('show', window.scrollY > 400);
-  const main = document.getElementById('mainWrap') || document.getElementById('dashView');
-  if (!main || main.style.display === 'none') return;
-  const offset = 32 + 62 + 46 + 20;
-  let active = NAV_SECTIONS[0];
-  NAV_SECTIONS.forEach(id => {
-    const el = document.getElementById(id);
-    if (el && el.getBoundingClientRect().top < offset) active = id;
-  });
-  document.querySelectorAll('.nav-item').forEach((n, i) => {
-    n.classList.toggle('active', NAV_SECTIONS[i] === active);
-  });
-}, { passive: true });
-
-
-/* ═══════════════════════════════════════════
-   TEAM ROSTER — AGENT STATUS
-═══════════════════════════════════════════ */
-function renderRoster(){
-  const agents = D.agents || [];
-  const active = agents.filter(ag => ag.active !== false);
-  const inactive = agents.filter(ag => ag.active === false);
-
-  // Summary chips
-  document.getElementById("rosterSummary").innerHTML = `
-    <div class="rs-chip"><span class="rs-chip-num" style="color:#22c55e">${active.length}</span><span>Active Agents</span></div>
-    <div class="rs-chip"><span class="rs-chip-num" style="color:#94a3b8">${inactive.length}</span><span>Inactive / Left</span></div>
-    <div class="rs-chip"><span class="rs-chip-num" style="color:var(--hgold)">${agents.length}</span><span>Total Roster</span></div>
-    <div class="rs-chip" style="margin-left:auto;background:var(--hgold-l);border-color:var(--hgold-m)"><span style="font-size:11px;color:var(--amber-d);font-weight:600">⚠ Inactive agents are excluded from all KPIs &amp; charts</span></div>
-  `;
-
-  const daysEl = D.june.daysElapsed;
-
-  document.getElementById("rosterGrid").innerHTML = agents.map((ag,i) => {
-    const isActive = ag.active !== false;
-    const tot = ag.daily ? ag.daily.slice(0,daysEl).reduce((s,v)=>s+(v||0),0) : 0;
-    const pct = ag.target>0 ? (tot/ag.target*100) : 0;
-    const bc  = pct>=100?"#16a34a":pct>=60?"#d97706":"#dc2626";
-    const isOC = ag.name.includes("OC");
-    const acColor = avC(i);
-
-    return `<div class="agent-card ${isActive?'':'inactive'}" style="--ac:${isActive?acColor:'#94a3b8'}">
-      <div class="ac-top">
-        <div class="ac-avatar" style="background:${isActive?acColor:'#94a3b8'}">
-          ${ini(ag.name)}
-          <span class="status-dot ${isActive?'active':'inactive'}"></span>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div class="ac-name">${ag.name.replace(' OC','')}</div>
-          <div style="display:flex;gap:5px;margin-top:4px;flex-wrap:wrap">
-            <span class="ac-badge ${isActive?'active':'inactive'}">${isActive?'● Active':'○ Inactive'}</span>
-            ${isOC?'<span class="ac-badge oc">OC</span>':''}
-          </div>
-        </div>
-      </div>
-      ${isActive ? `
-      <div class="ac-stats">
-        <div class="ac-stat"><div class="ac-stat-val" style="color:${bc}">${INR(tot)}</div><div class="ac-stat-lbl">Jun Total</div></div>
-        <div class="ac-stat"><div class="ac-stat-val" style="color:${pct>=60?'#16a34a':'#dc2626'}">${Pct(pct,0)}</div><div class="ac-stat-lbl">Achievement</div></div>
-      </div>
-      <div class="ac-progress">
-        <div class="ac-progress-lbl"><span>Progress vs Target</span><strong style="color:${bc}">${INR(tot)} / ${INR(ag.target)}</strong></div>
-        <div class="ac-bar"><div class="ac-bar-fill" style="width:${Math.min(pct,100).toFixed(0)}%;background:${bc}"></div></div>
-      </div>` : `
-      <div style="padding:10px 0 6px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px">
-        <span style="font-size:18px">🚪</span>
-        <span>Removed from active process${ag.note?': <em>'+ag.note+'</em>':''}</span>
-      </div>`}
-      <button class="ac-toggle ${isActive?'mark-inactive':'mark-active'}" onclick="toggleAgentStatus(${i})">
-        ${isActive
-          ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Mark as Left Process'
-          : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Mark as Active Again'}
-      </button>
-      ${ag.inactiveDate?`<div class="ac-note">Marked inactive: ${ag.inactiveDate}</div>`:''}
-    </div>`;
-  }).join('');
-}
-
-function toggleAgentStatus(idx) {
-  const ag = D.agents[idx];
-  const wasActive = ag.active !== false;
-  if (wasActive) {
-    const today = new Date().toISOString().split('T')[0];
-    if (!confirm('Mark ' + ag.name + ' as left/inactive? They will be excluded from KPIs.')) return;
-    D.agents[idx].active = false;
-    D.agents[idx].inactiveDate = today;
-  } else {
-    if (!confirm('Mark ' + ag.name + ' as active again?')) return;
-    D.agents[idx].active = true;
-    D.agents[idx].inactiveDate = '';
-  }
-  // Save to Firebase
-  document.getElementById('sovl').classList.add('on');
-  DB_REF.set(D)
-    .then(() => {
-      document.getElementById('sovl').classList.remove('on');
-      renderRoster();
-      renderAll();
-      toast((wasActive ? '🔴 ' : '🟢 ') + ag.name + (wasActive ? ' marked inactive.' : ' marked active.'));
-    })
-    .catch(err => {
-      document.getElementById('sovl').classList.remove('on');
-      toast('Save failed: ' + err.message, 5000);
-    });
-}
-
-/* ═══════════════════════════════════════════
-   MONTH-ON-MONTH ANALYSIS
-═══════════════════════════════════════════ */
-
-/* Build full months array = history + current month snapshot */
-function getAllMonths(){
-  const hist = (D.history || []).slice();
-  // Add current month as last entry
-  const {target,daysTotal,daysElapsed} = D.june;
-  const achieved = D.june.daily.reduce((s,v)=>s+v,0);
-  const avgDRR   = daysElapsed>0 ? Math.round(achieved/daysElapsed) : 0;
-  const activeLabel = D.activeMonth || "Current Month";
-  const cur = {
-    month: activeLabel,
-    label: activeLabel.replace('-',' '),
-    daysTotal, daysInMonth:daysTotal,
-    target, totalRevenue:achieved,
-    achievement: target>0?(achieved/target*100):0,
-    agentTarget: D.agents.length>0?Math.round(target/D.agents.length):0,
-    avgDRR,
-    closedAt: null, // not closed yet
-    isCurrent: true,
-    agentData: D.agents.map(ag=>({
-      name:ag.name,
-      target:ag.target,
-      total: ag.daily ? ag.daily.slice(0,daysElapsed).reduce((s,v)=>s+(v||0),0) : 0
-    }))
-  };
-  hist.push(cur);
-  return hist;
-}
-
-let momChart = null;
-let momSelectedIdx = null; // index for agent comparison tab
-
-function renderMoM(){
-  const months = getAllMonths();
-  if(months.length < 1){ 
-    document.getElementById("momKpis").innerHTML='<div style="padding:20px;color:var(--muted);font-size:13px">No historical data yet. Complete your first month to see trends.</div>';
-    return;
-  }
-
-  const cur = months[months.length-1];
-  const prev = months.length>1 ? months[months.length-2] : null;
-
-  // Header range
-  document.getElementById("momMonthRange").textContent =
-    months.length>1 ? months[0].label+' – '+cur.label : cur.label;
-
-  // ── KPI summary cards ──
-  const totalAllRev = months.reduce((s,m)=>s+m.totalRevenue,0);
-  const bestMonth   = [...months].sort((a,b)=>b.totalRevenue-a.totalRevenue)[0];
-  const avgAchieve  = months.reduce((s,m)=>s+m.achievement,0)/months.length;
-  const momChange   = prev ? ((cur.totalRevenue-prev.totalRevenue)/prev.totalRevenue*100) : null;
-  const trendHtml   = momChange!==null
-    ? `<span class="mom-trend ${momChange>=0?'up':'dn'}">${momChange>=0?'▲':'▼'}${Math.abs(momChange).toFixed(1)}%</span>`
-    : '';
-
-  document.getElementById("momKpis").innerHTML = [
-    {lbl:"Months Tracked",    val:months.length,                       sub:"in dashboard history",      color:"var(--hgold)"},
-    {lbl:"Current Month Rev", val:INR(cur.totalRevenue)+trendHtml,     sub:cur.label,                   color:pCol(cur.achievement)},
-    {lbl:"Best Month",        val:INR(bestMonth.totalRevenue),         sub:bestMonth.label,             color:"#16a34a"},
-    {lbl:"Avg Achievement",   val:Pct(avgAchieve,1),                   sub:"across all months",         color:pCol(avgAchieve)},
-    {lbl:"Total Revenue (All)",val:INR(totalAllRev),                   sub:months.length+" months",     color:"#7c3aed"},
-    {lbl:"MoM Change",        val:momChange!==null?(momChange>=0?'+':'')+momChange.toFixed(1)+'%':'N/A', sub:prev?'vs '+prev.label:'first month', color:momChange===null?'var(--muted)':momChange>=0?"#16a34a":"#dc2626"},
-  ].map(k=>`<div class="mom-kpi"><div class="mom-kpi-lbl">${k.lbl}</div><div class="mom-kpi-val" style="color:${k.color}">${k.val}</div><div class="mom-kpi-sub">${k.sub}</div></div>`).join('');
-
-  // ── Bar chart ──
-  const labels   = months.map(m=>m.label.replace(' 20','''));
-  const revenues = months.map(m=>m.totalRevenue);
-  const targets  = months.map(m=>m.target);
-  const bgColors = months.map(m=>m.isCurrent?'rgba(220,38,38,.8)':'rgba(37,99,235,.72)');
-
-  const ctx = document.getElementById('momChart').getContext('2d');
-  if(momChart) momChart.destroy();
-  momChart = new Chart(ctx, {
-    type:'bar',
-    data:{labels, datasets:[
-      {label:'Revenue',data:revenues,backgroundColor:bgColors,borderRadius:6,borderSkipped:false,order:1},
-      {label:'Target', data:targets, type:'line',borderColor:'rgba(247,195,26,.7)',borderWidth:2,
-       pointRadius:4,pointBackgroundColor:'rgba(247,195,26,.9)',tension:.3,fill:false,order:0,
-       borderDash:[5,3]}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},
-      interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{callbacks:{
-        label:c=>c.dataset.label+': '+INR(c.parsed.y||0),
-        afterBody:items=>{
-          const i=items[0].dataIndex;
-          return ['Achievement: '+Pct(months[i].achievement,1)];
-        }
-      }}},
-      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
-              y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>S(v),font:{size:10}}}}}
-  });
-
-  // ── Summary table ──
-  document.getElementById("momTableBody").innerHTML = months.map((m,i)=>{
-    const prev2 = i>0?months[i-1]:null;
-    const chg   = prev2?m.totalRevenue-prev2.totalRevenue:null;
-    const chgHtml = chg!==null
-      ? `<span class="chip ${chg>=0?'chip-g':'chip-r'}">${chg>=0?'▲':'▼'}${S(Math.abs(chg))}</span>`
-      : '—';
-    const statusBg  = m.isCurrent?'#fffbeb':m.achievement>=100?'#dcfce7':m.achievement>=75?'#eff6ff':'#fef2f2';
-    const statusCol = m.isCurrent?'#92400e':m.achievement>=100?'#14532d':m.achievement>=75?'#1e40af':'#b91c1c';
-    const statusTxt = m.isCurrent?'In Progress':m.achievement>=100?'✓ Target Hit':m.achievement>=75?'Good':'Below Target';
-    return `<tr>
-      <td><strong>${m.label}</strong>${m.isCurrent?'<span style="font-size:9px;background:var(--hgold-l);color:var(--amber-d);padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:700">CURRENT</span>':''}</td>
-      <td class="mono">${m.daysInMonth||m.daysTotal||'—'}</td>
-      <td class="mono">${INR(m.target)}</td>
-      <td class="mono" style="font-weight:700">${INR(m.totalRevenue)}</td>
-      <td><div style="display:flex;align-items:center;gap:6px">
-        <div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(m.achievement,100).toFixed(0)}%;background:${pCol(m.achievement)}"></div></div>
-        <span style="font-size:11px;font-weight:700;color:${pCol(m.achievement)}">${Pct(m.achievement,1)}</span>
-      </div></td>
-      <td class="mono">${INR(m.avgDRR||0)}</td>
-      <td>${chgHtml}</td>
-      <td><span style="background:${statusBg};color:${statusCol};font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px">${statusTxt}</span></td>
-    </tr>`;
-  }).join('');
-
-  // totals row
-  const allRev = months.reduce((s,m)=>s+m.totalRevenue,0);
-  const allTgt = months.reduce((s,m)=>s+m.target,0);
-  document.getElementById("momTableFoot").innerHTML =
-    `<tr><td><strong>Total</strong></td><td class="mono">${months.reduce((s,m)=>s+(m.daysInMonth||m.daysTotal||0),0)}</td><td class="mono">${INR(allTgt)}</td><td class="mono">${INR(allRev)}</td><td class="mono" colspan="4">Cumulative achievement: ${Pct(allTgt>0?allRev/allTgt*100:0,1)}</td></tr>`;
-
-  // ── Agent comparison tabs ──
-  if(momSelectedIdx === null) momSelectedIdx = months.length-1;
-  document.getElementById("momAgentTabs").innerHTML = months.map((m,i)=>
-    `<div class="mom-mtab ${i===momSelectedIdx?'active':''}" onclick="setMomTab(${i})">${m.label.replace(' 20',''')}</div>`
-  ).join('');
-  renderMomAgentTable(months);
-}
-
-function setMomTab(idx){
-  momSelectedIdx = idx;
-  renderMoM();
-}
-
-function renderMomAgentTable(months){
-  if(!months || months.length<1) return;
-  const selIdx = momSelectedIdx !== null ? momSelectedIdx : months.length-1;
-  const sel  = months[selIdx];
-  const prev = selIdx>0 ? months[selIdx-1] : null;
-
-  // Build agent rows
-  const agents = D.agents;
-  const getAgRev = (monthData, agName) => {
-    if(monthData.isCurrent){
-      const ag = agents.find(a=>a.name===agName);
-      return ag ? ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+(v||0),0) : 0;
-    }
-    if(monthData.agentData){
-      const ad = monthData.agentData.find(a=>a.name===agName);
-      return ad ? ad.total : 0;
-    }
-    return 0;
-  };
-
-  const rows = agents.map((ag,i)=>{
-    const agTgt   = ag.target || sel.agentTarget || 0;
-    const curRev  = getAgRev(sel, ag.name);
-    const curPct  = agTgt>0?(curRev/agTgt*100):0;
-    const prevRev = prev ? getAgRev(prev, ag.name) : null;
-    const prevPct = prev && (ag.target||prev.agentTarget)>0 ? (prevRev/(ag.target||prev.agentTarget)*100) : null;
-    const chg     = prevRev!==null ? curRev-prevRev : null;
-    const trend   = chg===null ? '—' :
-      chg>0 ? `<span class="chip chip-g">▲${S(chg)}</span>` :
-      chg<0 ? `<span class="chip chip-r">▼${S(Math.abs(chg))}</span>` :
-      `<span class="chip" style="background:var(--n100);color:var(--muted)">→ Same</span>`;
-    const trendIcon = chg===null?'—':chg>5000?'📈':chg<-5000?'📉':'➡️';
-    return {name:ag.name,i,curRev,curPct,prevRev,prevPct,chg,trend,trendIcon};
-  }).sort((a,b)=>b.curRev-a.curRev);
-
-  document.getElementById("momAgentBody").innerHTML = rows.map((r,rank)=>`
-    <tr>
-      <td style="color:var(--muted);font-size:11px;font-weight:600">${rank+1}</td>
-      <td><div style="display:flex;align-items:center;gap:8px">
-        <div style="width:24px;height:24px;border-radius:50%;background:${avC(r.i)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">${ini(r.name)}</div>
-        <span style="font-weight:600;font-size:12px">${r.name}</span>
-      </div></td>
-      <td class="mono" style="font-weight:700;color:${pCol(r.curPct)}">${INR(r.curRev)}</td>
-      <td><span style="font-size:11px;font-weight:700;color:${pCol(r.curPct)}">${Pct(r.curPct,1)}</span></td>
-      <td class="mono" style="color:var(--muted)">${r.prevRev!==null?INR(r.prevRev):'—'}</td>
-      <td><span style="font-size:11px;color:var(--muted)">${r.prevPct!==null?Pct(r.prevPct,1):'—'}</span></td>
-      <td>${r.trend}</td>
-      <td style="font-size:16px">${r.trendIcon}</td>
-    </tr>`).join('');
+  closeEdit();document.getElementById("savingOverlay").classList.add("on");
+  db.ref(DB_KEY).set(newD).then(()=>{document.getElementById("savingOverlay").classList.remove("on");toast("☁️ Saved & synced to all viewers!");}).catch(err=>{document.getElementById("savingOverlay").classList.remove("on");setSyncStatus("error","Save failed: "+err.message);toast("❌ Save failed — check connection");D=newD;renderAll();});
 }
 
 /* ═══════════════════════════════════════════
    NEW MONTH FLOW
 ═══════════════════════════════════════════ */
-let nmCurrentStep = 0;
-
+let nmStep=0;
 function openNewMonth(){
-  nmCurrentStep = 0;
-  // Pre-fill fields
-  const {target, daysTotal} = D.june;
-  const achieved = D.june.daily.reduce((s,v)=>s+v,0);
-
-  // Suggest next month
-  const activeKey = D.activeMonth || "June-2026";
-  const parts = activeKey.split('-');
-  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const curMonthIdx = MONTHS.findIndex(m=>parts[0] && parts[0].toLowerCase()===m.toLowerCase());
-  const curYear = parseInt(parts[1])||2026;
-  let nextMonthIdx = curMonthIdx>=0 ? (curMonthIdx+1)%12 : 6;
-  let nextYear = nextMonthIdx===0 ? curYear+1 : curYear;
-  const nextMonthName = MONTHS[nextMonthIdx];
-  const nextKey = nextMonthName+'-'+nextYear;
-  const daysInNext = new Date(nextYear, nextMonthIdx+1, 0).getDate();
-
-  document.getElementById("nmMonthLabel").value = nextMonthName+' '+nextYear;
-  document.getElementById("nmMonthKey").value   = nextKey;
-  document.getElementById("nmDaysTotal").value  = daysInNext;
-  document.getElementById("nmTarget").value     = target;
-  document.getElementById("nmStartDate").value  = nextYear+'-'+String(nextMonthIdx+1).padStart(2,'0')+'-01';
-
-  // Summary card
-  document.getElementById("nmCurrentSummary").innerHTML = `
-    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">${activeKey.replace('-',' ')} — Final Summary</div>
-    <div class="nm-summary-row"><span>Total Revenue</span><strong style="color:${pCol(achieved/target*100)}">${INR(achieved)}</strong></div>
-    <div class="nm-summary-row"><span>Monthly Target</span><strong>${INR(target)}</strong></div>
-    <div class="nm-summary-row"><span>Achievement</span><strong style="color:${pCol(achieved/target*100)}">${Pct(target>0?achieved/target*100:0,1)}</strong></div>
-    <div class="nm-summary-row"><span>Days Elapsed</span><strong>${D.june.daysElapsed} of ${daysTotal}</strong></div>
-    <div class="nm-summary-row"><span>Active Agents</span><strong>${D.agents.filter(a=>a.active!==false).length}</strong></div>
-    <div class="nm-summary-row"><span>Avg DRR</span><strong>${INR(D.june.daysElapsed>0?Math.round(achieved/D.june.daysElapsed):0)}</strong></div>
-  `;
-
-  nmSetStep(0);
-  document.getElementById("newMonthOvl").classList.add("on");
+  nmStep=0;
+  const{target,daysTotal,daysElapsed}=D.june,achieved=D.june.daily.reduce((s,v)=>s+v,0);
+  const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const parts=(D.activeMonth||"June-2026").split("-"),ci=MONTHS.findIndex(m=>parts[0]&&parts[0].toLowerCase()===m.toLowerCase()),cy=parseInt(parts[1])||2026;
+  let ni=(ci>=0?(ci+1)%12:6),ny=ni===0?cy+1:cy;
+  const nm=MONTHS[ni],nk=nm+"-"+ny,nd=new Date(ny,ni+1,0).getDate();
+  document.getElementById("nmLabel").value=nm+" "+ny;
+  document.getElementById("nmKey").value=nk;
+  document.getElementById("nmDays").value=nd;
+  document.getElementById("nmTarget").value=target;
+  document.getElementById("nmStart").value=ny+"-"+String(ni+1).padStart(2,"0")+"-01";
+  document.getElementById("nmCurrentSummary").innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">${(D.activeMonth||"June-2026").replace("-"," ")} — Final Summary</div><div class="nm-row"><span>Total Revenue</span><strong style="color:${pCol(achieved/target*100)}">${INR(achieved)}</strong></div><div class="nm-row"><span>Monthly Target</span><strong>${INR(target)}</strong></div><div class="nm-row"><span>Achievement</span><strong style="color:${pCol(achieved/target*100)}">${Pct(target>0?achieved/target*100:0,1)}</strong></div><div class="nm-row"><span>Days Elapsed</span><strong>${daysElapsed} of ${daysTotal}</strong></div><div class="nm-row"><span>Active Agents</span><strong>${D.agents.filter(a=>a.active!==false).length}</strong></div>`;
+  nmSetStep(0);document.getElementById("newMonthOvl").classList.add("on");
 }
-
-function closeNewMonth(){ document.getElementById("newMonthOvl").classList.remove("on"); }
-
-function nmSetStep(step){
-  nmCurrentStep = step;
-  for(let i=0;i<4;i++){
-    document.getElementById("nmStep"+i).classList.toggle("on", i===step);
-    const dot = document.getElementById("nmDot"+i);
-    dot.className = "nm-step-circle" + (i<step?" done":i===step?" current":"");
-    dot.textContent = i<step?"✓":(i+1);
-  }
-  const btn = document.getElementById("nmNextBtn");
-  const act = document.getElementById("nmActions");
-  if(step===0){ btn.textContent="Archive & Continue →"; btn.style.display=""; }
-  else if(step===1){ btn.textContent="Set Up New Month →"; btn.style.display=""; }
-  else if(step===2){ btn.textContent="🚀 Start New Month"; btn.style.display=""; }
-  else { btn.style.display="none"; act.querySelector('.btn-sec').textContent="Close"; }
+function closeNewMonth(){document.getElementById("newMonthOvl").classList.remove("on");}
+function nmSetStep(s){
+  nmStep=s;
+  for(let i=0;i<4;i++){document.getElementById("nmStep"+i).classList.toggle("on",i===s);const d=document.getElementById("nmDot"+i);d.className="nm-circle"+(i<s?" done":i===s?" current":"");d.textContent=i<s?"✓":(i+1);}
+  const btn=document.getElementById("nmBtn"),act=document.getElementById("nmActions");
+  if(s===0){btn.textContent="Archive & Continue →";btn.style.display="";}
+  else if(s===1){btn.textContent="Set Up New Month →";btn.style.display="";}
+  else if(s===2){btn.textContent="🚀 Start New Month";btn.style.display="";}
+  else{btn.style.display="none";act.querySelector(".btn-sec").textContent="Close";}
 }
-
-function nmNext(){
-  if(nmCurrentStep===0){ nmSetStep(1); return; }
-  if(nmCurrentStep===1){ nmSetStep(2); return; }
-  if(nmCurrentStep===2){ nmExecuteRollover(); return; }
-}
-
+function nmNext(){if(nmStep===0){nmSetStep(1);}else if(nmStep===1){nmSetStep(2);}else if(nmStep===2){nmExecuteRollover();}}
 function nmExecuteRollover(){
-  const label    = document.getElementById("nmMonthLabel").value.trim() || "New Month";
-  const key      = document.getElementById("nmMonthKey").value.trim() || label.replace(/ /g,'-');
-  const days     = parseInt(document.getElementById("nmDaysTotal").value)||30;
-  const tgt      = parseInt(document.getElementById("nmTarget").value)||D.june.target;
-  const startDt  = document.getElementById("nmStartDate").value;
-  const topNote  = document.getElementById("nmTopNote").value.trim();
-  const mNote    = document.getElementById("nmMonthNote").value.trim();
-
-  // Build history entry from current month
-  const {target,daysTotal,daysElapsed} = D.june;
-  const achieved = D.june.daily.reduce((s,v)=>s+v,0);
-  const histEntry = {
-    month: D.activeMonth||"Current",
-    label: (D.activeMonth||"Current").replace('-',' '),
-    daysTotal, daysInMonth:daysTotal,
-    target, totalRevenue:achieved,
-    achievement: target>0?(achieved/target*100):0,
-    agentTarget: D.agents.length>0?Math.round(target/D.agents.length):0,
-    avgDRR: daysElapsed>0?Math.round(achieved/daysElapsed):0,
-    closedAt: new Date().toISOString().split('T')[0],
-    topNote, mNote,
-    agentData: D.agents.map(ag=>({
-      name:ag.name,
-      target:ag.target,
-      total:ag.daily?ag.daily.slice(0,daysElapsed).reduce((s,v)=>s+(v||0),0):0
-    }))
-  };
-
-  // Build new month data
-  const agentTgt = Math.round(tgt / D.agents.filter(a=>a.active!==false).length);
-  const newD = JSON.parse(JSON.stringify(D));
-  newD.history = [...(D.history||[]), histEntry];
-  newD.activeMonth = key;
-  newD.lastUpdated = startDt || new Date().toISOString().split('T')[0];
-  newD.june = {
-    target: tgt,
-    daysTotal: days,
-    daysElapsed: 0,
-    daily: Array(days).fill(0)
-  };
-  // Reset each active agent's daily array; keep target same
-  newD.agents = newD.agents.map(ag=>({
-    ...ag,
-    target: ag.active!==false ? agentTgt : ag.target,
-    daily: Array(days).fill(0)
-  }));
-
-  document.getElementById("sovl").classList.add("on");
-  DB_REF.set(newD)
-    .then(()=>{
-      document.getElementById("sovl").classList.remove("on");
-      document.getElementById("nmDoneTitle").textContent = label+" started!";
-      document.getElementById("nmDoneDesc").textContent =
-        "Previous month archived. All agent targets reset to "+INR(agentTgt)+". Dashboard live for "+label+".";
-      nmSetStep(3);
-      toast("🚀 "+label+" started! Previous month archived in MoM history.");
-    })
-    .catch(err=>{
-      document.getElementById("sovl").classList.remove("on");
-      toast("Save failed: "+err.message, 5000);
-    });
+  const label=document.getElementById("nmLabel").value.trim()||"New Month",key=document.getElementById("nmKey").value.trim()||label.replace(/ /g,"-"),days=parseInt(document.getElementById("nmDays").value)||30,tgt=parseInt(document.getElementById("nmTarget").value)||D.june.target,startDt=document.getElementById("nmStart").value;
+  const{target,daysTotal,daysElapsed}=D.june,achieved=D.june.daily.reduce((s,v)=>s+v,0);
+  const histEntry={month:D.activeMonth||"Current",label:(D.activeMonth||"Current").replace("-"," "),daysTotal,daysInMonth:daysTotal,target,totalRevenue:achieved,achievement:target>0?(achieved/target*100):0,agentTarget:D.agents.length>0?Math.round(target/D.agents.length):0,avgDRR:daysElapsed>0?Math.round(achieved/daysElapsed):0,closedAt:new Date().toISOString().split("T")[0],topNote:document.getElementById("nmTopNote").value.trim(),mNote:document.getElementById("nmMonthNote").value.trim(),agentData:D.agents.map(ag=>({name:ag.name,target:ag.target,total:ag.daily?ag.daily.slice(0,daysElapsed).reduce((s,v)=>s+(v||0),0):0}))};
+  const agTgt=Math.round(tgt/Math.max(1,D.agents.filter(a=>a.active!==false).length));
+  const newD=JSON.parse(JSON.stringify(D));
+  newD.history=[...(D.history||[]),histEntry];
+  newD.activeMonth=key;newD.lastUpdated=startDt||new Date().toISOString().split("T")[0];
+  newD.june={target:tgt,daysTotal:days,daysElapsed:0,daily:Array(days).fill(0)};
+  newD.agents=newD.agents.map(ag=>({...ag,target:ag.active!==false?agTgt:ag.target,daily:Array(days).fill(0)}));
+  document.getElementById("savingOverlay").classList.add("on");
+  db.ref(DB_KEY).set(newD).then(()=>{document.getElementById("savingOverlay").classList.remove("on");document.getElementById("nmDoneTitle").textContent=label+" started!";document.getElementById("nmDoneDesc").textContent="Previous month archived. Agent targets reset to "+INR(agTgt)+".";nmSetStep(3);toast("🚀 "+label+" started! Previous month archived.");}).catch(err=>{document.getElementById("savingOverlay").classList.remove("on");toast("Save failed: "+err.message,5000);});
 }
 
-function forceShowDash(){
-  showDash();
-  try { renderAll(); } catch(e){ console.error(e); }
-  setSyncStatus("error","Firebase rules may have expired. Go to Firebase Console → Realtime Database → Rules and set read/write to true.");
+/* ═══════════════════════════════════════════
+   NAV + SCROLL SPY
+═══════════════════════════════════════════ */
+const NAV_IDS=["secSnap","secLB","secForecast","secDaily","secWeekly","secAgents","secCompare","secAction","secMoM","secTeam"];
+function navTo(el,id){
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  el.classList.add("active");
+  function tryScroll(n){
+    const t=document.getElementById(id),dash=document.getElementById("dashView");
+    if(!t||!dash||dash.style.display==="none"){if(n>0)setTimeout(()=>tryScroll(n-1),200);return;}
+    const off=32+62+46+8;
+    window.scrollTo({top:Math.max(0,t.getBoundingClientRect().top+window.scrollY-off),behavior:"smooth"});
+  }
+  tryScroll(15);
 }
-/* Show "taking too long" message after 4 seconds */
-setTimeout(()=>{
-  const slow = document.getElementById("loadingSlowMsg");
-  if(slow) slow.style.display = "block";
-}, 4000);
+window.addEventListener("scroll",()=>{
+  const st=document.getElementById("scrollTop");if(st)st.classList.toggle("show",scrollY>400);
+  const dash=document.getElementById("dashView");if(!dash||dash.style.display==="none")return;
+  const off=32+62+46+20;let active=NAV_IDS[0];
+  NAV_IDS.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<off)active=id;});
+  document.querySelectorAll(".nav-item").forEach((n,i)=>n.classList.toggle("active",NAV_IDS[i]===active));
+},{passive:true});
 
+/* ═══════════════════════════════════════════
+   BOOT — exact from working code
+═══════════════════════════════════════════ */
+updateDaysLeftBadge();
 connectFirebase();
 </script>
-
-<!-- NEW MONTH MODAL -->
-<div class="ovl" id="newMonthOvl">
-  <div class="modal wide">
-    <h2>📅 Start New Month</h2>
-    <p>Archive the current month and set up fresh targets for the next month.</p>
-
-    <!-- Step progress -->
-    <div class="nm-progress" id="nmProgress">
-      <div class="nm-step-dot"><div class="nm-step-circle current" id="nmDot0">1</div><div class="nm-step-label">Review</div></div>
-      <div class="nm-step-dot"><div class="nm-step-circle" id="nmDot1">2</div><div class="nm-step-label">Archive</div></div>
-      <div class="nm-step-dot"><div class="nm-step-circle" id="nmDot2">3</div><div class="nm-step-label">New Month</div></div>
-      <div class="nm-step-dot"><div class="nm-step-circle" id="nmDot3">✓</div><div class="nm-step-label">Done</div></div>
-    </div>
-
-    <!-- Step 1: Review current month -->
-    <div class="nm-step on" id="nmStep0">
-      <div class="nm-info">💡 Before starting a new month, review the current month's performance below. This data will be archived.</div>
-      <div class="nm-summary-card" id="nmCurrentSummary"></div>
-      <div class="nm-warning">⚠️ Once you proceed, the current month's data is locked in history. Agent daily data will be reset for the new month.</div>
-    </div>
-
-    <!-- Step 2: Confirm archive -->
-    <div class="nm-step" id="nmStep1">
-      <div class="nm-info">✅ Current month will be saved to history. You can always view it in the MoM section.</div>
-      <div class="fg"><label>Top Performer Note (optional)</label><input type="text" id="nmTopNote" placeholder="e.g. Lucky Malik led June with ₹X"></div>
-      <div class="fg"><label>Any month-end observations</label><input type="text" id="nmMonthNote" placeholder="e.g. MCN overlap impacted leads in last week"></div>
-    </div>
-
-    <!-- Step 3: Setup new month -->
-    <div class="nm-step" id="nmStep2">
-      <div class="nm-info">🚀 Configure the new month. Agent targets default to the same as the previous month.</div>
-      <div class="two-inp">
-        <div class="fg"><label>New Month Name</label><input type="text" id="nmMonthLabel" placeholder="e.g. July 2026"></div>
-        <div class="fg"><label>Month Key (no spaces)</label><input type="text" id="nmMonthKey" placeholder="e.g. July-2026"></div>
-        <div class="fg"><label>Days in Month</label><input type="number" id="nmDaysTotal" placeholder="31"></div>
-        <div class="fg"><label>Team Monthly Target (₹)</label><input type="number" id="nmTarget" placeholder="885000"></div>
-      </div>
-      <div class="fg"><label>Start Date (first day of new month)</label><input type="date" id="nmStartDate"></div>
-      <div class="nm-info">Agent targets will be distributed equally from the team target. All daily revenues reset to 0.</div>
-    </div>
-
-    <!-- Step 4: Confirmation -->
-    <div class="nm-step" id="nmStep3">
-      <div style="text-align:center;padding:20px 0">
-        <div style="font-size:48px;margin-bottom:12px">🎉</div>
-        <div style="font-size:18px;font-weight:800;margin-bottom:8px" id="nmDoneTitle">New month started!</div>
-        <div style="font-size:13px;color:var(--muted)" id="nmDoneDesc">Dashboard reset for the new month. Previous month archived.</div>
-      </div>
-    </div>
-
-    <div class="m-act" id="nmActions">
-      <button class="btn-sec" onclick="closeNewMonth()">Cancel</button>
-      <button class="btn-primary" id="nmNextBtn" onclick="nmNext()">Review &amp; Continue →</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
