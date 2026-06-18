@@ -523,6 +523,20 @@ tfoot td{padding:10px 13px;}
 </head>
 <body>
 
+
+<!-- LOADING OVERLAY (covers content while Firebase connects) -->
+<div id="loadingOverlay" style="position:fixed;inset:0;background:var(--page);z-index:150;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .5s;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:15px solid var(--hgold)"></div>
+      <span style="font-size:20px;font-weight:900;color:var(--hblack);letter-spacing:-.5px">HOUSING<span style="color:var(--hgold)">.com</span></span>
+    </div>
+    <div style="width:44px;height:44px;border:4px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .8s linear infinite"></div>
+    <div style="font-size:14px;font-weight:600;color:var(--muted)">Loading Sales Command Centre…</div>
+    <div style="font-size:11px;color:var(--n400)" id="loadingMsg">Connecting to Firebase</div>
+  </div>
+</div>
+
 <!-- SYNC STATUS BAR -->
 <div class="sync-bar" id="syncBar">
   <div class="sdot blink" id="sdot"></div>
@@ -618,7 +632,7 @@ tfoot td{padding:10px 13px;}
 </div>
 
 <!-- MAIN DASHBOARD (hidden until Firebase responds) -->
-<div class="wrap" id="mainWrap" style="display:none">
+<div class="wrap" id="mainWrap">
 
   <!-- DAYS BANNER -->
   <div class="days-banner">
@@ -988,6 +1002,9 @@ function agTot(ag){return ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+v
 ═══════════════════════════════════════ */
 let _syncTime=null,_clockInt=null;
 function setSyncStatus(state,msg){
+  const lm = document.getElementById("loadingMsg");
+  if(lm && state==="connecting") lm.textContent = msg||"Connecting to Firebase…";
+
   const bar=document.getElementById("syncBar"),dot=document.getElementById("sdot"),txt=document.getElementById("syncMsg");
   dot.className="sdot";bar.className="sync-bar";
   if(state==="live"){
@@ -1017,8 +1034,11 @@ function updateDaysChip(){
    SHOW DASHBOARD
 ═══════════════════════════════════════ */
 function showDash(){
-  document.getElementById("skeletonView").style.display="none";
-  document.getElementById("mainWrap").style.display="block";
+  const overlay = document.getElementById("loadingOverlay");
+  if(overlay){
+    overlay.style.opacity="0";
+    setTimeout(()=>{ overlay.style.display="none"; }, 500);
+  }
 }
 
 /* ═══════════════════════════════════════
