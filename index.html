@@ -534,6 +534,10 @@ tfoot td{padding:10px 13px;}
     <div style="width:44px;height:44px;border:4px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .8s linear infinite"></div>
     <div style="font-size:14px;font-weight:600;color:var(--muted)">Loading Sales Command Centre…</div>
     <div style="font-size:11px;color:var(--n400)" id="loadingMsg">Connecting to Firebase</div>
+    <div id="loadingSlowMsg" style="display:none;font-size:11px;color:var(--amber);margin-top:8px;text-align:center">
+      Taking longer than usual…<br>
+      <span style="cursor:pointer;text-decoration:underline;color:var(--hgold)" onclick="forceShowDash()">Click here to load with cached data</span>
+    </div>
   </div>
 </div>
 
@@ -1046,24 +1050,47 @@ function showDash(){
 ═══════════════════════════════════════ */
 function connectFirebase(){
   setSyncStatus("connecting");
-  DB_REF.once("value").then(snap=>{
-    if(!snap.exists()) DB_REF.set(D);
-  }).catch(()=>{});
-  DB_REF.on("value",snap=>{
+  
+  /* Hard timeout: show dashboard after 8s regardless of Firebase */
+  const fbTimeout = setTimeout(()=>{
+    showDash();
+    try { renderAll(); } catch(e){ console.error("Render error:", e); }
+    setSyncStatus("error","⚠ Firebase timeout — showing cached data");
+  }, 8000);
+
+  DB_REF.on("value", snap=>{
+    clearTimeout(fbTimeout);
     if(snap.exists()){
-      const v=snap.val();
-      if(v.june)v.june.daily=toArr(v.june.daily);
-      v.mayDaily=toArr(v.mayDaily);v.mayWeekly=toArr(v.mayWeekly);
-      v.juneWeekly=toArr(v.juneWeekly);v.agents=toArr(v.agents);
-      v.agents.forEach(a=>{a.daily=toArr(a.daily);if(a.active===undefined)a.active=true;});
-      v.history = toArr(v.history||[]);
-      if(v.lastUpdated)v.june.daysElapsed=calcDE(v.lastUpdated,v.june.daysTotal);
-      D=v;
+      const v = snap.val();
+      try {
+        if(v.june)v.june.daily = toArr(v.june.daily);
+        v.mayDaily    = toArr(v.mayDaily||[]);
+        v.mayWeekly   = toArr(v.mayWeekly||[]);
+        v.juneWeekly  = toArr(v.juneWeekly||[]);
+        v.agents      = toArr(v.agents||[]);
+        v.agents.forEach(a=>{
+          a.daily  = toArr(a.daily||[]);
+          if(a.active===undefined) a.active = true;
+        });
+        v.history = toArr(v.history||[]);
+        if(v.lastUpdated) v.june.daysElapsed = calcDE(v.lastUpdated, v.june.daysTotal);
+        D = v;
+        /* Seed missing fields if old data */
+        if(!D.activeMonth) D.activeMonth = "June-2026";
+        if(!D.history) D.history = [];
+      } catch(e){ console.error("Data parse error:", e); }
+    } else {
+      /* No data in Firebase yet — seed with defaults */
+      DB_REF.set(D).catch(()=>{});
     }
-    showDash();renderAll();
+    showDash();
+    try { renderAll(); } catch(e){ console.error("Render error:", e); }
     setSyncStatus("live");
-  },err=>{
-    showDash();renderAll();
+  }, err=>{
+    clearTimeout(fbTimeout);
+    console.error("Firebase error:", err);
+    showDash();
+    try { renderAll(); } catch(e){ console.error("Render error:", e); }
     setSyncStatus("error","⚠ Firebase: "+err.message);
   });
 }
@@ -1752,6 +1779,17 @@ function nmExecuteRollover(){
       toast("Save failed: "+err.message, 5000);
     });
 }
+
+function forceShowDash(){
+  showDash();
+  try { renderAll(); } catch(e){ console.error(e); }
+  setSyncStatus("error","Firebase rules may have expired. Go to Firebase Console → Realtime Database → Rules and set read/write to true.");
+}
+/* Show "taking too long" message after 4 seconds */
+setTimeout(()=>{
+  const slow = document.getElementById("loadingSlowMsg");
+  if(slow) slow.style.display = "block";
+}, 4000);
 
 connectFirebase();
 </script>
