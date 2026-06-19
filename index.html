@@ -456,10 +456,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
         <option value="current">📅 Current Month</option>
       </select>
     </div>
-    <button class="btn-newmonth" onclick="openNewMonth()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
-      New Month
-    </button>
+
     <button class="btn-update" onclick="openLogin()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
       Update Data
@@ -692,6 +689,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <button class="m-tab" onclick="swTab('tpAgents',1)">All Agents</button>
       <button class="m-tab" onclick="swTab('tpWeekly',2)">Weekly</button>
       <button class="m-tab" onclick="swTab('tpRoster',3)">Team Roster</button>
+      <button class="m-tab" onclick="swTab('tpNewMonth',4);initNewMonthTab()" style="color:#d97706">📅 New Month</button>
     </div>
     <div class="tp on" id="tpJune">
       <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--blue-d);">💡 <strong>Days Elapsed auto-calculates</strong> from the Last Updated date — just set date = today.</div>
@@ -724,60 +722,75 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="junWkInputs"></div>
 
     <div class="tp" id="tpRoster">
-      <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--blue-d);">
-        💡 Mark agents as <strong>inactive</strong> if they've left the process — they'll be excluded from all KPIs, charts and leaderboard.
+      <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:14px;font-size:11px;color:var(--blue-d);">
+        💡 Toggle agents between <strong>Active</strong> and <strong>Inactive</strong>. Inactive agents are excluded from all KPIs, charts and leaderboard.
       </div>
-      <div class="roster-summary" id="rosterSummary" style="padding:0 0 12px 0"></div>
-      <div class="roster-grid" id="rosterGrid" style="padding:0"></div>
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap" id="rosterSummary"></div>
+      <div id="rosterGrid"></div>
+    </div>
+    <div class="tp" id="tpNewMonth">
+      <!-- Step progress -->
+      <div style="display:flex;gap:0;margin-bottom:20px" id="nmProgressInline">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative">
+          <div style="position:absolute;top:14px;left:50%;width:100%;height:2px;background:var(--border);z-index:0"></div>
+          <div class="nm-circle current" id="nmDot0" style="z-index:1">1</div>
+          <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Review</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative">
+          <div style="position:absolute;top:14px;left:50%;width:100%;height:2px;background:var(--border);z-index:0"></div>
+          <div class="nm-circle" id="nmDot1" style="z-index:1">2</div>
+          <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Configure</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative">
+          <div class="nm-circle" id="nmDot2" style="z-index:1">✓</div>
+          <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Done</div>
+        </div>
+      </div>
+
+      <!-- Step 0: Review -->
+      <div class="nm-step on" id="nmStep0">
+        <div class="nm-info">📋 Review current month before archiving to history.</div>
+        <div class="nm-card" id="nmCurrentSummary"></div>
+        <div class="nm-warn" style="margin-top:10px">⚠️ Once archived, this month is locked in history and agent dailies reset to zero.</div>
+        <div style="margin-top:16px;display:flex;justify-content:flex-end">
+          <button class="btn-primary" onclick="nmNext()" id="nmBtn0">Archive &amp; Configure New Month →</button>
+        </div>
+      </div>
+
+      <!-- Step 1: Configure -->
+      <div class="nm-step" id="nmStep1">
+        <div class="nm-info">🚀 Set targets for the new month. Agent targets split equally from team target.</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <div class="fg" style="flex:1;margin-bottom:0"><label>Month Notes (optional)</label><input type="text" id="nmTopNote" placeholder="e.g. Lucky Malik led with highest revenue"></div>
+        </div>
+        <div class="two-inp">
+          <div class="fg"><label>New Month Name</label><input type="text" id="nmLabel" placeholder="e.g. July 2026"></div>
+          <div class="fg"><label>Month Key (no spaces)</label><input type="text" id="nmKey" placeholder="e.g. July-2026"></div>
+          <div class="fg"><label>Days in Month</label><input type="number" id="nmDays" placeholder="31"></div>
+          <div class="fg"><label>Team Monthly Target (₹)</label><input type="number" id="nmTarget" placeholder="885000"></div>
+        </div>
+        <div class="fg"><label>Start Date</label><input type="date" id="nmStart"></div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+          <button class="btn-sec" onclick="nmSetStep(0)">← Back</button>
+          <button class="btn-primary" onclick="nmExecuteRollover()">🚀 Start New Month</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Done -->
+      <div class="nm-step" id="nmStep2">
+        <div style="text-align:center;padding:20px 0">
+          <div style="font-size:48px;margin-bottom:12px">🎉</div>
+          <div style="font-size:18px;font-weight:800;margin-bottom:8px" id="nmDoneTitle">New month started!</div>
+          <div style="font-size:13px;color:var(--muted)" id="nmDoneDesc">Dashboard reset. Previous month archived.</div>
+          <button class="btn-primary" style="margin-top:20px" onclick="closeEdit()">Close</button>
+        </div>
+      </div>
     </div>
     </div>
     <div class="m-act"><button class="btn-sec" onclick="closeEdit()">Cancel</button><button class="btn-primary" onclick="saveData()">☁️ Save &amp; Sync All</button></div>
   </div>
 </div>
 
-<!-- NEW MONTH MODAL -->
-<div class="ovl" id="newMonthOvl">
-  <div class="modal wide">
-    <h2>📅 Start New Month</h2><p>Archive the current month and configure fresh targets.</p>
-    <div class="nm-progress">
-      <div class="nm-step-dot"><div class="nm-circle current" id="nmDot0">1</div><div class="nm-step-lbl">Review</div></div>
-      <div class="nm-step-dot"><div class="nm-circle" id="nmDot1">2</div><div class="nm-step-lbl">Archive</div></div>
-      <div class="nm-step-dot"><div class="nm-circle" id="nmDot2">3</div><div class="nm-step-lbl">Configure</div></div>
-      <div class="nm-step-dot"><div class="nm-circle" id="nmDot3">✓</div><div class="nm-step-lbl">Done</div></div>
-    </div>
-    <div class="nm-step on" id="nmStep0">
-      <div class="nm-info">💡 Review the current month's performance before archiving.</div>
-      <div class="nm-card" id="nmCurrentSummary"></div>
-      <div class="nm-warn">⚠️ Once you proceed, this month is locked in history and agent dailies reset to zero.</div>
-    </div>
-    <div class="nm-step" id="nmStep1">
-      <div class="nm-info">✅ Current month will be saved to history and visible in MoM analysis.</div>
-      <div class="fg"><label>Top Performer Note (optional)</label><input type="text" id="nmTopNote" placeholder="e.g. Lucky Malik led with ₹X"></div>
-      <div class="fg"><label>Month-end Observations</label><input type="text" id="nmMonthNote" placeholder="e.g. MCN overlap impacted last week leads"></div>
-    </div>
-    <div class="nm-step" id="nmStep2">
-      <div class="nm-info">🚀 Configure the new month. Agent targets will be distributed equally from team target.</div>
-      <div class="two-inp">
-        <div class="fg"><label>New Month Name</label><input type="text" id="nmLabel" placeholder="e.g. July 2026"></div>
-        <div class="fg"><label>Month Key (no spaces)</label><input type="text" id="nmKey" placeholder="e.g. July-2026"></div>
-        <div class="fg"><label>Days in Month</label><input type="number" id="nmDays" placeholder="31"></div>
-        <div class="fg"><label>Team Monthly Target (₹)</label><input type="number" id="nmTarget" placeholder="885000"></div>
-      </div>
-      <div class="fg"><label>Start Date</label><input type="date" id="nmStart"></div>
-    </div>
-    <div class="nm-step" id="nmStep3">
-      <div style="text-align:center;padding:20px 0">
-        <div style="font-size:48px;margin-bottom:12px">🎉</div>
-        <div style="font-size:18px;font-weight:800;margin-bottom:8px" id="nmDoneTitle">New month started!</div>
-        <div style="font-size:13px;color:var(--muted)" id="nmDoneDesc">Dashboard reset. Previous month archived.</div>
-      </div>
-    </div>
-    <div class="m-act" id="nmActions">
-      <button class="btn-sec" onclick="closeNewMonth()">Cancel</button>
-      <button class="btn-primary" id="nmBtn" onclick="nmNext()">Review &amp; Continue →</button>
-    </div>
-  </div>
-</div>
 
 <script>
 /* ═══════════════════════════════════════════
@@ -1149,11 +1162,36 @@ function renderInsights(){
 function renderRoster(){
   const agents=D.agents||[];
   const active=agents.filter(ag=>ag.active!==false),inactive=agents.filter(ag=>ag.active===false);
-  document.getElementById("rosterSummary").innerHTML=`<div class="rs-chip"><span class="rs-chip-num" style="color:#22c55e">${active.length}</span><span>Active</span></div><div class="rs-chip"><span class="rs-chip-num" style="color:#94a3b8">${inactive.length}</span><span>Inactive</span></div><div class="rs-chip"><span class="rs-chip-num" style="color:var(--hgold)">${agents.length}</span><span>Total Roster</span></div><div class="rs-chip" style="margin-left:auto;background:var(--hgold-l);border-color:var(--hgold-m)"><span style="font-size:11px;color:var(--amber-d);font-weight:600">⚠ Inactive agents excluded from KPIs</span></div>`;
+  const sumEl=document.getElementById("rosterSummary");
+  if(sumEl) sumEl.innerHTML=`
+    <div class="stat-pill"><div class="stat-dot" style="background:#22c55e"></div><strong>${active.length}</strong><em>Active</em></div>
+    <div class="stat-pill"><div class="stat-dot" style="background:#94a3b8"></div><strong>${inactive.length}</strong><em>Inactive</em></div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--hgold)"></div><strong>${agents.length}</strong><em>Total</em></div>
+    <div class="stat-pill" style="background:var(--hgold-l);border-color:var(--hgold-m)"><span style="font-size:10px;color:var(--amber-d)">⚠ Inactive = excluded from all KPIs</span></div>`;
   const de=D.june.daysElapsed;
-  document.getElementById("rosterGrid").innerHTML=agents.map((ag,i)=>{
-    const isAct=ag.active!==false,tot=ag.daily?ag.daily.slice(0,de).reduce((s,v)=>s+(v||0),0):0,pct=ag.target>0?(tot/ag.target*100):0,bc=pCol(pct),isOC=ag.name.includes("OC"),col=avC(i);
-    return`<div class="agent-card ${isAct?"":"inactive"}" style="--ac:${isAct?col:"#94a3b8"}"><div class="ac-top"><div class="ac-avatar" style="background:${isAct?col:"#94a3b8"}">${ini(ag.name)}<span class="ac-status-dot ${isAct?"active":"inactive"}"></span></div><div style="flex:1;min-width:0"><div class="ac-name">${ag.name.replace(" OC","")}</div><div style="display:flex;gap:5px;margin-top:4px;flex-wrap:wrap"><span class="ac-badge ${isAct?"active":"inactive"}">${isAct?"● Active":"○ Inactive"}</span>${isOC?'<span class="ac-badge oc">OC</span>':""}</div></div></div>${isAct?`<div class="ac-stats"><div class="ac-stat"><div class="ac-stat-val" style="color:${bc}">${INR(tot)}</div><div class="ac-stat-lbl">Jun Total</div></div><div class="ac-stat"><div class="ac-stat-val" style="color:${pct>=60?"#16a34a":"#dc2626"}">${Pct(pct,0)}</div><div class="ac-stat-lbl">Achievement</div></div></div><div class="ac-prog"><div class="ac-prog-lbl"><span>vs Target</span><strong style="color:${bc}">${INR(tot)} / ${INR(ag.target)}</strong></div><div class="ac-prog-bar"><div class="ac-prog-fill" style="width:${Math.min(pct,100).toFixed(0)}%;background:${bc}"></div></div></div>`:`<div style="padding:10px 0 6px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px"><span style="font-size:18px">🚪</span><span>Removed from active process${ag.note?": "+ag.note:""}</span></div>`}<button class="ac-toggle ${isAct?"mark-inactive":"mark-active"}" onclick="toggleAgentStatus(${i})">${isAct?"✕ Mark as Left Process":"✓ Mark as Active Again"}</button>${ag.inactiveDate?`<div style="font-size:10px;color:var(--muted);font-style:italic;margin-top:6px;padding:5px 8px;background:var(--n100);border-radius:var(--r-sm)">Inactive since: ${ag.inactiveDate}</div>`:""}</div>`;
+  const gridEl=document.getElementById("rosterGrid");
+  if(!gridEl) return;
+  gridEl.innerHTML=agents.map((ag,i)=>{
+    const isAct=ag.active!==false;
+    const tot=ag.daily?ag.daily.slice(0,de).reduce((s,v)=>s+(v||0),0):0;
+    const pct=ag.target>0?(tot/ag.target*100):0;
+    const bc=pCol(pct);
+    const isOC=ag.name.includes("OC");
+    const col=avC(i);
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);border:1px solid ${isAct?"var(--border)":"var(--n200)"};background:${isAct?"var(--surface)":"var(--n50)"};margin-bottom:8px;opacity:${isAct?1:.75}">
+      <div style="width:36px;height:36px;border-radius:50%;background:${isAct?col:"#94a3b8"};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;position:relative">
+        ${ini(ag.name)}
+        <span style="position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;background:${isAct?"#22c55e":"#94a3b8"};border:2px solid #fff"></span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${ag.name.replace(" OC","")}${isOC?'<span style="font-size:9px;background:var(--blue-l);color:var(--blue-d);padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:700">OC</span>':""}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace">${isAct?INR(tot)+" · "+Pct(pct,0)+" achv":"Inactive since "+( ag.inactiveDate||"—")}</div>
+      </div>
+      ${isAct?`<div style="width:60px"><div style="height:4px;background:var(--n200);border-radius:2px;overflow:hidden"><div style="height:100%;width:${Math.min(pct,100).toFixed(0)}%;background:${bc};border-radius:2px"></div></div></div>`:""}
+      <button onclick="toggleAgentStatus(${i})" style="flex-shrink:0;padding:6px 12px;border-radius:var(--r-sm);border:1.5px solid ${isAct?"var(--red-m)":"var(--green-m)"};background:${isAct?"var(--red-l)":"var(--green-l)"};color:${isAct?"var(--red-d)":"var(--green-d)"};font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">
+        ${isAct?"✕ Mark Inactive":"✓ Mark Active"}
+      </button>
+    </div>`;
   }).join("");
 }
 
@@ -1267,32 +1305,34 @@ function saveData(){
    NEW MONTH FLOW
 ═══════════════════════════════════════════ */
 let nmStep=0;
-function openNewMonth(){
-  nmStep=0;
+function openNewMonth(){ swTab("tpNewMonth",4); initNewMonthTab(); openEdit(); }
+
+function initNewMonthTab(){
+  nmSetStep(0);
   const{target,daysTotal,daysElapsed}=D.june,achieved=D.june.daily.reduce((s,v)=>s+v,0);
   const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
   const parts=(D.activeMonth||"June-2026").split("-"),ci=MONTHS.findIndex(m=>parts[0]&&parts[0].toLowerCase()===m.toLowerCase()),cy=parseInt(parts[1])||2026;
   let ni=(ci>=0?(ci+1)%12:6),ny=ni===0?cy+1:cy;
   const nm=MONTHS[ni],nk=nm+"-"+ny,nd=new Date(ny,ni+1,0).getDate();
-  document.getElementById("nmLabel").value=nm+" "+ny;
-  document.getElementById("nmKey").value=nk;
-  document.getElementById("nmDays").value=nd;
-  document.getElementById("nmTarget").value=target;
-  document.getElementById("nmStart").value=ny+"-"+String(ni+1).padStart(2,"0")+"-01";
-  document.getElementById("nmCurrentSummary").innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">${(D.activeMonth||"June-2026").replace("-"," ")} — Final Summary</div><div class="nm-row"><span>Total Revenue</span><strong style="color:${pCol(achieved/target*100)}">${INR(achieved)}</strong></div><div class="nm-row"><span>Monthly Target</span><strong>${INR(target)}</strong></div><div class="nm-row"><span>Achievement</span><strong style="color:${pCol(achieved/target*100)}">${Pct(target>0?achieved/target*100:0,1)}</strong></div><div class="nm-row"><span>Days Elapsed</span><strong>${daysElapsed} of ${daysTotal}</strong></div><div class="nm-row"><span>Active Agents</span><strong>${D.agents.filter(a=>a.active!==false).length}</strong></div>`;
-  nmSetStep(0);document.getElementById("newMonthOvl").classList.add("on");
+  const lbl=document.getElementById("nmLabel");if(lbl){lbl.value=nm+" "+ny;}
+  const key=document.getElementById("nmKey");if(key){key.value=nk;}
+  const days=document.getElementById("nmDays");if(days){days.value=nd;}
+  const tgt=document.getElementById("nmTarget");if(tgt){tgt.value=target;}
+  const start=document.getElementById("nmStart");if(start){start.value=ny+"-"+String(ni+1).padStart(2,"0")+"-01";}
+  const sumEl=document.getElementById("nmCurrentSummary");
+  if(sumEl) sumEl.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">${(D.activeMonth||"June-2026").replace("-"," ")} — Final Summary</div><div class="nm-row"><span>Total Revenue</span><strong style="color:${pCol(achieved/target*100)}">${INR(achieved)}</strong></div><div class="nm-row"><span>Monthly Target</span><strong>${INR(target)}</strong></div><div class="nm-row"><span>Achievement</span><strong style="color:${pCol(achieved/target*100)}">${Pct(target>0?achieved/target*100:0,1)}</strong></div><div class="nm-row"><span>Days Elapsed</span><strong>${daysElapsed} of ${daysTotal}</strong></div><div class="nm-row"><span>Active Agents</span><strong>${D.agents.filter(a=>a.active!==false).length}</strong></div>`;
 }
-function closeNewMonth(){document.getElementById("newMonthOvl").classList.remove("on");}
+
 function nmSetStep(s){
   nmStep=s;
-  for(let i=0;i<4;i++){document.getElementById("nmStep"+i).classList.toggle("on",i===s);const d=document.getElementById("nmDot"+i);d.className="nm-circle"+(i<s?" done":i===s?" current":"");d.textContent=i<s?"✓":(i+1);}
-  const btn=document.getElementById("nmBtn"),act=document.getElementById("nmActions");
-  if(s===0){btn.textContent="Archive & Continue →";btn.style.display="";}
-  else if(s===1){btn.textContent="Set Up New Month →";btn.style.display="";}
-  else if(s===2){btn.textContent="🚀 Start New Month";btn.style.display="";}
-  else{btn.style.display="none";act.querySelector(".btn-sec").textContent="Close";}
+  for(let i=0;i<3;i++){
+    const step=document.getElementById("nmStep"+i);
+    const dot=document.getElementById("nmDot"+i);
+    if(step) step.classList.toggle("on",i===s);
+    if(dot){ dot.className="nm-circle"+(i<s?" done":i===s?" current":""); dot.textContent=i<s?"✓":(i+1); }
+  }
 }
-function nmNext(){if(nmStep===0){nmSetStep(1);}else if(nmStep===1){nmSetStep(2);}else if(nmStep===2){nmExecuteRollover();}}
+function nmNext(){if(nmStep===0){nmSetStep(1);}else if(nmStep===1){nmExecuteRollover();}}
 function nmExecuteRollover(){
   const label=document.getElementById("nmLabel").value.trim()||"New Month",key=document.getElementById("nmKey").value.trim()||label.replace(/ /g,"-"),days=parseInt(document.getElementById("nmDays").value)||30,tgt=parseInt(document.getElementById("nmTarget").value)||D.june.target,startDt=document.getElementById("nmStart").value;
   const{target,daysTotal,daysElapsed}=D.june,achieved=D.june.daily.reduce((s,v)=>s+v,0);
@@ -1304,7 +1344,7 @@ function nmExecuteRollover(){
   newD.june={target:tgt,daysTotal:days,daysElapsed:0,daily:Array(days).fill(0)};
   newD.agents=newD.agents.map(ag=>({...ag,target:ag.active!==false?agTgt:ag.target,daily:Array(days).fill(0)}));
   document.getElementById("savingOverlay").classList.add("on");
-  db.ref(DB_KEY).set(newD).then(()=>{document.getElementById("savingOverlay").classList.remove("on");document.getElementById("nmDoneTitle").textContent=label+" started!";document.getElementById("nmDoneDesc").textContent="Previous month archived. Agent targets reset to "+INR(agTgt)+".";nmSetStep(3);toast("🚀 "+label+" started! Previous month archived.");}).catch(err=>{document.getElementById("savingOverlay").classList.remove("on");toast("Save failed: "+err.message,5000);});
+  db.ref(DB_KEY).set(newD).then(()=>{document.getElementById("savingOverlay").classList.remove("on");document.getElementById("nmDoneTitle").textContent=label+" started!";document.getElementById("nmDoneDesc").textContent="Previous month archived. Agent targets reset to "+INR(agTgt)+".";nmSetStep(2);toast("🚀 "+label+" started! Previous month archived.");}).catch(err=>{document.getElementById("savingOverlay").classList.remove("on");toast("Save failed: "+err.message,5000);});
 }
 
 /* ═══════════════════════════════════════════
