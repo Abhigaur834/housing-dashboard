@@ -489,10 +489,25 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 <div class="wrap" id="mainWrap">
 
   <!-- LOAD BAR (non-blocking progress indicator) -->
-  <div id="skeletonView" style="display:none"></div>
+  <div id="skeletonView">
+    <div class="sec" style="margin-top:0">June 2026 — Monthly Snapshot</div>
+    <div class="skeleton-grid">
+      <div class="sk-card"><div class="sk-line" style="width:45%"></div><div class="sk-block"></div><div class="sk-line" style="width:60%"></div><div class="sk-line" style="height:3px;margin-top:14px;width:80%"></div></div>
+      <div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div>
+      <div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div>
+    </div>
+    <div class="sec">Performance Leaderboard</div>
+    <div class="card"><div class="card-hdr"><h3>🏆 Agent Rankings</h3></div>
+      <div style="padding:12px 18px"><div class="sk-lb"></div><div class="sk-lb"></div><div class="sk-lb"></div><div class="sk-lb"></div><div class="sk-lb"></div></div>
+    </div>
+    <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">
+      <div style="width:32px;height:32px;border:3px solid var(--n200);border-top-color:var(--hgold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px"></div>
+      Connecting to Firebase…
+    </div>
+  </div>
 
   <!-- MAIN DASHBOARD (hidden until Firebase responds) -->
-  <div id="dashView">
+  <div id="dashView" style="display:none">
 
     <!-- DAYS BANNER -->
     <div class="days-banner">
@@ -1107,11 +1122,9 @@ function connectFirebase(){
   },err=>{setSyncStatus("error","⚠️ Firebase error: "+err.message);showDashboard();renderAll();});
 }
 function showDashboard(){
-  const fill=document.getElementById("loadBarFill");
-  if(fill){fill.classList.add("done");setTimeout(()=>{fill.style.display="none";},600);}
+  document.getElementById("skeletonView").style.display="none";
   document.getElementById("dashView").style.display="block";
 }
-function startLoadBar(){const fill=document.getElementById("loadBarFill");if(fill){fill.style.display="";fill.classList.remove("done");fill.classList.add("running");}}
 
 /* ═══════════════════════════════════════════
    DERIVE
@@ -1654,15 +1667,14 @@ function renderViewMonth(m){
 }
 
 updateDaysLeftBadge();
-renderAll();
-startLoadBar();
 connectFirebase();
 connectCDR();
-// Fallback: if Firebase hasn't responded in 8 seconds, show error state
+// Fallback: if Firebase hasn't responded in 8 seconds, show default data
 setTimeout(()=>{
   if(!fbListenerActive){
-    setSyncStatus("error","⚠️ Firebase taking too long — showing cached data");
     showDashboard();
+    renderAll();
+    setSyncStatus("error","⚠️ Firebase taking long — showing default data");
   }
 }, 8000);
 </script>
