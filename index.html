@@ -676,6 +676,8 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   <div class="modal">
     <h2>🔐 Admin Login</h2><p>Enter your password to update data.</p>
     <div class="fg"><label>Password</label><input type="password" id="loginPw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"><div class="err" id="loginErr">Incorrect password.</div></div>
+    
+
     <div class="m-act"><button class="btn-sec" onclick="closeLogin()">Cancel</button><button class="btn-primary" onclick="doLogin()">Login</button></div>
   </div>
 </div>
@@ -688,7 +690,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <button class="m-tab on" onclick="swTab('tpJune',0)">June KPIs</button>
       <button class="m-tab" onclick="swTab('tpAgents',1)">All Agents</button>
       <button class="m-tab" onclick="swTab('tpWeekly',2)">Weekly</button>
-      <button class="m-tab" onclick="swTab('tpRoster',3)">Team Roster</button>
+      <button class="m-tab" onclick="swTab('tpRoster',3);renderRoster()">Team Roster</button>
       <button class="m-tab" onclick="swTab('tpNewMonth',4);initNewMonthTab()" style="color:#d97706">📅 New Month</button>
     </div>
     <div class="tp on" id="tpJune">
@@ -723,14 +725,14 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 
     <div class="tp" id="tpRoster">
       <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:14px;font-size:11px;color:var(--blue-d);">
-        💡 Toggle agents between <strong>Active</strong> and <strong>Inactive</strong>. Inactive agents are excluded from all KPIs, charts and leaderboard.
+        💡 Toggle agents <strong>Active / Inactive</strong>. Inactive agents are excluded from all KPIs, charts and leaderboard.
       </div>
-      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap" id="rosterSummary"></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap" id="rosterSummary"></div>
       <div id="rosterGrid"></div>
     </div>
+
     <div class="tp" id="tpNewMonth">
-      <!-- Step progress -->
-      <div style="display:flex;gap:0;margin-bottom:20px" id="nmProgressInline">
+      <div style="display:flex;gap:0;margin-bottom:20px">
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative">
           <div style="position:absolute;top:14px;left:50%;width:100%;height:2px;background:var(--border);z-index:0"></div>
           <div class="nm-circle current" id="nmDot0" style="z-index:1">1</div>
@@ -741,28 +743,24 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
           <div class="nm-circle" id="nmDot1" style="z-index:1">2</div>
           <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Configure</div>
         </div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px">
           <div class="nm-circle" id="nmDot2" style="z-index:1">✓</div>
           <div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Done</div>
         </div>
       </div>
 
-      <!-- Step 0: Review -->
       <div class="nm-step on" id="nmStep0">
-        <div class="nm-info">📋 Review current month before archiving to history.</div>
+        <div class="nm-info">📋 Review current month performance before archiving.</div>
         <div class="nm-card" id="nmCurrentSummary"></div>
         <div class="nm-warn" style="margin-top:10px">⚠️ Once archived, this month is locked in history and agent dailies reset to zero.</div>
         <div style="margin-top:16px;display:flex;justify-content:flex-end">
-          <button class="btn-primary" onclick="nmNext()" id="nmBtn0">Archive &amp; Configure New Month →</button>
+          <button class="btn-primary" onclick="nmNext()">Archive &amp; Configure →</button>
         </div>
       </div>
 
-      <!-- Step 1: Configure -->
       <div class="nm-step" id="nmStep1">
-        <div class="nm-info">🚀 Set targets for the new month. Agent targets split equally from team target.</div>
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <div class="fg" style="flex:1;margin-bottom:0"><label>Month Notes (optional)</label><input type="text" id="nmTopNote" placeholder="e.g. Lucky Malik led with highest revenue"></div>
-        </div>
+        <div class="nm-info">🚀 Configure the new month. Targets split equally from team target.</div>
+        <div class="fg"><label>Month Notes (optional)</label><input type="text" id="nmTopNote" placeholder="e.g. Lucky Malik led with highest revenue"></div>
         <div class="two-inp">
           <div class="fg"><label>New Month Name</label><input type="text" id="nmLabel" placeholder="e.g. July 2026"></div>
           <div class="fg"><label>Month Key (no spaces)</label><input type="text" id="nmKey" placeholder="e.g. July-2026"></div>
@@ -776,7 +774,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
         </div>
       </div>
 
-      <!-- Step 2: Done -->
       <div class="nm-step" id="nmStep2">
         <div style="text-align:center;padding:20px 0">
           <div style="font-size:48px;margin-bottom:12px">🎉</div>
@@ -786,8 +783,11 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
         </div>
       </div>
     </div>
+
+    <div class="m-act">
+      <button class="btn-sec" onclick="closeEdit()">Cancel</button>
+      <button class="btn-primary" onclick="saveData()">☁️ Save &amp; Sync All</button>
     </div>
-    <div class="m-act"><button class="btn-sec" onclick="closeEdit()">Cancel</button><button class="btn-primary" onclick="saveData()">☁️ Save &amp; Sync All</button></div>
   </div>
 </div>
 
