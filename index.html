@@ -34,7 +34,15 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
 
 /* ── SYNC STATUS BAR ── */
-.sync-bar{background:linear-gradient(90deg,#052e16,#0a3d1e);border-bottom:1px solid rgba(247,195,26,.15);padding:0 28px;height:30px;display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);position:sticky;top:0;z-index:400;}
+.sync-bar{
+  background:linear-gradient(90deg,#052e16,#0a3d1e);
+  border-bottom:1px solid rgba(247,195,26,.15);
+  padding:0 28px;
+  height:30px;
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;color:rgba(255,255,255,.6);
+  position:sticky;top:0;z-index:400;
+}
 .sync-bar.err{background:linear-gradient(90deg,#450a0a,#5c1a1a);}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;transition:background .3s;}
 .sync-dot.connecting{background:#fbbf24;animation:blink .8s ease-in-out infinite;}
@@ -66,9 +74,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .btn-update{background:var(--hgold);color:#000;border:none;padding:8px 18px;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s var(--ease-out);box-shadow:0 2px 12px rgba(247,195,26,.3);letter-spacing:.2px;}
 .btn-update:hover{background:var(--hgold-d);transform:translateY(-1px);box-shadow:0 4px 18px rgba(247,195,26,.4);}
 .btn-update svg{width:13px;height:13px;}
-/* archive dropdown */
-.archive-select{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;padding:5px 10px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
-.archive-select option{background:#111;color:#fff;}
 
 /* WRAP */
 .wrap{max-width:1500px;margin:0 auto;padding:24px 28px;}
@@ -80,13 +85,15 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .sec::after{content:'';flex:1;height:1px;background:var(--border);}
 .sec:first-child{margin-top:0;}
 
-/* SKELETON */
+/* ── SKELETON LOADER ── */
 .skeleton-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin-bottom:4px;}
 .sk-card{background:var(--surface);border-radius:var(--r-lg);padding:16px 18px 14px;border:1px solid var(--border);border-top:3px solid var(--n200);height:110px;overflow:hidden;position:relative;}
 .sk-card::after,.sk-line::after,.sk-block::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.6) 50%,transparent 100%);animation:shimmer 1.4s infinite;}
 @keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
 .sk-line{height:10px;border-radius:4px;background:var(--n200);margin-bottom:8px;position:relative;overflow:hidden;}
-.sk-line.w60{width:60%;}.sk-line.w80{width:80%;}.sk-line.w40{width:40%;}
+.sk-line.w60{width:60%;}
+.sk-line.w80{width:80%;}
+.sk-line.w40{width:40%;}
 .sk-block{height:24px;border-radius:4px;background:var(--n200);width:70%;margin-bottom:8px;position:relative;overflow:hidden;}
 .sk-lb{height:60px;border-radius:var(--r);background:var(--n100);margin-bottom:8px;position:relative;overflow:hidden;}
 
@@ -137,18 +144,14 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .lb-pill{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:12px;}
 .lb-bar-track{flex:1;height:6px;background:var(--n200);border-radius:3px;overflow:hidden;min-width:80px;}
 .lb-bar-fill{height:100%;border-radius:3px;transition:width .8s var(--ease-spring);}
-/* progress ring */
-.ring-wrap{position:relative;width:38px;height:38px;flex-shrink:0;}
-.ring-wrap svg{width:38px;height:38px;transform:rotate(-90deg);}
-.ring-bg{fill:none;stroke:var(--n200);stroke-width:3.5;}
-.ring-fg{fill:none;stroke-width:3.5;stroke-linecap:round;transition:stroke-dashoffset .9s var(--ease-spring),stroke .4s;}
-.ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text);}
 
 /* FORECAST */
 .fc-scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);}
 @media(max-width:640px){.fc-scenarios{grid-template-columns:1fr;}}
 .fc-sc{border-radius:var(--r);padding:14px 16px;border:1px solid transparent;}
-.fc-sc.opt{background:#f0fdf4;border-color:#bbf7d0;}.fc-sc.base{background:var(--blue-l);border-color:var(--blue-m);}.fc-sc.cons{background:var(--amber-l);border-color:var(--amber-m);}
+.fc-sc.opt{background:#f0fdf4;border-color:#bbf7d0;}
+.fc-sc.base{background:var(--blue-l);border-color:var(--blue-m);}
+.fc-sc.cons{background:var(--amber-l);border-color:var(--amber-m);}
 .fc-sc-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
 .fc-sc-label.opt{color:var(--green-d);}.fc-sc-label.base{color:var(--blue-d);}.fc-sc-label.cons{color:var(--amber-d);}
 .fc-sc-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
@@ -183,48 +186,56 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .zebra tbody tr:nth-child(even){background:var(--n50);}
 .zebra tbody tr:nth-child(even):hover{background:var(--n100);}
 
-/* ── CDR / CALL INTEL ── */
-.cdr-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:16px 18px;border-bottom:1px solid var(--border);}
-.cdr-kpi{background:var(--n50);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;}
-.cdr-kpi-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;}
-.cdr-kpi-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text);}
-.cdr-kpi-sub{font-size:10px;color:var(--muted);margin-top:3px;}
-/* heatmap */
-.heatmap-wrap{padding:16px 18px 20px;overflow-x:auto;}
-.heatmap-table{border-collapse:collapse;font-size:10px;white-space:nowrap;}
-.heatmap-table th{padding:4px 6px;font-size:9px;font-weight:700;color:var(--muted);text-align:center;letter-spacing:.3px;}
-.heatmap-table td.agent-name{font-size:11px;font-weight:600;color:var(--text);padding:3px 10px 3px 0;white-space:nowrap;text-align:left;}
-.heatmap-table td.hcell{width:28px;height:24px;border-radius:3px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:#fff;font-weight:600;cursor:default;transition:opacity .15s;}
-.heatmap-table td.hcell:hover{opacity:.75;}
-/* cdr leaderboard */
-.cdr-lb-wrap{padding:6px 0;}
-.cdr-lb-row{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--n100);transition:background .12s;}
-.cdr-lb-row:hover{background:var(--n50);}
-.cdr-lb-row:last-child{border-bottom:none;}
-.cdr-lb-rank{font-size:13px;font-weight:900;width:28px;text-align:center;font-family:'JetBrains Mono',monospace;flex-shrink:0;}
-.cdr-stat-bar{flex:1;height:6px;background:var(--n200);border-radius:3px;overflow:hidden;min-width:60px;}
-.cdr-stat-fill{height:100%;border-radius:3px;background:var(--teal);transition:width .8s var(--ease-spring);}
-/* no-cdr state */
-.cdr-empty{padding:40px 24px;text-align:center;color:var(--muted);}
-.cdr-empty-icon{font-size:36px;margin-bottom:12px;}
-.cdr-empty-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;}
-.cdr-empty-desc{font-size:12px;line-height:1.6;}
+/* ACTION PLAN */
+.ap-wrap{padding:20px 22px 24px;}
+.ap-meta{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.ap-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:20px;}
+.ap-badge.status{background:#fef9c3;color:#713f12;border:1px solid #fde047;}
+.ap-badge.priority{background:var(--red-l);color:var(--red-d);border:1px solid var(--red-m);}
+.ap-badge.date{background:var(--n100);color:var(--n700);border:1px solid var(--border);}
+.ap-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:860px){.ap-grid{grid-template-columns:1fr;}}
+.ap-item{display:flex;gap:12px;padding:13px 15px;border-radius:var(--r);border:1px solid var(--border);background:var(--n50);transition:box-shadow .18s,border-color .18s;}
+.ap-item:hover{box-shadow:var(--sh);border-color:var(--n300);}
+.ap-item.highlight{background:#fef2f2;border-color:var(--red-m);}
+.ap-item.strategic{background:var(--blue-l);border-color:var(--blue-m);}
+.ap-icon{font-size:20px;flex-shrink:0;line-height:1;margin-top:1px;}
+.ap-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:1px 7px;border-radius:10px;margin-bottom:5px;}
+.ap-tag.people{background:#f3e8ff;color:#6b21a8;}
+.ap-tag.process{background:var(--blue-l);color:var(--blue-d);}
+.ap-tag.strategy{background:#f0fdf4;color:var(--green-d);}
+.ap-title{font-size:13px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:4px;}
+.ap-desc{font-size:11px;color:var(--muted);line-height:1.6;}
+.ap-divider{grid-column:1/-1;display:flex;align-items:center;gap:10px;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:4px 0;}
+.ap-divider::before,.ap-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.ap-summary{grid-column:1/-1;background:linear-gradient(135deg,var(--hblack) 0%,#1a1a00 100%);border-radius:var(--r-lg);padding:18px 22px;display:flex;align-items:flex-start;gap:16px;border:1px solid rgba(247,195,26,.2);}
+.ap-summary-icon{font-size:28px;flex-shrink:0;}
+.ap-summary-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;}
+.ap-summary-text{font-size:12px;color:rgba(255,255,255,.62);line-height:1.65;}
 
 /* INTEL */
 .intel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:16px 18px 20px;}
 .intel-card{border-radius:var(--r);border:1px solid transparent;padding:13px 15px;display:flex;gap:11px;position:relative;overflow:hidden;transition:box-shadow .18s;}
 .intel-card:hover{box-shadow:var(--sh);}
 .intel-card::before{content:'';position:absolute;inset:0;opacity:.045;pointer-events:none;}
-.intel-card.sev-critical{background:#fff1f2;border-color:#fecdd3;}.intel-card.sev-critical::before{background:var(--red);}
-.intel-card.sev-warn{background:#fffbeb;border-color:#fde68a;}.intel-card.sev-warn::before{background:var(--amber);}
-.intel-card.sev-info{background:var(--blue-l);border-color:var(--blue-m);}.intel-card.sev-info::before{background:var(--blue);}
-.intel-card.sev-ok{background:var(--green-l);border-color:#bbf7d0;}.intel-card.sev-ok::before{background:var(--green);}
+.intel-card.sev-critical{background:#fff1f2;border-color:#fecdd3;}
+.intel-card.sev-critical::before{background:var(--red);}
+.intel-card.sev-warn{background:#fffbeb;border-color:#fde68a;}
+.intel-card.sev-warn::before{background:var(--amber);}
+.intel-card.sev-info{background:var(--blue-l);border-color:var(--blue-m);}
+.intel-card.sev-info::before{background:var(--blue);}
+.intel-card.sev-ok{background:var(--green-l);border-color:#bbf7d0;}
+.intel-card.sev-ok::before{background:var(--green);}
 .intel-card.sev-neutral{background:var(--n50);border-color:var(--border);}
 .intel-card.intel-static{background:var(--amber-l);border-color:var(--amber-m);}
 .intel-icon{font-size:22px;flex-shrink:0;line-height:1;margin-top:1px;}
 .intel-body{flex:1;min-width:0;}
 .intel-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:1px 7px;border-radius:10px;margin-bottom:5px;}
-.badge-critical{background:#fee2e2;color:#991b1b;}.badge-warn{background:#fef3c7;color:#92400e;}.badge-info{background:#dbeafe;color:#1e3a8a;}.badge-ok{background:#dcfce7;color:#14532d;}.badge-neutral{background:var(--n200);color:var(--n700);}
+.badge-critical{background:#fee2e2;color:#991b1b;}
+.badge-warn{background:#fef3c7;color:#92400e;}
+.badge-info{background:#dbeafe;color:#1e3a8a;}
+.badge-ok{background:#dcfce7;color:#14532d;}
+.badge-neutral{background:var(--n200);color:var(--n700);}
 .intel-title{font-size:12px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px;}
 .intel-desc{font-size:11px;color:var(--muted);line-height:1.6;}
 .intel-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:3px;line-height:1.2;}
@@ -269,8 +280,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .live-bar{background:var(--hgold-l);border:1px solid var(--hgold-m);border-radius:var(--r);padding:10px 14px;margin-top:12px;display:flex;gap:20px;flex-wrap:wrap;}
 .live-item span{display:block;font-size:9px;color:#78620a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
 .live-item strong{font-size:13px;font-family:'JetBrains Mono',monospace;color:#3d3000;}
-/* date warning */
-.date-warn{background:#fef2f2;border:1px solid var(--red-m);border-radius:var(--r);padding:8px 12px;font-size:11px;color:var(--red-d);margin-bottom:10px;display:none;}
 
 /* SAVING OVERLAY */
 .saving-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
@@ -283,21 +292,18 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .refresh-banner{display:none;background:linear-gradient(90deg,#1e3a8a,#1d4ed8);color:#fff;padding:8px 28px;font-size:11px;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.1);}
 .refresh-banner.show{display:flex;}
 .refresh-banner strong{color:#fcd34d;}
-
-/* WHATSAPP SHARE BTN */
-.btn-share{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;padding:7px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;display:none;}
-.btn-share.visible{display:flex;}
-.btn-share:hover{background:rgba(255,255,255,.16);}
 </style>
 </head>
 <body>
 
+<!-- Auto-refresh fallback banner -->
 <div class="refresh-banner" id="refreshBanner">
   <span>🔄</span>
   <span>Firebase real-time listener offline. Auto-refresh in <strong id="refreshCountdown">60:00</strong>.</span>
   <button onclick="manualRefresh()" style="margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-weight:600;">Refresh Now</button>
 </div>
 
+<!-- Sync status bar -->
 <div class="sync-bar" id="syncBar">
   <div class="sync-dot connecting" id="syncDot"></div>
   <span id="syncMsg">Connecting to Firebase…</span>
@@ -349,15 +355,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <span class="tb-title">Sales Command Centre</span>
   </div>
   <div class="tb-right">
-    <select class="archive-select" id="archiveSelect" onchange="switchMonth(this.value)">
-      <option value="live">📅 June 2026 (Live)</option>
-      <option value="may">📦 May 2026 (Archive)</option>
-    </select>
     <span class="tb-live"><span class="live-dot"></span><span id="updBadge">Connecting…</span></span>
-    <button class="btn-share" id="shareBtn" onclick="shareReport()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-      Share Report
-    </button>
     <button class="btn-update" onclick="openLogin()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
       Update Data
@@ -367,37 +365,23 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 
 <div class="wrap" id="mainWrap">
 
-  <!-- LOADING SKELETONS -->
+  <!-- LOADING SKELETONS (shown until Firebase responds) -->
   <div id="skeletonView">
     <div class="sec">June 2026 — Monthly Snapshot</div>
     <div class="skeleton-grid">
-      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div><div class="sk-line w80" style="height:3px;margin-top:14px"></div></div>
-      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div><div class="sk-line w80" style="height:3px;margin-top:14px"></div></div>
-      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div><div class="sk-line w80" style="height:3px;margin-top:14px"></div></div>
-      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div><div class="sk-line w80" style="height:3px;margin-top:14px"></div></div>
-      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div></div>
-      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div></div>
-      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div></div>
-      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div></div>
+      ${Array(8).fill(0).map(()=>`<div class="sk-card"><div class="sk-line w40"></div><div class="sk-block"></div><div class="sk-line w60"></div><div class="sk-line w80" style="height:3px;margin-top:14px"></div></div>`).join('')}
     </div>
     <div class="sec" style="margin-top:28px">Performance Leaderboard</div>
-    <div class="card"><div class="card-hdr"><h3 style="color:#fff">🏆 Agent Rankings</h3></div><div style="padding:12px 18px"><div class="sk-lb"></div><div class="sk-lb"></div><div class="sk-lb"></div><div class="sk-lb"></div><div class="sk-lb"></div></div></div>
+    <div class="card"><div class="card-hdr"><h3 style="color:#fff">🏆 Agent Rankings</h3></div><div style="padding:12px 18px">${Array(5).fill(0).map(()=>`<div class="sk-lb"></div>`).join('')}</div></div>
   </div>
 
-  <!-- MAIN DASHBOARD -->
+  <!-- MAIN CONTENT (hidden until Firebase responds) -->
   <div id="dashView" style="display:none">
 
-    <!-- archive banner -->
-    <div id="archiveBanner" style="display:none;background:linear-gradient(90deg,#1e3a8a,#2563eb);color:#fff;border-radius:var(--r-lg);padding:10px 18px;margin-bottom:14px;font-size:12px;align-items:center;gap:10px;">
-      <span style="font-size:16px">📦</span>
-      <span>Viewing <strong>May 2026 Archive</strong> — this is read-only historical data. Switch back to June for live data.</span>
-      <button onclick="switchMonth('live')" style="margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-weight:600;">← Back to June</button>
-    </div>
-
-    <div class="sec" id="snapshotLabel">June 2026 — Monthly Snapshot</div>
+    <div class="sec">June 2026 — Monthly Snapshot</div>
     <div class="kpi-grid" id="kpiGrid"></div>
 
-    <div class="sec">Performance Leaderboard</div>
+    <div class="sec">Performance Leaderboard — June 2026</div>
     <div class="card">
       <div class="card-hdr"><h3>🏆 Agent Rankings</h3><aside id="lbDate">—</aside></div>
       <div class="lb-wrap" id="lbWrap"></div>
@@ -460,18 +444,43 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <div class="tbl-wrap"><table class="zebra"><thead><tr><th>Week</th><th>Date</th><th>May Revenue</th><th>June Revenue</th><th>MoD Δ</th></tr></thead><tbody id="dailyBody"></tbody><tfoot id="dailyFoot"></tfoot></table></div>
     </div>
 
-    <!-- ── CDR / CALL INTEL ── -->
-    <div class="sec">CDR / Call Intelligence — June 2026</div>
-    <div class="card" id="cdrCard">
-      <div class="card-hdr">
-        <h3>📞 Call Data Analysis</h3>
-        <aside id="cdrDateRange">—</aside>
-      </div>
-      <div id="cdrContent">
-        <div class="cdr-empty">
-          <div class="cdr-empty-icon">📭</div>
-          <div class="cdr-empty-title">No CDR data pushed yet</div>
-          <div class="cdr-empty-desc">Use the <strong>cdr_push_tool.html</strong> to upload your Excel CDR file.<br>Data will appear here automatically once pushed to Firebase.</div>
+    <!-- ACTION PLAN -->
+    <div class="sec">Action Plan — June 2026 Recovery</div>
+    <div class="card">
+      <div class="card-hdr"><h3>📋 Team Action Plan</h3><aside>Housing Owner Process · Effective immediately</aside></div>
+      <div class="ap-wrap">
+        <div class="ap-meta">
+          <span class="ap-badge status">⚡ In Execution</span>
+          <span class="ap-badge priority">🎯 High Priority</span>
+          <span class="ap-badge date">📅 June 2026</span>
+        </div>
+        <div class="ap-grid">
+          <div class="ap-divider">People &amp; Coaching</div>
+          <div class="ap-item highlight"><div class="ap-icon">🎙️</div><div class="ap-body"><span class="ap-tag people">People</span><div class="ap-title">Daily Performance Reviews</div><div class="ap-desc">Structured daily check-ins with low-performing and non-performing agents to identify blockers, set daily commitments, and track follow-through.</div></div></div>
+          <div class="ap-item highlight"><div class="ap-icon">🧠</div><div class="ap-body"><span class="ap-tag people">People</span><div class="ap-title">Focused Skill Coaching</div><div class="ap-desc">Targeted coaching sessions on conversion techniques, objection handling, and closing skills — particularly for agents currently sitting below 10% achievement.</div></div></div>
+          <div class="ap-divider">Process &amp; Execution</div>
+          <div class="ap-item"><div class="ap-icon">🔥</div><div class="ap-body"><span class="ap-tag process">Process</span><div class="ap-title">Hot Lead Follow-Up Blitz</div><div class="ap-desc">Increased follow-up activity on hot and payment-ready leads. Closures and daily target commitments to be monitored more rigorously by TLs.</div></div></div>
+          <div class="ap-item"><div class="ap-icon">⚖️</div><div class="ap-body"><span class="ap-tag process">Process</span><div class="ap-title">Reduce Top-Performer Dependency</div><div class="ap-desc">Additional focus on improving contributions from underperforming agents to distribute revenue load more evenly across the team.</div></div></div>
+          <div class="ap-divider">Lead Intelligence &amp; Observations</div>
+        </div>
+        <div style="margin-top:4px;">
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:0 2px 10px;display:flex;align-items:center;justify-content:space-between;">
+            <span>Auto-computed alerts · refreshes on every data save</span>
+            <span id="intelTimestamp" style="font-weight:400;color:var(--n400)"></span>
+          </div>
+          <div class="intel-grid" id="intelGrid"></div>
+        </div>
+        <div class="ap-grid" style="margin-top:4px;">
+          <div class="ap-divider">Strategic Initiative</div>
+          <div class="ap-item strategic"><div class="ap-icon">🌅</div><div class="ap-body"><span class="ap-tag strategy">Strategy</span><div class="ap-title">Early-Login Initiative</div><div class="ap-desc">Team members will log in early each morning to maximize access to fresh leads — improving contactability and increasing chances of early-day conversions before other centres engage.</div></div></div>
+          <div class="ap-item strategic"><div class="ap-icon">🔁</div><div class="ap-body"><span class="ap-tag strategy">Strategy</span><div class="ap-title">Regular Effectiveness Reviews</div><div class="ap-desc">The early-login strategy will be reviewed regularly. Further process improvements will be implemented based on lead quality trends, contactability rates, and conversion outcomes observed.</div></div></div>
+          <div class="ap-summary">
+            <div class="ap-summary-icon">🎯</div>
+            <div class="ap-summary-body">
+              <div class="ap-summary-title">Bottom Line</div>
+              <div class="ap-summary-text">The team is tracking below the June DRR target. The immediate priority is activating zero-revenue agents, exploiting the FIFO lead advantage through earlier logins, and compressing the gap on hot leads before month-end. Every day of delay costs approximately <strong style="color:#fcd34d">₹14,000+</strong> in opportunity against target.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -489,6 +498,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 </div>
 
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
+
 <div class="saving-overlay" id="savingOverlay">
   <div class="saving-box"><div class="saving-spinner"></div><span>Saving to Firebase…</span></div>
 </div>
@@ -507,8 +517,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 <div class="ovl" id="editOvl">
   <div class="modal wide">
     <h2>✏️ Update Dashboard</h2>
-    <p>All charts, KPIs, rankings &amp; forecasts update automatically on save.</p>
-    <div class="date-warn" id="dateWarn">⚠️ Selected date is outside June 2026 — Days Elapsed will be set to 0. Please check the date.</div>
+    <p>All charts, KPIs, rankings &amp; forecasts update automatically on save — and sync live to all viewers.</p>
     <div class="m-tabs">
       <button class="m-tab on" onclick="swTab('tpJune',0)">June KPIs</button>
       <button class="m-tab" onclick="swTab('tpAgents',1)">Agents</button>
@@ -518,11 +527,11 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <div class="two-inp">
         <div class="fg"><label>Monthly Target (₹)</label><input type="number" id="eTarget" oninput="livePreview()"></div>
         <div class="fg"><label>Days in Month</label><input type="number" id="eDaysTotal" oninput="livePreview()"></div>
-        <div class="fg"><label>Days Elapsed (auto-computed)</label><input type="number" id="eDaysElapsed" style="background:#f8f7f4;color:var(--muted)" readonly title="Auto-calculated from Last Updated date"></div>
+        <div class="fg"><label>Days Elapsed (auto-computed)</label><input type="number" id="eDaysElapsed" oninput="livePreview()" style="background:#f8f7f4;color:var(--muted)" readonly title="Auto-calculated from Last Updated date"></div>
         <div class="fg"><label>Last Updated (sets Days Elapsed)</label><input type="date" id="eUpdated" oninput="autoCalcDaysElapsed()"></div>
       </div>
       <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--blue-d);">
-        💡 <strong>Days Elapsed auto-calculates</strong> from the "Last Updated" date — always set this to today's date when updating.
+        💡 <strong>Days Elapsed auto-calculates</strong> from the "Last Updated" date — no manual entry needed. Set date = today when updating.
       </div>
       <div class="divider"></div>
       <div class="sub-lbl">June Daily Revenue (₹) — all 30 days</div>
@@ -537,7 +546,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     </div>
     <div class="tp" id="tpAgents">
       <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--blue-d);">
-        💡 All agents shown. Click an agent to expand and edit their daily figures.
+        💡 <strong>All agents shown below.</strong> Update any agent's daily revenue — all are saved together when you click Save.
       </div>
       <div id="allAgentsWrap"></div>
     </div>
@@ -554,6 +563,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     </div>
   </div>
 </div>
+
 <script>
 /* ═══════════════════════════════════════════
    FIREBASE
@@ -569,50 +579,33 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const DB_KEY     = "housing_dashboard_v1";
-const CDR_KEY    = "housing_cdr_v1";
+const DB_KEY = "housing_dashboard_v1";
 
 /* ═══════════════════════════════════════════
    MONTH CONSTANTS
 ═══════════════════════════════════════════ */
-const JUNE_MONTH = 5;
+const JUNE_MONTH = 5;   // JS month index for June (0-based)
 const JUNE_YEAR  = 2026;
 const JUNE_DAYS  = 30;
+const MONTH_END  = new Date(JUNE_YEAR, JUNE_MONTH + 1, 0); // June 30
 
+/* Auto-compute days elapsed from a YYYY-MM-DD date string */
 function computeDaysElapsed(dateStr) {
   if(!dateStr) return 0;
   const d = new Date(dateStr + "T00:00:00");
+  // Only count days within June 2026
   if(d.getFullYear() !== JUNE_YEAR || d.getMonth() !== JUNE_MONTH) return 0;
   return Math.min(d.getDate(), JUNE_DAYS);
 }
-function isDateInJune(dateStr) {
-  if(!dateStr) return false;
-  const d = new Date(dateStr + "T00:00:00");
-  return d.getFullYear() === JUNE_YEAR && d.getMonth() === JUNE_MONTH;
-}
+
+/* Days left in June from today */
 function computeDaysLeft() {
   const today = new Date();
-  if(today.getFullYear() !== JUNE_YEAR || today.getMonth() !== JUNE_MONTH)
+  if(today.getFullYear() !== JUNE_YEAR || today.getMonth() !== JUNE_MONTH) {
+    // If we're past June, return 0; before June return 30
     return today < new Date(JUNE_YEAR, JUNE_MONTH, 1) ? JUNE_DAYS : 0;
+  }
   return Math.max(0, JUNE_DAYS - today.getDate() + 1);
-}
-
-/* ═══════════════════════════════════════════
-   AGENT NAME NORMALISER
-   Strips suffixes like " OC", extra spaces, lowercases for matching
-═══════════════════════════════════════════ */
-function normName(name) {
-  return (name || "")
-    .replace(/\s+OC$/i,"")
-    .replace(/\s+/g," ")
-    .trim()
-    .toLowerCase();
-}
-/* Build a map: normName → dashboard agent index */
-function buildNameMap(agents) {
-  const map = {};
-  agents.forEach((ag, i) => { map[normName(ag.name)] = i; });
-  return map;
 }
 
 /* ═══════════════════════════════════════════
@@ -662,43 +655,17 @@ const DEFAULT_DATA = {
   ]
 };
 
-/* Ensure all agent daily arrays are exactly 30 elements */
-function padAgentArrays(agents) {
-  return agents.map(ag => {
-    const d = [...(ag.daily||[])];
-    while(d.length < 30) d.push(0);
-    return {...ag, daily: d.slice(0,30)};
-  });
-}
-
-let D    = JSON.parse(JSON.stringify(DEFAULT_DATA));
-D.agents = padAgentArrays(D.agents);
-
-let CDR_DATA = null;   // CDR data from Firebase housing_cdr_v1
-let currentMonth = "live"; // "live" | "may"
-let isAdmin = false;
-
+let D = JSON.parse(JSON.stringify(DEFAULT_DATA));
 const ADMIN_B64 = btoa("housing2026");
 
-/* ── MAY ARCHIVE DATA (static) ── */
-const MAY_ARCHIVE = {
-  lastUpdated:"2026-05-31",
-  june:{ target:885000, daysTotal:31, daysElapsed:31,
-    daily:[0,8623,2123,10015,4049,7042,11551,7342,24567,9083,12699,4359,13623,11395,
-           21386,8728,4424,18774,5309,8221,6075,8848,4359,6162,14561,32552,27545,16000,11000,38342,23982]
-  },
-  agents: DEFAULT_DATA.agents.map(ag => ({...ag, daily: Array(31).fill(0)}))
-};
-
 /* ═══════════════════════════════════════════
-   SYNC STATE
+   SYNC STATE & CLOCK
 ═══════════════════════════════════════════ */
 let lastSyncedAt = null;
 let fbListenerActive = false;
 let autoRefreshTimer = null;
 let refreshCountdownSec = 3600;
 let clockInterval = null;
-let chartDebounce = null;
 
 function setSyncStatus(state, msg) {
   const bar = document.getElementById("syncBar");
@@ -706,15 +673,15 @@ function setSyncStatus(state, msg) {
   const txt = document.getElementById("syncMsg");
   dot.className = "sync-dot";
   bar.className = "sync-bar";
-  if(state==="live") {
+  if(state === "live") {
     txt.textContent = msg || "🟢 Firebase connected — live sync active";
     lastSyncedAt = Date.now();
     startSyncClock();
     hideRefreshBanner();
-  } else if(state==="connecting") {
+  } else if(state === "connecting") {
     dot.classList.add("connecting");
     txt.textContent = msg || "Connecting to Firebase…";
-  } else if(state==="error") {
+  } else if(state === "error") {
     dot.classList.add("error");
     bar.classList.add("err");
     txt.textContent = msg || "⚠️ Firebase offline — auto-refresh active";
@@ -726,164 +693,130 @@ function startSyncClock() {
   if(clockInterval) clearInterval(clockInterval);
   clockInterval = setInterval(() => {
     if(!lastSyncedAt) return;
-    const sec = Math.floor((Date.now()-lastSyncedAt)/1000);
+    const sec = Math.floor((Date.now() - lastSyncedAt) / 1000);
     const el = document.getElementById("lastSyncedClock");
     if(!el) return;
-    if(sec<60) el.textContent=sec+"s ago";
-    else if(sec<3600) el.textContent=Math.floor(sec/60)+"m ago";
-    else el.textContent=Math.floor(sec/3600)+"h ago";
+    if(sec < 60) el.textContent = sec + "s ago";
+    else if(sec < 3600) el.textContent = Math.floor(sec/60) + "m ago";
+    else el.textContent = Math.floor(sec/3600) + "h ago";
   }, 5000);
-  const el=document.getElementById("lastSyncedClock");
-  if(el) el.textContent="just now";
+  document.getElementById("lastSyncedClock").textContent = "just now";
 }
 
 function updateDaysLeftBadge() {
-  const dl=computeDaysLeft();
-  const el=document.getElementById("daysLeftBadge");
-  if(el) el.textContent=`⏳ ${dl} day${dl!==1?"s":""} left`;
+  const dl = computeDaysLeft();
+  const el = document.getElementById("daysLeftBadge");
+  if(el) el.textContent = `⏳ ${dl} day${dl !== 1 ? "s" : ""} left`;
 }
 
 function startAutoRefreshCountdown() {
   document.getElementById("refreshBanner").classList.add("show");
-  refreshCountdownSec=3600;
+  refreshCountdownSec = 3600;
   if(autoRefreshTimer) clearInterval(autoRefreshTimer);
-  autoRefreshTimer=setInterval(()=>{
+  autoRefreshTimer = setInterval(() => {
     refreshCountdownSec--;
-    const m=String(Math.floor(refreshCountdownSec/60)).padStart(2,"0");
-    const s=String(refreshCountdownSec%60).padStart(2,"0");
-    const el=document.getElementById("refreshCountdown");
-    if(el) el.textContent=`${m}:${s}`;
-    if(refreshCountdownSec<=0){clearInterval(autoRefreshTimer);manualRefresh();}
-  },1000);
+    const m = String(Math.floor(refreshCountdownSec / 60)).padStart(2,"0");
+    const s = String(refreshCountdownSec % 60).padStart(2,"0");
+    const el = document.getElementById("refreshCountdown");
+    if(el) el.textContent = `${m}:${s}`;
+    if(refreshCountdownSec <= 0) {
+      clearInterval(autoRefreshTimer);
+      manualRefresh();
+    }
+  }, 1000);
 }
 
-function hideRefreshBanner(){
+function hideRefreshBanner() {
   document.getElementById("refreshBanner").classList.remove("show");
-  if(autoRefreshTimer){clearInterval(autoRefreshTimer);autoRefreshTimer=null;}
+  if(autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
 }
 
-function manualRefresh(){setSyncStatus("connecting","Reconnecting…");connectFirebase();}
+function manualRefresh() {
+  setSyncStatus("connecting","Reconnecting…");
+  connectFirebase();
+}
 
 /* ═══════════════════════════════════════════
    FIREBASE CONNECT
 ═══════════════════════════════════════════ */
-function toArr(v){ return v&&!Array.isArray(v)?Object.values(v):(v||[]); }
-
-function normaliseData(raw) {
-  if(raw.june) raw.june.daily = toArr(raw.june.daily);
-  raw.mayDaily    = toArr(raw.mayDaily);
-  raw.mayWeekly   = toArr(raw.mayWeekly);
-  raw.juneWeekly  = toArr(raw.juneWeekly);
-  raw.agents      = toArr(raw.agents);
-  raw.agents.forEach(ag => { ag.daily = toArr(ag.daily); });
-  raw.agents = padAgentArrays(raw.agents);
-  if(raw.lastUpdated) raw.june.daysElapsed = computeDaysElapsed(raw.lastUpdated);
-  return raw;
-}
-
 function connectFirebase() {
   const ref = db.ref(DB_KEY);
+  // Seed if empty
   ref.once("value").then(snap => {
-    if(!snap.exists()) ref.set(DEFAULT_DATA);
+    if(!snap.exists()) {
+      ref.set(DEFAULT_DATA);
+    }
   }).catch(err => {
-    setSyncStatus("error","⚠️ Cannot reach Firebase: "+err.message);
+    setSyncStatus("error", "⚠️ Cannot reach Firebase: " + err.message);
   });
 
+  // Realtime listener
   ref.on("value", snap => {
-    fbListenerActive=true;
+    fbListenerActive = true;
     if(snap.exists()) {
-      D = normaliseData(snap.val());
-      if(currentMonth==="live") { showDashboard(); renderAll(); }
+      const fresh = snap.val();
+      // Normalise arrays (Firebase can return objects for arrays)
+      const toArr = v => v && !Array.isArray(v) ? Object.values(v) : (v || []);
+      if(fresh.june) fresh.june.daily = toArr(fresh.june.daily);
+      fresh.mayDaily    = toArr(fresh.mayDaily);
+      fresh.mayWeekly   = toArr(fresh.mayWeekly);
+      fresh.juneWeekly  = toArr(fresh.juneWeekly);
+      fresh.agents      = toArr(fresh.agents);
+      fresh.agents.forEach(ag => { ag.daily = toArr(ag.daily); });
+
+      // ── AUTO-UPDATE daysElapsed from lastUpdated ──
+      if(fresh.lastUpdated) {
+        fresh.june.daysElapsed = computeDaysElapsed(fresh.lastUpdated);
+      }
+
+      D = fresh;
+      showDashboard();
+      renderAll();
       setSyncStatus("live");
       updateDaysLeftBadge();
     }
   }, err => {
-    setSyncStatus("error","⚠️ Firebase error: "+err.message);
-    showDashboard(); renderAll();
+    setSyncStatus("error", "⚠️ Firebase error: " + err.message);
+    // Still render with cached data
+    showDashboard();
+    renderAll();
   });
-
-  /* CDR listener — separate key */
-  db.ref(CDR_KEY).on("value", snap => {
-    if(snap.exists()) {
-      CDR_DATA = snap.val();
-      /* normalise CDR agents array */
-      if(CDR_DATA.agents) CDR_DATA.agents = toArr(CDR_DATA.agents);
-    } else {
-      CDR_DATA = null;
-    }
-    renderCDR();
-  }, () => { CDR_DATA=null; renderCDR(); });
 }
 
-function showDashboard(){
-  document.getElementById("skeletonView").style.display="none";
-  document.getElementById("dashView").style.display="block";
-}
-
-/* ═══════════════════════════════════════════
-   MONTH ARCHIVE SWITCH
-═══════════════════════════════════════════ */
-function switchMonth(val) {
-  currentMonth = val;
-  document.getElementById("archiveSelect").value = val;
-  const banner = document.getElementById("archiveBanner");
-  const shareBtn = document.getElementById("shareBtn");
-
-  if(val==="may") {
-    banner.style.display="flex";
-    document.getElementById("snapshotLabel").textContent="May 2026 — Monthly Snapshot (Archive)";
-    shareBtn.classList.remove("visible"); // no share in archive view
-    // Render using archive data
-    const tmpD = D;
-    D = MAY_ARCHIVE;
-    renderAll();
-    D = tmpD;
-  } else {
-    banner.style.display="none";
-    document.getElementById("snapshotLabel").textContent="June 2026 — Monthly Snapshot";
-    if(isAdmin) shareBtn.classList.add("visible");
-    renderAll();
-  }
+function showDashboard() {
+  document.getElementById("skeletonView").style.display = "none";
+  document.getElementById("dashView").style.display = "block";
 }
 
 /* ═══════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════ */
-const INR = n=>"₹"+Math.round(n).toLocaleString("en-IN");
-const S   = n=>{const a=Math.abs(n),sg=n<0?"-":"";return a>=1e5?sg+"₹"+(a/1e5).toFixed(1)+"L":a>=1000?sg+"₹"+(a/1000).toFixed(0)+"K":sg+"₹"+Math.round(a);};
-const Pct = (n,d=1)=>n.toFixed(d)+"%";
-const pCol = p=>p>=100?"#16a34a":p>=60?"#d97706":"#dc2626";
-const pillCls = p=>p>=100?"pill-g":p>=60?"pill-a":"pill-r";
-const pillTxt = p=>p>=100?"✓ On Track":p>=60?"▲ Halfway":"✗ Behind";
-const AV_COLORS=["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c","#ea580c","#4f46e5","#0284c7","#65a30d","#9333ea","#db2777"];
-const avColor = i=>AV_COLORS[i%AV_COLORS.length];
-const initials = name=>name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+const INR = n => "₹" + Math.round(n).toLocaleString("en-IN");
+const S   = n => { const a=Math.abs(n),sg=n<0?"-":""; return a>=1e5?sg+"₹"+(a/1e5).toFixed(1)+"L":a>=1000?sg+"₹"+(a/1000).toFixed(0)+"K":sg+"₹"+Math.round(a); };
+const Pct = (n,d=1) => n.toFixed(d)+"%";
+const pCol = p => p>=100?"#16a34a":p>=60?"#d97706":"#dc2626";
+const pillCls = p => p>=100?"pill-g":p>=60?"pill-a":"pill-r";
+const pillTxt = p => p>=100?"✓ On Track":p>=60?"▲ Halfway":"✗ Behind";
+const AV_COLORS = ["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c","#ea580c","#4f46e5","#0284c7","#65a30d","#9333ea","#db2777"];
+const avColor = i => AV_COLORS[i % AV_COLORS.length];
+const initials = name => name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
 
 function derive() {
-  const {target,daysTotal,daysElapsed,daily}=D.june;
-  const achieved  = daily.reduce((s,v)=>s+(v||0),0);
-  const remaining = target-achieved;
-  const daysLeft  = daysTotal-daysElapsed;
-  const drr       = daysLeft>0?remaining/daysLeft:0;
-  const actualDrr = daysElapsed>0?achieved/daysElapsed:0;
+  const {target,daysTotal,daysElapsed,daily} = D.june;
+  const achieved  = daily.reduce((s,v)=>s+v,0);
+  const remaining = target - achieved;
+  const daysLeft  = daysTotal - daysElapsed;
+  const drr       = daysLeft > 0 ? remaining/daysLeft : 0;
+  const actualDrr = daysElapsed > 0 ? achieved/daysElapsed : 0;
   const dayTarget = Math.round(target/daysTotal);
-  const pct       = target>0?achieved/target*100:0;
-  const baseFc    = Math.round(actualDrr*daysTotal);
-  const optFc     = Math.round(achieved+actualDrr*1.2*daysLeft);
-  const consFc    = Math.round(achieved+actualDrr*0.8*daysLeft);
+  const pct       = target > 0 ? achieved/target*100 : 0;
+  const baseFc    = Math.round(actualDrr * daysTotal);
+  const optFc     = Math.round(achieved + actualDrr*1.2*daysLeft);
+  const consFc    = Math.round(achieved + actualDrr*0.8*daysLeft);
   return {achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc,optFc,consFc};
 }
 
-function agentTotal(ag){ return (ag.daily||[]).slice(0,D.june.daysElapsed).reduce((s,v)=>s+(v||0),0); }
-
-/* ── progress ring SVG ── */
-function ringHtml(pct, color) {
-  const safePct = isNaN(pct)||!isFinite(pct) ? 0 : Math.min(Math.max(pct,0),100);
-  const r=15, circ=+(2*Math.PI*r).toFixed(3);
-  const offset=+(circ*(1-safePct/100)).toFixed(3);
-  const label=pct>=100?"100%":(Math.round(safePct)+"%");
-  return `<div class="ring-wrap"><svg viewBox="0 0 38 38"><circle class="ring-bg" cx="19" cy="19" r="${r}"/><circle class="ring-fg" cx="19" cy="19" r="${r}" stroke="${color}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/></svg><div class="ring-label" style="color:${color}">${label}</div></div>`;
-}
+function agentTotal(ag) { return ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+v,0); }
 
 /* ═══════════════════════════════════════════
    RENDER FUNCTIONS
@@ -903,7 +836,7 @@ function renderKPIs(){
     {icon:"📊",label:"May Revenue",        val:"₹3,82,739",   sub:"77% of May target",       ac:"#c2255c",bar:77,barCol:"#c2255c"},
     {icon:"🔮",label:"Month-End Forecast", val:INR(baseFc),   sub:Pct(baseFc/target*100)+" of target",ac:"#5f3dc4",bar:Math.min(baseFc/target*100,100),barCol:"#5f3dc4"},
   ];
-  document.getElementById("kpiGrid").innerHTML=kpis.map(k=>`
+  document.getElementById("kpiGrid").innerHTML=kpis.map((k,i)=>`
     <div class="kc" style="--ac:${k.ac};--ac-glow:${k.ac}18">
       <span class="kc-icon">${k.icon}</span>
       <div class="kc-lbl">${k.label}</div>
@@ -912,47 +845,30 @@ function renderKPIs(){
       ${k.extra||""}
       ${k.bar!=null?`<div class="kc-track"><div class="kc-fill" style="background:${k.barCol||k.ac};width:${k.bar}%"></div></div>`:""}
     </div>`).join("");
-  document.getElementById("updBadge").textContent="Updated: "+D.lastUpdated;
-  document.getElementById("juneTotalLbl").textContent="Total: "+INR(derive().achieved);
-  document.getElementById("junLogTot").textContent=INR(derive().achieved);
+  document.getElementById("updBadge").textContent = "Updated: "+D.lastUpdated;
+  document.getElementById("juneTotalLbl").textContent = "Total: "+INR(derive().achieved);
+  document.getElementById("junLogTot").textContent = INR(derive().achieved);
 }
 
 function renderLeaderboard(){
-  const {daysElapsed,target,daysTotal}=D.june;
-  const dayTarget=Math.round((D.agents[0]?.target||68077)/daysTotal);
   const ranked=D.agents.map((ag,i)=>({...ag,i,tot:agentTotal(ag)})).sort((a,b)=>b.tot/b.target-a.tot/a.target);
   const maxTot=ranked[0]?.tot||1;
   const posClass=i=>i===0?"gold":i===1?"silver":i===2?"bronze":"rest";
   const medals=["🥇","🥈","🥉"];
   document.getElementById("lbWrap").innerHTML=ranked.map((ag,i)=>{
-    const pct=ag.target>0?ag.tot/ag.target*100:0;
-    const bc=pCol(pct);
-    const barW=Math.min(ag.tot/maxTot*100,100).toFixed(1);
-    /* pro-rated target context */
-    const proRated=dayTarget*daysElapsed;
-    const vsProRated=ag.tot-proRated;
-    const proRatedPct=proRated>0?ag.tot/proRated*100:0;
+    const bc=pCol(ag.tot/ag.target*100),barW=Math.min(ag.tot/maxTot*100,100).toFixed(1);
     return`<div class="lb-row" style="animation-delay:${i*30}ms">
       <div class="lb-pos ${posClass(i)}">${i<3?medals[i]:"#"+(i+1)}</div>
       <div class="lb-avatar" style="background:${avColor(ag.i)}">${initials(ag.name)}</div>
-      ${ringHtml(pct,bc)}
-      <div class="lb-info">
-        <div class="lb-name">${ag.name}</div>
-        <div class="lb-meta">${INR(ag.tot)} · ${Pct(proRatedPct)} of pro-rated target</div>
-      </div>
+      <div class="lb-info"><div class="lb-name">${ag.name}</div><div class="lb-meta">${INR(ag.tot)} · ${Pct(ag.tot/ag.target*100)} achieved</div></div>
       <div class="lb-bar-track"><div class="lb-bar-fill" style="width:${barW}%;background:${bc}"></div></div>
-      <div class="lb-right">
-        <div class="lb-rev" style="color:${bc}">${INR(ag.tot)}</div>
-        <div class="lb-pct">${Pct(pct,0)} of month target</div>
-        <span class="lb-pill ${pillCls(pct)}">${pillTxt(pct)}</span>
-      </div>
+      <div class="lb-right"><div class="lb-rev" style="color:${bc}">${INR(ag.tot)}</div><div class="lb-pct">${Pct(ag.tot/ag.target*100)} of target</div><span class="lb-pill ${pillCls(ag.tot/ag.target*100)}">${pillTxt(ag.tot/ag.target*100)}</span></div>
     </div>`;
   }).join("");
-  document.getElementById("lbDate").textContent="As of Jun "+daysElapsed+", 2026 · "+ranked.length+" agents";
+  document.getElementById("lbDate").textContent="As of Jun "+D.june.daysElapsed+", 2026 · "+ranked.length+" agents";
 }
 
-let fcChart=null,juneChart=null,cmpChart=null;
-
+let fcChart=null;
 function renderForecast(){
   const {target,daysTotal,daysElapsed,daily}=D.june;
   const {achieved,drr,actualDrr,dayTarget,baseFc,optFc,consFc}=derive();
@@ -968,13 +884,13 @@ function renderForecast(){
   ].map(c=>`<div class="fc-chip"><div class="fc-chip-lbl">${c.l}</div><div class="fc-chip-val">${c.v}</div></div>`).join("");
   const labels=Array.from({length:daysTotal},(_,i)=>i+1);
   let cum=0;
-  const actLine=labels.map((_,i)=>{if(i<daysElapsed){cum+=(daily[i]||0);return cum;}return null;});
+  const actLine=labels.map((_,i)=>{if(i<daysElapsed){cum+=daily[i];return cum;}return null;});
   let fc2=achieved,opt2=achieved;
   const baseLine=labels.map((_,i)=>{if(i<daysElapsed)return null;fc2+=drr;return Math.round(fc2);});
   const optLine=labels.map((_,i)=>{if(i<daysElapsed)return null;opt2+=actualDrr*1.2;return Math.round(opt2);});
   const tgtLine=labels.map((_,i)=>Math.round(dayTarget*(i+1)));
   const ctx=document.getElementById("fcChart").getContext("2d");
-  if(fcChart){try{fcChart.destroy();}catch(e){}}
+  if(fcChart)fcChart.destroy();
   fcChart=new Chart(ctx,{type:"line",data:{labels,datasets:[
     {label:"Actual",data:actLine,borderColor:"#dc2626",backgroundColor:"rgba(220,38,38,.08)",borderWidth:2.5,pointRadius:2.5,pointBackgroundColor:"#dc2626",tension:.3,fill:true},
     {label:"Forecast",data:baseLine,borderColor:"#2563eb",backgroundColor:"rgba(37,99,235,.05)",borderWidth:2,pointRadius:0,tension:.3,borderDash:[5,4],fill:true},
@@ -983,18 +899,20 @@ function renderForecast(){
   ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": "+INR(c.parsed.y||0),title:c=>"Jun "+c[0].label}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
 }
 
+let juneChart=null;
 function renderJuneChart(){
   const {daily,daysElapsed}=D.june;
   const ctx=document.getElementById("juneChart").getContext("2d");
-  if(juneChart){try{juneChart.destroy();}catch(e){}}
+  if(juneChart)juneChart.destroy();
   juneChart=new Chart(ctx,{type:"bar",data:{labels:daily.map((_,i)=>i+1),datasets:[{label:"Revenue",data:daily,backgroundColor:daily.map((v,i)=>i>=daysElapsed?"#e2e8f0":v>0?"rgba(220,38,38,.82)":"rgba(226,232,240,.6)"),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"₹"+c.parsed.y.toLocaleString("en-IN"),title:c=>"Jun "+c[0].label+" — "+(c[0].dataIndex<daysElapsed?"actual":"future")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:false,maxRotation:0}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
 }
 
+let cmpChart=null;
 function renderCmpChart(){
   const jun=D.june.daily;
   const ctx=document.getElementById("cmpChart").getContext("2d");
-  if(cmpChart){try{cmpChart.destroy();}catch(e){}}
-  cmpChart=new Chart(ctx,{type:"bar",data:{labels:D.mayDaily.map(r=>r.d.replace("-May","")),datasets:[{label:"May",data:D.mayDaily.map(r=>r.v),backgroundColor:"rgba(37,99,235,.72)",borderRadius:2,borderSkipped:false},{label:"June",data:D.mayDaily.map((_,i)=>i<jun.length?(jun[i]||0):0),backgroundColor:"rgba(220,38,38,.72)",borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
+  if(cmpChart)cmpChart.destroy();
+  cmpChart=new Chart(ctx,{type:"bar",data:{labels:D.mayDaily.map(r=>r.d.replace("-May","")),datasets:[{label:"May",data:D.mayDaily.map(r=>r.v),backgroundColor:"rgba(37,99,235,.72)",borderRadius:2,borderSkipped:false},{label:"June",data:D.mayDaily.map((_,i)=>i<jun.length?jun[i]:0),backgroundColor:"rgba(220,38,38,.72)",borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
 }
 
 function renderWeekly(){
@@ -1021,15 +939,14 @@ function renderAgents(){
   for(let d=1;d<=daysElapsed;d++) hdr+=`<th style="min-width:40px">${d}</th>`;
   hdr+=`<th>Total</th><th>Target</th><th>Achv%</th><th>DRR Needed</th><th>Tgt Till Now</th><th>Deficit</th><th>Status</th>`;
   document.getElementById("agHdr").innerHTML=hdr;
-  const dayTgtPerAgent=Math.round((D.agents[0]?.target||68077)/daysTotal);
   const sorted=[...D.agents].map((ag,i)=>({...ag,_i:i,tot:agentTotal(ag)})).sort((a,b)=>b.tot/b.target-a.tot/a.target);
   let grand=0;
   document.getElementById("agBody").innerHTML=sorted.map((ag,rank)=>{
     grand+=ag.tot;
     const pct=ag.target>0?ag.tot/ag.target*100:0;
-    const dLeft=daysTotal-daysElapsed;
+    const dayTgt=Math.round(ag.target/daysTotal),dLeft=daysTotal-daysElapsed;
     const agDrr=dLeft>0?(ag.target-ag.tot)/dLeft:0;
-    const tgtTillNow=dayTgtPerAgent*daysElapsed,deficit=ag.tot-tgtTillNow,over=deficit>=0,bc=pCol(pct);
+    const tgtTillNow=dayTgt*daysElapsed,deficit=ag.tot-tgtTillNow,over=deficit>=0,bc=pCol(pct);
     let cells="";
     for(let d=0;d<daysElapsed;d++){const v=ag.daily[d]||0;cells+=`<td class="mono" style="color:${v>0?"var(--text)":"var(--n300)"}">${v>0?S(v):"—"}</td>`;}
     return`<tr><td style="color:var(--muted);font-size:11px;font-weight:600">${rank+1}</td>
@@ -1038,7 +955,7 @@ function renderAgents(){
       <td style="font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px">${INR(ag.tot)}</td>
       <td class="mono">${INR(ag.target)}</td>
       <td><div style="display:flex;align-items:center;gap:6px"><div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(pct,100).toFixed(0)}%;background:${bc}"></div></div><span style="font-size:11px;font-weight:700;color:${bc}">${Pct(pct)}</span></div></td>
-      <td class="mono ${agDrr<dayTgtPerAgent?"up":"dn"}">${INR(agDrr)}</td>
+      <td class="mono ${agDrr<dayTgt?"up":"dn"}">${INR(agDrr)}</td>
       <td class="mono">${INR(tgtTillNow)}</td>
       <td class="mono ${over?"up":"dn"}">${over?"+":""}${INR(deficit)}</td>
       <td><span class="pill ${pillCls(pct)}">${pillTxt(pct)}</span></td></tr>`;
@@ -1052,213 +969,106 @@ function renderAgents(){
 function renderDaily(){
   const jun=D.june.daily;
   document.getElementById("dailyBody").innerHTML=D.mayDaily.map((r,i)=>{
-    const jv=i<jun.length?(jun[i]||0):0,diff=jv-r.v;
+    const jv=i<jun.length?jun[i]:0,diff=jv-r.v;
     const dEl=(r.v>0&&jv>0)?`<span class="chip ${diff>=0?"chip-g":"chip-r"}">${diff>=0?"▲":"▼"}${S(Math.abs(diff))}</span>`:"—";
     return`<tr><td style="color:var(--muted);font-size:11px">${r.w}</td><td style="font-weight:500">${r.d}</td><td class="mono" style="color:${r.v>0?"#1e3a8a":"var(--muted)"}">${r.v>0?INR(r.v):"—"}</td><td class="mono" style="color:${jv>0?"#b91c1c":"var(--muted)"}">${jv>0?INR(jv):"—"}</td><td>${dEl}</td></tr>`;
   }).join("");
-  const mSum=D.mayDaily.reduce((s,r)=>s+r.v,0),jSum=jun.reduce((s,v)=>s+(v||0),0);
+  const mSum=D.mayDaily.reduce((s,r)=>s+r.v,0),jSum=jun.reduce((s,v)=>s+v,0);
   document.getElementById("dailyFoot").innerHTML=`<tr><td colspan="2"><strong>Total</strong></td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#1e3a8a">${INR(mSum)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#b91c1c">${INR(jSum)}</td><td></td></tr>`;
 }
 
-/* ═══════════════════════════════════════════
-   CDR RENDER
-═══════════════════════════════════════════ */
-function heatColor(val, max) {
-  if(!val||val===0) return "#f1f5f9";
-  const t = Math.min(val/Math.max(max,1), 1);
-  // teal gradient: low=light, high=dark
-  const r=Math.round(13+(1-t)*(220-13));
-  const g=Math.round(148+(1-t)*(230-148));
-  const b=Math.round(136+(1-t)*(220-136));
-  return `rgb(${r},${g},${b})`;
-}
-function heatTextColor(val, max) {
-  if(!val||val===0) return "var(--muted)";
-  return Math.min(val/Math.max(max,1),1)>0.5?"#fff":"#0f2d2a";
-}
-
-function renderCDR() {
-  const el = document.getElementById("cdrContent");
-  if(!el) return;
-
-  if(!CDR_DATA || !CDR_DATA.agents || CDR_DATA.agents.length===0) {
-    el.innerHTML=`<div class="cdr-empty">
-      <div class="cdr-empty-icon">📭</div>
-      <div class="cdr-empty-title">No CDR data pushed yet</div>
-      <div class="cdr-empty-desc">Use the <strong>cdr_push_tool.html</strong> to upload your Excel CDR file.<br>Data will appear here automatically once pushed to Firebase.</div>
-    </div>`;
-    const dr=document.getElementById("cdrDateRange");
-    if(dr) dr.textContent="—";
-    return;
+function renderInsights(){
+  const {target,daysTotal,daysElapsed,daily}=D.june;
+  const {achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc,optFc,consFc}=derive();
+  const alerts=[];
+  if(daysElapsed>0){
+    const todayIdx=daysElapsed-1,zeroToday=D.agents.filter(ag=>(ag.daily[todayIdx]||0)===0);
+    const activeToday=D.agents.length-zeroToday.length;
+    const sev=zeroToday.length>=Math.ceil(D.agents.length*0.6)?"critical":zeroToday.length>=3?"warn":"ok";
+    alerts.push({sev,icon:sev==="ok"?"✅":"🚨",badge:sev==="ok"?"All Active":"Zero Revenue Today",
+      title:sev==="ok"?`All ${activeToday} agents logged revenue on Jun ${daysElapsed}`:`${zeroToday.length} of ${D.agents.length} agents had ₹0 on Jun ${daysElapsed}`,
+      val:zeroToday.length>0?zeroToday.length+"":null,valColor:sev==="ok"?"green":"red",
+      desc:zeroToday.length===0?"Every agent contributed today — ideal day for lead momentum.":`${zeroToday.length} agent${zeroToday.length>1?"s":""} contributed nothing. Each idle agent costs ~${INR(dayTarget)} in missed daily quota.`,
+      names:zeroToday.map(a=>a.name)});
   }
-
-  const agents = CDR_DATA.agents;
-  const nameMap = buildNameMap(D.agents);
-
-  /* Attach revenue context from dashboard data */
-  const enriched = agents.map(a => {
-    const key = normName(a.name);
-    const dashIdx = nameMap[key];
-    const revAgent = dashIdx!==undefined ? D.agents[dashIdx] : null;
-    const sales = revAgent ? agentTotal(revAgent) : 0;
-    const salesCount = revAgent ? (revAgent.daily||[]).slice(0,D.june.daysElapsed).filter(v=>v>0).length : 0;
-    const contactRate = a.totalCalls>0 ? a.connected/a.totalCalls*100 : 0;
-    const callsPerSale = salesCount>0 ? (a.connected||0)/salesCount : 0;
-    const effortScore = (contactRate*0.5) + (Math.min((a.totalCalls||0)/100,1)*100*0.3) + (Math.min((a.avgDuration||0)/300,1)*100*0.2);
-    return {...a, sales, salesCount, contactRate, callsPerSale, effortScore};
-  });
-
-  /* Team totals */
-  const totCalls   = enriched.reduce((s,a)=>s+(a.totalCalls||0),0);
-  const totConn    = enriched.reduce((s,a)=>s+(a.connected||0),0);
-  const totNotConn = enriched.reduce((s,a)=>s+(a.notConnected||0),0);
-  const avgCR      = totCalls>0?totConn/totCalls*100:0;
-  const avgDur     = enriched.length>0?enriched.reduce((s,a)=>s+(a.avgDuration||0),0)/enriched.length:0;
-
-  /* Date range label */
-  const dr=document.getElementById("cdrDateRange");
-  if(dr) dr.textContent=(CDR_DATA.dateRange||"—")+" · "+totCalls.toLocaleString("en-IN")+" calls";
-
-  /* ── SUMMARY KPIs ── */
-  const summaryHtml=`<div class="cdr-summary-grid">
-    <div class="cdr-kpi"><div class="cdr-kpi-lbl">Total Calls</div><div class="cdr-kpi-val">${totCalls.toLocaleString("en-IN")}</div><div class="cdr-kpi-sub">Across all agents</div></div>
-    <div class="cdr-kpi"><div class="cdr-kpi-lbl">Connected</div><div class="cdr-kpi-val" style="color:var(--green)">${totConn.toLocaleString("en-IN")}</div><div class="cdr-kpi-sub">${Pct(avgCR)} contact rate</div></div>
-    <div class="cdr-kpi"><div class="cdr-kpi-lbl">Not Connected</div><div class="cdr-kpi-val" style="color:var(--red-d)">${totNotConn.toLocaleString("en-IN")}</div><div class="cdr-kpi-sub">${Pct(100-avgCR)} not reached</div></div>
-    <div class="cdr-kpi"><div class="cdr-kpi-lbl">Avg Contact Rate</div><div class="cdr-kpi-val" style="color:${avgCR>=50?"var(--green)":avgCR>=30?"var(--amber)":"var(--red-d)"}">${Pct(avgCR)}</div><div class="cdr-kpi-sub">Team average</div></div>
-    <div class="cdr-kpi"><div class="cdr-kpi-lbl">Avg Call Duration</div><div class="cdr-kpi-val">${Math.round(avgDur)}s</div><div class="cdr-kpi-sub">Connected calls</div></div>
-    <div class="cdr-kpi"><div class="cdr-kpi-lbl">Last Pushed</div><div class="cdr-kpi-val" style="font-size:13px">${CDR_DATA.lastPushed||"—"}</div><div class="cdr-kpi-sub">From push tool</div></div>
-  </div>`;
-
-  /* ── PER-AGENT TABLE ── */
-  const crColor=cr=>cr>=50?"var(--green-d)":cr>=30?"var(--amber-d)":"var(--red-d)";
-  const tableHtml=`<div class="tbl-wrap" style="border-top:1px solid var(--border)">
-    <table class="zebra">
-      <thead><tr>
-        <th>Agent</th><th>Total Calls</th><th>Connected</th><th>Not Connected</th>
-        <th>Contact Rate</th><th>Avg Duration</th><th>Revenue Days</th><th>Calls / Rev Day</th><th>Effort Score</th>
-      </tr></thead>
-      <tbody>
-        ${enriched.sort((a,b)=>b.contactRate-a.contactRate).map(a=>`
-        <tr>
-          <td style="font-weight:600;font-size:12px">${a.name}</td>
-          <td class="mono">${(a.totalCalls||0).toLocaleString("en-IN")}</td>
-          <td class="mono" style="color:var(--green-d)">${(a.connected||0).toLocaleString("en-IN")}</td>
-          <td class="mono" style="color:var(--red-d)">${(a.notConnected||0).toLocaleString("en-IN")}</td>
-          <td><span class="pill ${a.contactRate>=50?"pill-g":a.contactRate>=30?"pill-a":"pill-r"}">${Pct(a.contactRate)}</span></td>
-          <td class="mono">${Math.round(a.avgDuration||0)}s</td>
-          <td class="mono">${a.salesCount}</td>
-          <td class="mono">${a.salesCount>0?a.callsPerSale.toFixed(1):"—"}</td>
-          <td><div style="display:flex;align-items:center;gap:6px">
-            <div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(a.effortScore,100).toFixed(0)}%;background:var(--teal)"></div></div>
-            <span style="font-size:11px;font-weight:700;color:var(--teal)">${Math.round(a.effortScore)}</span>
-          </div></td>
-        </tr>`).join("")}
-      </tbody>
-      <tfoot><tr>
-        <td><strong>Total / Avg</strong></td>
-        <td class="mono">${totCalls.toLocaleString("en-IN")}</td>
-        <td class="mono" style="color:var(--green-d)">${totConn.toLocaleString("en-IN")}</td>
-        <td class="mono" style="color:var(--red-d)">${totNotConn.toLocaleString("en-IN")}</td>
-        <td><span class="pill ${avgCR>=50?"pill-g":avgCR>=30?"pill-a":"pill-r"}">${Pct(avgCR)}</span></td>
-        <td class="mono">${Math.round(avgDur)}s</td>
-        <td colspan="3" style="color:var(--muted);font-size:11px">June 2026 · CDR Analysis</td>
-      </tr></tfoot>
-    </table>
-  </div>`;
-
-  /* ── HEATMAP ── */
-  const HOURS = Array.from({length:24},(_,i)=>{
-    const h=i%12||12,ap=i<12?"am":"pm";
-    return (i===0?"12am":i===12?"12pm":`${h}${ap}`);
-  });
-  /* find max across all agents × hours */
-  let maxHeat=1;
-  enriched.forEach(a=>{if(a.hourlyDist){(toArr(a.hourlyDist)).forEach(v=>{if((v||0)>maxHeat)maxHeat=v||0;});}});
-
-  const heatRows=enriched.map(a=>{
-    const dist=toArr(a.hourlyDist||[]);
-    while(dist.length<24) dist.push(0);
-    const cells=dist.map((v,h)=>{
-      const bg=heatColor(v,maxHeat),tc=heatTextColor(v,maxHeat);
-      return `<td class="hcell" style="background:${bg};color:${tc}" title="${HOURS[h]}: ${v||0} calls">${(v||0)>0?v:""}</td>`;
-    }).join("");
-    return`<tr><td class="agent-name">${a.name}</td>${cells}</tr>`;
-  }).join("");
-
-  const heatmapHtml=`<div style="border-top:1px solid var(--border);padding:13px 18px 4px;">
-    <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">⏰ Hourly Call Distribution Heatmap</div>
-  </div>
-  <div class="heatmap-wrap">
-    <table class="heatmap-table">
-      <thead><tr>
-        <th style="text-align:left;padding-right:10px">Agent</th>
-        ${HOURS.map(h=>`<th>${h}</th>`).join("")}
-      </tr></thead>
-      <tbody>${heatRows}</tbody>
-    </table>
-    <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:10px;color:var(--muted);">
-      <span>Low</span>
-      <div style="display:flex;gap:2px">${[0,.2,.4,.6,.8,1].map(t=>{const v=Math.round(t*maxHeat);return`<div style="width:18px;height:10px;border-radius:2px;background:${heatColor(v,maxHeat)}"></div>`;}).join("")}</div>
-      <span>High (${maxHeat} calls)</span>
-    </div>
-  </div>`;
-
-  /* ── CDR LEADERBOARD ── */
-  const sortedEff=[...enriched].sort((a,b)=>b.effortScore-a.effortScore);
-  const maxEff=sortedEff[0]?.effortScore||1;
-  const posClass=i=>i===0?"gold":i===1?"silver":i===2?"bronze":"rest";
-  const medals=["🥇","🥈","🥉"];
-  const cdrLbHtml=`<div style="border-top:1px solid var(--border);padding:13px 18px 4px;">
-    <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">🏅 CDR Effort Leaderboard <span style="font-weight:400;font-size:9px">(50% contact rate · 30% call volume · 20% avg duration)</span></div>
-  </div>
-  <div class="cdr-lb-wrap">
-    ${sortedEff.map((a,i)=>`
-    <div class="cdr-lb-row">
-      <div class="cdr-lb-rank ${posClass(i)}">${i<3?medals[i]:"#"+(i+1)}</div>
-      <div style="width:28px;height:28px;border-radius:50%;background:${avColor(i)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${initials(a.name)}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:600">${a.name}</div>
-        <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace">CR: ${Pct(a.contactRate)} · ${a.totalCalls||0} calls · ${Math.round(a.avgDuration||0)}s avg</div>
+  const drrGap=drr-actualDrr,drrGapPct=actualDrr>0?(drrGap/actualDrr*100):0;
+  const drrSev=drrGap>actualDrr*0.5?"critical":drrGap>0?"warn":"ok";
+  alerts.push({sev:drrSev,icon:drrSev==="ok"?"🟢":"📉",badge:drrSev==="ok"?"On Pace":drrGapPct>50?"Critical DRR Gap":"DRR Behind Target",
+    title:drrSev==="ok"?"Team DRR is ahead of required pace":`Team needs ${INR(Math.round(drr))}/day but averaging ${INR(Math.round(actualDrr))}/day`,
+    val:(drrGap>0?"+":"")+INR(Math.round(Math.abs(drrGap))),valColor:drrSev==="ok"?"green":drrSev==="critical"?"red":"amber",
+    desc:drrSev==="ok"?`Actual DRR (${INR(Math.round(actualDrr))}) exceeds required DRR (${INR(Math.round(drr))}). Keep this pace.`:`Gap of ${INR(Math.round(drrGap))}/day (${drrGapPct.toFixed(0)}% shortfall). Base forecast: ${INR(baseFc)} — ${Pct(baseFc/target*100)} of target.`,
+    names:[]});
+  const zeroMonth=D.agents.filter(ag=>agentTotal(ag)===0);
+  if(zeroMonth.length>0) alerts.push({sev:"critical",icon:"💤",badge:"No Revenue — Month to Date",
+    title:`${zeroMonth.length} agent${zeroMonth.length>1?"s have":" has"} ₹0 for all of June so far`,
+    val:zeroMonth.length+"",valColor:"red",
+    desc:`${zeroMonth.map(a=>a.name.split(" ")[0]).join(", ")} ${zeroMonth.length>1?"have":"has"} not logged a single rupee in ${daysElapsed} elapsed days.`,
+    names:zeroMonth.map(a=>a.name)});
+  const sortedAg=[...D.agents].map(ag=>({...ag,tot:agentTotal(ag)})).sort((a,b)=>b.tot-a.tot);
+  const top3Tot=sortedAg.slice(0,3).reduce((s,a)=>s+a.tot,0),concPct=achieved>0?top3Tot/achieved*100:0;
+  const concSev=concPct>75?"critical":concPct>60?"warn":"ok";
+  alerts.push({sev:concSev,icon:concSev==="ok"?"⚖️":"⚠️",badge:concSev==="ok"?"Balanced Load":"High Concentration Risk",
+    title:`Top 3 agents account for ${Pct(concPct,0)} of all June revenue`,
+    val:Pct(concPct,0),valColor:concSev==="ok"?"green":concSev==="critical"?"red":"amber",
+    desc:concSev==="ok"?"Revenue load is reasonably spread.":`${sortedAg[0].name.split(" ")[0]}, ${sortedAg[1].name.split(" ")[0]} & ${sortedAg[2].name.split(" ")[0]} are carrying the team.`,
+    names:concSev!=="ok"?sortedAg.slice(0,3).map(a=>a.name):[]});
+  const fcSev=baseFc>=target?"ok":baseFc>=target*0.75?"warn":"critical";
+  alerts.push({sev:fcSev,icon:fcSev==="ok"?"🎯":"🔮",badge:fcSev==="ok"?"On Track to Close":"Month-End Shortfall Risk",
+    title:fcSev==="ok"?`Base forecast meets target`:`Base forecast ${INR(baseFc)} — short by ${INR(target-baseFc)}`,
+    val:INR(baseFc),valColor:fcSev==="ok"?"green":fcSev==="critical"?"red":"amber",
+    desc:`Optimistic: ${INR(optFc)} (${Pct(optFc/target*100)}). Conservative: ${INR(consFc)} (${Pct(consFc/target*100)}). ${daysLeft} days to close ${INR(remaining)}.`,
+    names:[]});
+  const filledDays=daily.slice(0,daysElapsed).filter(v=>v>0);
+  if(filledDays.length>0){
+    const bestVal=Math.max(...filledDays),bestDay=daily.indexOf(bestVal)+1,avgDay=filledDays.reduce((s,v)=>s+v,0)/filledDays.length;
+    alerts.push({sev:"info",icon:"🏅",badge:"Best Single Day",
+      title:`Jun ${bestDay} was the strongest day — ${(bestVal/avgDay).toFixed(1)}× the daily average`,
+      val:INR(bestVal),valColor:"blue",
+      desc:`Daily average across ${filledDays.length} revenue-generating days is ${INR(Math.round(avgDay))}. Jun ${bestDay} outperformed by ${INR(Math.round(bestVal-avgDay))}.`,
+      names:[]});
+  }
+  const critAgents=D.agents.filter(ag=>{const tot=agentTotal(ag),p=ag.target>0?tot/ag.target*100:0;return p<10&&ag.target>0;});
+  if(critAgents.length>0) alerts.push({sev:"warn",icon:"🎙️",badge:"Coaching Priority",
+    title:`${critAgents.length} agent${critAgents.length>1?"s":""} below 10% monthly achievement`,
+    val:critAgents.length+"",valColor:"amber",
+    desc:`Immediate coaching needed. Combined untapped target: ${INR(critAgents.reduce((s,a)=>s+a.target,0))}.`,
+    names:critAgents.map(a=>a.name)});
+  if(daysElapsed>=3){
+    const last3=daily.slice(Math.max(0,daysElapsed-3),daysElapsed).filter(v=>v>0);
+    if(last3.length===3){
+      const trend=last3[2]>last3[1]&&last3[1]>last3[0],drop=last3[2]<last3[1]&&last3[1]<last3[0];
+      if(trend||drop) alerts.push({sev:trend?"ok":"warn",icon:trend?"📈":"📉",badge:trend?"3-Day Surge":"3-Day Decline",
+        title:trend?"Revenue has grown 3 days in a row":"Revenue has declined 3 days in a row",
+        val:null,valColor:trend?"green":"amber",
+        desc:`Jun ${daysElapsed-2}: ${INR(last3[0])} → Jun ${daysElapsed-1}: ${INR(last3[1])} → Jun ${daysElapsed}: ${INR(last3[2])}.`,
+        names:[]});
+    }
+  }
+  alerts.push({sev:"neutral",icon:"📡",badge:"Observed · Qualitative",title:"MCN / SKN Lead Overlap",val:null,valColor:null,
+    desc:"A significant portion of current leads have already been contacted by MCN and SKN centres, reducing contactability and conversion rates.",names:[],isStatic:true});
+  alerts.push({sev:"neutral",icon:"🗂️",badge:"Observed · Qualitative",title:"FIFO Lead Allocation",val:null,valColor:null,
+    desc:"Lead allocation follows a First In, First Out sequence. Agents who log in earlier access fresher leads before other centres engage them.",names:[],isStatic:true});
+  const sevOrder={critical:0,warn:1,ok:2,info:3,neutral:4};
+  const sorted2=[...alerts].sort((a,b)=>sevOrder[a.sev]-sevOrder[b.sev]);
+  const badgeCls=s=>({critical:"badge-critical",warn:"badge-warn",ok:"badge-ok",info:"badge-info",neutral:"badge-neutral"}[s]);
+  const cardCls=s=>"intel-card sev-"+s+(s==="neutral"?" intel-static":"");
+  document.getElementById("intelGrid").innerHTML=sorted2.map(a=>`
+    <div class="${cardCls(a.sev)}">
+      <div class="intel-icon">${a.icon}</div>
+      <div class="intel-body">
+        <span class="intel-badge ${badgeCls(a.sev)}">${a.badge}</span>
+        ${a.val!==null?`<div class="intel-val ${a.valColor||""}">${a.val}</div>`:""}
+        <div class="intel-title">${a.title}</div>
+        <div class="intel-desc">${a.desc}</div>
+        ${a.names&&a.names.length>0?`<div class="intel-names">${a.names.map(n=>`<span class="intel-name-chip">${n}</span>`).join("")}</div>`:""}
       </div>
-      <div class="cdr-stat-bar"><div class="cdr-stat-fill" style="width:${Math.min(a.effortScore/Math.max(maxEff,1)*100,100).toFixed(0)}%"></div></div>
-      <div style="min-width:50px;text-align:right;font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--teal)">${Math.round(a.effortScore)}</div>
-    </div>`).join("")}
-  </div>`;
-
-  el.innerHTML = summaryHtml + tableHtml + heatmapHtml + cdrLbHtml;
+    </div>`).join("");
+  document.getElementById("intelTimestamp").textContent="Last updated: "+D.lastUpdated+" · "+sorted2.filter(a=>a.sev==="critical").length+" critical · "+sorted2.filter(a=>a.sev==="warn").length+" warnings";
 }
 
 function renderAll(){
   renderKPIs();renderLeaderboard();renderForecast();renderJuneChart();
-  renderWeekly();renderAgents();renderDaily();renderCmpChart();
-}
-
-/* ═══════════════════════════════════════════
-   WHATSAPP SHARE REPORT (admin only)
-═══════════════════════════════════════════ */
-function shareReport() {
-  if(!isAdmin) return;
-  const {achieved,remaining,daysLeft,drr,actualDrr,pct,baseFc}=derive();
-  const top3=[...D.agents].map(ag=>({...ag,tot:agentTotal(ag)})).sort((a,b)=>b.tot-a.tot).slice(0,3);
-  const today=new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
-  const lines=[
-    `📊 *Housing.com · Daily Report — ${today}*`,
-    ``,
-    `🎯 Target: ${INR(D.june.target)}`,
-    `💰 Achieved: ${INR(achieved)} (${Pct(pct)})`,
-    `⏳ Remaining: ${INR(remaining)} · ${daysLeft} days left`,
-    `📈 DRR Required: ${INR(Math.round(drr))} | Actual: ${INR(Math.round(actualDrr))}`,
-    `🔮 Base Forecast: ${INR(baseFc)} (${Pct(baseFc/D.june.target*100)})`,
-    ``,
-    `🏆 *Top 3 Agents:*`,
-    ...top3.map((ag,i)=>`${["1️⃣","2️⃣","3️⃣"][i]} ${ag.name}: ${INR(ag.tot)} (${Pct(ag.tot/ag.target*100)})`),
-    ``,
-    `_Powered by OcubeServices · Housing Sales Command Centre_`
-  ];
-  const text=lines.join("\n");
-  const waUrl=`https://wa.me/?text=${encodeURIComponent(text)}`;
-  window.open(waUrl,"_blank");
-  toast("📲 Opening WhatsApp with report…");
+  renderWeekly();renderAgents();renderDaily();renderCmpChart();renderInsights();
 }
 
 /* ═══════════════════════════════════════════
@@ -1270,45 +1080,18 @@ function toast(msg){
   t.classList.add("show");
   setTimeout(()=>t.classList.remove("show"),3500);
 }
-function openLogin(){
-  document.getElementById("loginOvl").classList.add("on");
-  const pw=document.getElementById("loginPw");
-  pw.value="";
-  document.getElementById("loginErr").style.display="none";
-  setTimeout(()=>pw.focus(),120);
-}
-function closeLogin(){document.getElementById("loginOvl").classList.remove("on");}
-function doLogin(){
-  if(btoa(document.getElementById("loginPw").value)===ADMIN_B64){
-    isAdmin=true;
-    closeLogin();
-    /* show share button */
-    if(currentMonth==="live") document.getElementById("shareBtn").classList.add("visible");
-    /* defer so loginOvl finishes closing before editOvl opens */
-    setTimeout(openEdit, 80);
-  } else {
-    document.getElementById("loginErr").style.display="block";
-  }
-}
-function openEdit(){
-  try { populateEdit(); } catch(e){ console.error("populateEdit error:",e); }
-  document.getElementById("editOvl").classList.add("on");
-}
-function closeEdit(){document.getElementById("editOvl").classList.remove("on");}
-function swTab(id,idx){
-  document.querySelectorAll(".tp").forEach(p=>p.classList.remove("on"));
-  document.querySelectorAll(".m-tab").forEach(t=>t.classList.remove("on"));
-  document.getElementById(id).classList.add("on");
-  document.querySelectorAll(".m-tab")[idx].classList.add("on");
-}
+function openLogin(){ document.getElementById("loginOvl").classList.add("on");const pw=document.getElementById("loginPw");pw.value="";document.getElementById("loginErr").style.display="none";setTimeout(()=>pw.focus(),120); }
+function closeLogin(){ document.getElementById("loginOvl").classList.remove("on"); }
+function doLogin(){ if(btoa(document.getElementById("loginPw").value)===ADMIN_B64){closeLogin();openEdit();}else document.getElementById("loginErr").style.display="block"; }
+function openEdit(){ populateEdit();document.getElementById("editOvl").classList.add("on"); }
+function closeEdit(){ document.getElementById("editOvl").classList.remove("on"); }
+function swTab(id,idx){ document.querySelectorAll(".tp").forEach(p=>p.classList.remove("on"));document.querySelectorAll(".m-tab").forEach(t=>t.classList.remove("on"));document.getElementById(id).classList.add("on");document.querySelectorAll(".m-tab")[idx].classList.add("on"); }
 
+/* Auto-calc days elapsed when admin changes date */
 function autoCalcDaysElapsed(){
-  const dateVal=document.getElementById("eUpdated").value;
-  const days=computeDaysElapsed(dateVal);
-  document.getElementById("eDaysElapsed").value=days;
-  /* show warning if date is outside June */
-  const warn=document.getElementById("dateWarn");
-  if(warn) warn.style.display=isDateInJune(dateVal)?"none":"block";
+  const dateVal = document.getElementById("eUpdated").value;
+  const days = computeDaysElapsed(dateVal);
+  document.getElementById("eDaysElapsed").value = days;
   livePreview();
 }
 
@@ -1317,39 +1100,40 @@ function populateEdit(){
   document.getElementById("eDaysTotal").value=D.june.daysTotal;
   document.getElementById("eDaysElapsed").value=D.june.daysElapsed;
   document.getElementById("eUpdated").value=D.lastUpdated;
-  document.getElementById("dateWarn").style.display="none";
-  document.getElementById("juneDayGrid").innerHTML=D.june.daily.map((v,i)=>`<div class="dw"><span>Jun ${i+1}</span><input type="number" id="jd${i}" value="${v||0}" oninput="livePreview()"></div>`).join("");
+  document.getElementById("juneDayGrid").innerHTML=D.june.daily.map((v,i)=>`<div class="dw"><span>Jun ${i+1}</span><input type="number" id="jd${i}" value="${v}" oninput="livePreview()"></div>`).join("");
 
-  const daysTotal=D.june.daysTotal;
-  document.getElementById("allAgentsWrap").innerHTML=D.agents.map((ag,ai)=>{
-    const tot=ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+(v||0),0);
-    const pct=ag.target>0?((tot/ag.target)*100).toFixed(1):0;
-    const bc=tot/ag.target>=1?"#16a34a":tot/ag.target>=0.6?"#d97706":"#dc2626";
-    return`<div style="border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;">
-      <div style="background:var(--n50);padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none" onclick="toggleAgSection(${ai})">
-        <div style="width:26px;height:26px;border-radius:50%;background:${avColor(ai)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${initials(ag.name)}</div>
-        <strong style="font-size:12px;flex:1">${ag.name}</strong>
-        <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:${bc};font-weight:700">${INR(tot)}</span>
-        <span style="font-size:10px;color:var(--muted)">${pct}%</span>
-        <span id="agArrow${ai}" style="font-size:11px;color:var(--muted);transition:transform .2s">▼</span>
-      </div>
-      <div id="agSection${ai}" style="display:none;padding:10px 12px;border-top:1px solid var(--border)">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-          <div class="fg" style="margin-bottom:0"><label>Monthly Target (₹)</label><input type="number" id="agt${ai}" value="${ag.target}" oninput="refreshAgLive(${ai})"></div>
-          <div style="background:var(--n50);border-radius:var(--r);padding:6px 10px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;justify-content:center">
-            Total: <strong id="agliveTot${ai}" style="font-family:'JetBrains Mono',monospace;color:var(--text)">${INR(tot)}</strong>
-            Achv: <strong id="aglivePct${ai}" style="font-family:'JetBrains Mono',monospace;color:${bc}">${pct}%</strong>
+  // ── Render ALL agents at once ──
+  const daysTotal = D.june.daysTotal;
+  document.getElementById("allAgentsWrap").innerHTML = D.agents.map((ag,ai)=>{
+    const tot = ag.daily.slice(0,D.june.daysElapsed).reduce((s,v)=>s+v,0);
+    const pct = ag.target>0?((tot/ag.target)*100).toFixed(1):0;
+    const bc  = tot/ag.target>=1?"#16a34a":tot/ag.target>=0.6?"#d97706":"#dc2626";
+    return `
+      <div style="border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;">
+        <div style="background:var(--n50);padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none" onclick="toggleAgSection(${ai})">
+          <div style="width:26px;height:26px;border-radius:50%;background:${avColor(ai)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${initials(ag.name)}</div>
+          <strong style="font-size:12px;flex:1">${ag.name}</strong>
+          <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:${bc};font-weight:700">${INR(tot)}</span>
+          <span style="font-size:10px;color:var(--muted)">${pct}%</span>
+          <span id="agArrow${ai}" style="font-size:11px;color:var(--muted);transition:transform .2s">▼</span>
+        </div>
+        <div id="agSection${ai}" style="display:none;padding:10px 12px;border-top:1px solid var(--border)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div class="fg" style="margin-bottom:0"><label>Monthly Target (₹)</label><input type="number" id="agt${ai}" value="${ag.target}" oninput="refreshAgLive(${ai})"></div>
+            <div style="background:var(--n50);border-radius:var(--r);padding:6px 10px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;justify-content:center">
+              Total: <strong id="agliveTot${ai}" style="font-family:'JetBrains Mono',monospace;color:var(--text)">${INR(tot)}</strong>
+              Achv: <strong id="aglivePct${ai}" style="font-family:'JetBrains Mono',monospace;color:${bc}">${pct}%</strong>
+            </div>
+          </div>
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Daily Revenue — June</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px">
+            ${ag.daily.slice(0,daysTotal).map((v,d)=>`
+              <div><span style="display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600">Jun ${d+1}</span>
+              <input type="number" id="agd${ai}_${d}" value="${v}" oninput="refreshAgLive(${ai})"
+                style="width:100%;padding:4px 5px;font-size:11px;border:1px solid ${d<D.june.daysElapsed?"var(--border)":"var(--n200)"};border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;background:${d<D.june.daysElapsed?"#fff":"var(--n50)"}"></div>`).join("")}
           </div>
         </div>
-        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Daily Revenue — June</div>
-        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px">
-          ${ag.daily.slice(0,daysTotal).map((v,d)=>`
-          <div><span style="display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600">Jun ${d+1}</span>
-          <input type="number" id="agd${ai}_${d}" value="${v||0}" oninput="refreshAgLive(${ai})"
-            style="width:100%;padding:4px 5px;font-size:11px;border:1px solid ${d<D.june.daysElapsed?"var(--border)":"var(--n200)"};border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;background:${d<D.june.daysElapsed?"#fff":"var(--n50)"}"></div>`).join("")}
-        </div>
-      </div>
-    </div>`;
+      </div>`;
   }).join("");
 
   document.getElementById("mayWkInputs").innerHTML=D.mayWeekly.map((w,i)=>`<div class="fg"><label>May ${w.week} Revenue</label><input type="number" id="mw${i}" value="${w.revenue}"></div>`).join("");
@@ -1358,29 +1142,29 @@ function populateEdit(){
 }
 
 function toggleAgSection(ai){
-  const sec=document.getElementById("agSection"+ai);
-  const arrow=document.getElementById("agArrow"+ai);
-  const isOpen=sec.style.display!=="none";
-  sec.style.display=isOpen?"none":"block";
-  arrow.style.transform=isOpen?"":"rotate(180deg)";
+  const sec = document.getElementById("agSection"+ai);
+  const arrow = document.getElementById("agArrow"+ai);
+  const isOpen = sec.style.display !== "none";
+  sec.style.display = isOpen ? "none" : "block";
+  arrow.style.transform = isOpen ? "" : "rotate(180deg)";
 }
 
 function refreshAgLive(ai){
-  const ag=D.agents[ai];
-  let sum=0;
-  ag.daily.forEach((_,d)=>{const e=document.getElementById(`agd${ai}_${d}`);if(e)sum+=parseInt(e.value)||0;});
-  const tgt=parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target;
-  const pct=tgt>0?((sum/tgt)*100).toFixed(1):0;
-  const bc=sum/tgt>=1?"#16a34a":sum/tgt>=0.6?"#d97706":"#dc2626";
-  const totEl=document.getElementById(`agliveTot${ai}`);if(totEl)totEl.textContent=INR(sum);
-  const pctEl=document.getElementById(`aglivePct${ai}`);if(pctEl){pctEl.textContent=pct+"%";pctEl.style.color=bc;}
+  const ag = D.agents[ai];
+  let sum = 0;
+  ag.daily.forEach((_,d)=>{ const e=document.getElementById(`agd${ai}_${d}`); if(e) sum+=parseInt(e.value)||0; });
+  const tgt = parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target;
+  const pct = tgt>0?((sum/tgt)*100).toFixed(1):0;
+  const bc  = sum/tgt>=1?"#16a34a":sum/tgt>=0.6?"#d97706":"#dc2626";
+  const totEl=document.getElementById(`agliveTot${ai}`); if(totEl) totEl.textContent=INR(sum);
+  const pctEl=document.getElementById(`aglivePct${ai}`); if(pctEl){ pctEl.textContent=pct+"%"; pctEl.style.color=bc; }
 }
 
 function livePreview(){
   const tgt=parseInt(document.getElementById("eTarget")?.value)||D.june.target;
   const el=parseInt(document.getElementById("eDaysElapsed")?.value)||D.june.daysElapsed;
   const dt=parseInt(document.getElementById("eDaysTotal")?.value)||D.june.daysTotal;
-  let sum=0;D.june.daily.forEach((_,i)=>{const e=document.getElementById("jd"+i);if(e)sum+=parseInt(e.value)||0;});
+  let sum=0; D.june.daily.forEach((_,i)=>{const e=document.getElementById("jd"+i);if(e)sum+=parseInt(e.value)||0;});
   const drr=el>0?sum/el:0,fc=Math.round(drr*dt),p=tgt>0?sum/tgt*100:0;
   document.getElementById("lvTotal").textContent=INR(sum);
   document.getElementById("lvDrr").textContent=INR(Math.round(drr));
@@ -1390,25 +1174,29 @@ function livePreview(){
 }
 
 /* ═══════════════════════════════════════════
-   SAVE → FIREBASE
+   SAVE → FIREBASE  (saves ALL agents)
 ═══════════════════════════════════════════ */
 function saveData(){
-  const newD=JSON.parse(JSON.stringify(D));
-  newD.june.target    =parseInt(document.getElementById("eTarget").value)||D.june.target;
-  newD.june.daysTotal =parseInt(document.getElementById("eDaysTotal").value)||30;
-  newD.lastUpdated    =document.getElementById("eUpdated").value;
-  newD.june.daysElapsed=computeDaysElapsed(newD.lastUpdated);
-  newD.june.daily     =newD.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0);
-  newD.agents=D.agents.map((ag,ai)=>({
+  const newD = JSON.parse(JSON.stringify(D));
+  newD.june.target      = parseInt(document.getElementById("eTarget").value)||D.june.target;
+  newD.june.daysTotal   = parseInt(document.getElementById("eDaysTotal").value)||30;
+  newD.lastUpdated      = document.getElementById("eUpdated").value;
+  newD.june.daysElapsed = computeDaysElapsed(newD.lastUpdated);
+  newD.june.daily       = newD.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0);
+
+  // ── Save ALL agents (not just selected one) ──
+  newD.agents = D.agents.map((ag,ai)=>({
     ...ag,
-    target:parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target,
-    daily:ag.daily.map((_,d)=>parseInt(document.getElementById(`agd${ai}_${d}`)?.value)||0)
+    target: parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target,
+    daily:  ag.daily.map((_,d)=>parseInt(document.getElementById(`agd${ai}_${d}`)?.value)||0)
   }));
-  newD.mayWeekly.forEach((_,i)=>{newD.mayWeekly[i].revenue=parseInt(document.getElementById("mw"+i)?.value)||0;});
-  newD.juneWeekly.forEach((_,i)=>{newD.juneWeekly[i].revenue=parseInt(document.getElementById("jw"+i)?.value)||0;});
+
+  newD.mayWeekly.forEach((_,i)=>{ newD.mayWeekly[i].revenue=parseInt(document.getElementById("mw"+i)?.value)||0; });
+  newD.juneWeekly.forEach((_,i)=>{ newD.juneWeekly[i].revenue=parseInt(document.getElementById("jw"+i)?.value)||0; });
 
   closeEdit();
   document.getElementById("savingOverlay").classList.add("on");
+
   db.ref(DB_KEY).set(newD)
     .then(()=>{
       document.getElementById("savingOverlay").classList.remove("on");
@@ -1418,7 +1206,8 @@ function saveData(){
       document.getElementById("savingOverlay").classList.remove("on");
       setSyncStatus("error","Save failed: "+err.message);
       toast("❌ Save failed — check connection");
-      D=newD;renderAll();
+      D = newD;
+      renderAll();
     });
 }
 
