@@ -329,6 +329,8 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .refresh-banner.show{display:flex;}
 .refresh-banner strong{color:#fcd34d;}
 
+/* FALLBACK — force skeleton hidden after boot */
+#skeletonView{transition:opacity .3s;}
 /* WHATSAPP SHARE BTN */
 .btn-share{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;padding:7px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;display:none;}
 .btn-share.visible{display:flex;}
@@ -785,18 +787,18 @@ function buildNameMap(agents) {
    DEFAULT DATA
 ═══════════════════════════════════════════ */
 const DEFAULT_DATA = {
-  lastUpdated:"2026-06-11",
-  june:{ target:885000, daysTotal:30, daysElapsed:11,
+  lastUpdated:"2026-06-17",
+  june:{ target:885000, daysTotal:30, daysElapsed:17,
     daily:[26428,11245,38262,11229,11346,12823,2000,7903,15029,13055,19820,
-           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+           7435,9792,6489,29143,13653,28141,0,0,0,0,0,0,0,0,0,0,0,0,0]
   },
   mayWeekly:[
     {week:"Wk-1",target:221250,revenue:113338},{week:"Wk-2",target:221250,revenue:55807},
     {week:"Wk-3",target:221250,revenue:72355},{week:"Wk-4",target:221250,revenue:141239}
   ],
   juneWeekly:[
-    {week:"Wk-1",target:221250,revenue:112333},{week:"Wk-2",target:221250,revenue:56812},
-    {week:"Wk-3",target:221250,revenue:0},{week:"Wk-4",target:221250,revenue:0}
+    {week:"Wk-1",target:221250,revenue:113338},{week:"Wk-2",target:221250,revenue:79523},
+    {week:"Wk-3",target:221250,revenue:70937},{week:"Wk-4",target:221250,revenue:0}
   ],
   mayDaily:[
     {w:"Wk-1",d:"01-May",v:0},{w:"Wk-1",d:"02-May",v:8623},{w:"Wk-1",d:"03-May",v:2123},
@@ -812,19 +814,19 @@ const DEFAULT_DATA = {
     {w:"Wk-4",d:"31-May",v:23982}
   ],
   agents:[
-    {name:"Lucky Malik",       target:68077,daily:[8554,3834,2757,4152,3067,2359,0,0,3244,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Md Mehtab",         target:68077,daily:[10619,0,20175,2004,0,0,0,5899,2724,0,8556,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Km Kashish Sengar", target:68077,daily:[0,4021,6489,0,0,0,0,0,2831,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Uqba Suhail OC",    target:68077,daily:[0,0,0,5073,0,6039,0,0,2662,0,2831,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Aman Tyagi OC",     target:68077,daily:[0,0,2831,0,0,0,0,2004,0,3568,2004,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Lucky Malik",       target:68077,daily:[8554,3834,2757,4152,3067,2359,0,0,3244,0,4424,0,0,0,2831,0,4447,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Md Mehtab",         target:68077,daily:[10619,0,20175,2004,0,0,0,5899,2724,0,8556,0,0,0,10853,0,2478,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Km Kashish Sengar", target:68077,daily:[0,4021,6489,0,0,0,0,0,2831,2005,0,5368,0,0,0,2005,6489,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Uqba Suhail OC",    target:68077,daily:[0,0,0,5073,0,6039,0,0,2662,0,2831,2067,7787,0,0,0,3444,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Aman Tyagi OC",     target:68077,daily:[0,0,2831,0,0,0,0,2004,0,3568,2004,0,0,0,2421,2831,2005,0,0,0,0,0,0,0,0,0,0,0,0,0]},
     {name:"Shivani Pal OC",    target:68077,daily:[0,3390,3179,0,0,0,0,0,0,3244,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
     {name:"Atul Kumar",        target:68077,daily:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Teena Pal OC",      target:68077,daily:[0,0,0,0,2831,0,0,0,0,2233,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Cally Richard OC",  target:68077,daily:[0,0,0,0,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Teena Pal OC",      target:68077,daily:[0,0,0,0,2831,0,0,0,0,2233,0,0,0,0,6614,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Cally Richard OC",  target:68077,daily:[0,0,0,0,0,4424,0,0,0,0,0,0,0,0,0,3568,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
     {name:"Neha Sharma",       target:68077,daily:[0,0,0,0,0,0,2000,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Priyanka Saini OC", target:68077,daily:[0,0,2831,0,2724,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Mohit Batra OC",    target:68077,daily:[0,0,0,0,2724,0,0,0,3568,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Altmas OC",         target:68077,daily:[7255,0,0,0,0,0,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
+    {name:"Priyanka Saini OC", target:68077,daily:[0,0,2831,0,2724,0,0,0,0,0,0,0,2005,0,6424,2005,2831,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Mohit Batra OC",    target:68077,daily:[0,0,0,0,2724,0,0,0,3568,0,0,0,0,6489,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Altmas OC",         target:68077,daily:[7255,0,0,0,0,0,0,0,0,2005,0,0,0,0,0,3244,6447,0,0,0,0,0,0,0,0,0,0,0,0,0]}
   ]
 };
 
@@ -948,11 +950,6 @@ function normaliseData(raw) {
 }
 
 function connectFirebase() {
-  /* Always show dashboard with DEFAULT_DATA immediately — 
-     Firebase data replaces it when it arrives */
-  showDashboard();
-  renderAll();
-
   const ref = db.ref(DB_KEY);
 
   /* Seed if empty */
@@ -2116,8 +2113,19 @@ function copyEmailText(){
 /* ═══════════════════════════════════════════
    BOOT
 ═══════════════════════════════════════════ */
-updateDaysLeftBadge();
-connectFirebase();
+function boot() {
+  updateDaysLeftBadge();
+  // Show dashboard immediately with default data — no waiting for Firebase
+  showDashboard();
+  safeRun(renderAll);
+  // Then connect Firebase — it will re-render with live data when it arrives
+  connectFirebase();
+}
+if(document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", boot);
+} else {
+  boot();
+}
 </script>
 </body>
 </html>
