@@ -333,6 +333,25 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .btn-share{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;padding:7px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;display:none;}
 .btn-share.visible{display:flex;}
 .btn-share:hover{background:rgba(255,255,255,.16);}
+/* ── EMAIL REPORT MODAL ── */
+.email-ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;align-items:flex-start;justify-content:center;backdrop-filter:blur(4px);padding:24px;overflow-y:auto;}
+.email-ovl.on{display:flex;}
+.email-modal{background:#fff;border-radius:var(--r-lg);width:700px;max-width:100%;box-shadow:var(--sh-lg);animation:modal-in .3s var(--ease-spring) both;}
+.email-toolbar{background:var(--hblack);padding:14px 20px;border-radius:var(--r-lg) var(--r-lg) 0 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.email-toolbar h3{font-size:13px;font-weight:700;color:#fff;flex:1;}
+.btn-copy-email{background:var(--hgold);color:#000;border:none;padding:7px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;}
+.btn-copy-email:hover{background:var(--hgold-d);}
+.btn-close-email{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;}
+.email-body{padding:24px;font-family:'Georgia',serif;font-size:13px;line-height:1.7;color:#111;max-height:70vh;overflow-y:auto;}
+.email-body h2{font-size:15px;font-weight:700;margin:16px 0 6px;border-bottom:2px solid #F7C31A;padding-bottom:4px;}
+.email-body table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0;}
+.email-body th{background:#0a0a0a;color:#F7C31A;padding:7px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.email-body td{padding:7px 10px;border-bottom:1px solid #eee;}
+.email-body tr:nth-child(even) td{background:#fafaf8;}
+.email-body .highlight{background:#fef9e7!important;}
+.btn-gen-email{background:linear-gradient(135deg,#0a0a0a,#1a1a1a);color:#F7C31A;border:1px solid rgba(247,195,26,.3);padding:8px 18px;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;}
+.btn-gen-email:hover{background:linear-gradient(135deg,#1a1a00,#2a2a00);border-color:var(--hgold);}
+
 </style>
 </head>
 <body>
@@ -402,6 +421,10 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <button class="btn-share" id="shareBtn" onclick="shareReport()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
       Share Report
+    </button>
+    <button class="btn-gen-email" id="emailBtn" style="display:none" onclick="openEmailReport()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+      Generate Email
     </button>
     <button class="btn-update" onclick="openLogin()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
@@ -621,6 +644,19 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 <div class="saving-overlay" id="savingOverlay">
   <div class="saving-box"><div class="saving-spinner"></div><span>Saving to Firebase…</span></div>
+</div>
+
+
+<!-- EMAIL REPORT MODAL -->
+<div class="email-ovl" id="emailOvl">
+  <div class="email-modal">
+    <div class="email-toolbar">
+      <h3>📧 Performance Email Report — Auto Generated</h3>
+      <button class="btn-copy-email" onclick="copyEmailText()">📋 Copy Email Text</button>
+      <button class="btn-close-email" onclick="document.getElementById('emailOvl').classList.remove('on')">✕ Close</button>
+    </div>
+    <div class="email-body" id="emailBody">Generating…</div>
+  </div>
 </div>
 
 <!-- LOGIN MODAL -->
@@ -1731,8 +1767,11 @@ function doLogin(){
   if(btoa(document.getElementById("loginPw").value)===ADMIN_B64){
     isAdmin=true;
     closeLogin();
-    /* show share button */
-    if(currentMonth==="live") document.getElementById("shareBtn").classList.add("visible");
+    /* show share + email buttons */
+    if(currentMonth==="live"){
+      document.getElementById("shareBtn").classList.add("visible");
+      document.getElementById("emailBtn").style.display="flex";
+    }
     /* defer so loginOvl finishes closing before editOvl opens */
     setTimeout(openEdit, 80);
   } else {
@@ -1869,6 +1908,189 @@ function saveData(){
       toast("❌ Save failed — check connection");
       D=newD;renderAll();
     });
+}
+
+
+/* ═══════════════════════════════════════════
+   EMAIL REPORT GENERATOR
+═══════════════════════════════════════════ */
+function openEmailReport(){
+  document.getElementById("emailOvl").classList.add("on");
+  generateEmailHTML();
+}
+
+function generateEmailHTML(){
+  const {target,daysTotal,daysElapsed}=D.june;
+  const {achieved,remaining,daysLeft,drr,actualDrr,dayTarget,pct,baseFc}=derive();
+  const todayDate=D.lastUpdated||new Date().toISOString().split("T")[0];
+  // Format date nicely
+  const d=new Date(todayDate+"T00:00:00");
+  const months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const niceDate=d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+
+  // Agent rows sorted by revenue desc
+  const sortedAgs=[...D.agents].map((ag,i)=>({...ag,tot:agentTotal(ag)})).sort((a,b)=>b.tot-a.tot);
+
+  // Weekly breakdown
+  const wkRows=D.juneWeekly.map((w,i)=>{
+    const prev=i>0?D.juneWeekly[i-1].revenue:null;
+    const wow=prev&&prev>0?((w.revenue-prev)/prev*100):null;
+    const def=w.revenue-w.target;
+    const share=achieved>0&&w.revenue>0?(w.revenue/achieved*100).toFixed(0)+"%":"0%";
+    return{...w,wow,def,share};
+  });
+
+  // WoW trend narrative
+  const completedWks=wkRows.filter(w=>w.revenue>0);
+  let trendNote="";
+  if(completedWks.length>=2){
+    const last=completedWks[completedWks.length-1],prev=completedWks[completedWks.length-2];
+    if(last.revenue>prev.revenue) trendNote=`Week ${completedWks.length} showed a recovery of ${Pct((last.revenue-prev.revenue)/prev.revenue*100,0)} vs prior week.`;
+    else trendNote=`Week ${completedWks.length} declined by ${Pct(Math.abs((last.revenue-prev.revenue)/prev.revenue*100),0)} vs prior week, indicating continued downward momentum.`;
+  }
+
+  // Zero agents
+  const zeroAgents=sortedAgs.filter(ag=>ag.tot===0);
+  const belowHalf=sortedAgs.filter(ag=>ag.target>0&&ag.tot/ag.target<0.5&&ag.tot>0);
+  const topAgent=sortedAgs[0];
+
+  // Key challenges (auto from data)
+  const challenges=[];
+  if(pct<50) challenges.push("Overall achievement at "+Pct(pct,0)+" — significantly below mid-month pace.");
+  const top3=sortedAgs.slice(0,3).reduce((s,a)=>s+a.tot,0);
+  const concPct=achieved>0?top3/achieved*100:0;
+  if(concPct>65) challenges.push("Revenue heavily concentrated — top 3 agents contribute "+Pct(concPct,0)+" of total.");
+  if(zeroAgents.length>0) challenges.push(zeroAgents.length+" advisor"+(zeroAgents.length>1?"s":""+" with zero revenue for the month: "+zeroAgents.map(a=>a.name).join(", ")+".");
+  if(drr>actualDrr*1.3) challenges.push("Required DRR ("+INR(Math.round(drr))+") is "+Pct((drr/actualDrr-1)*100,0)+" above current actual DRR ("+INR(Math.round(actualDrr))+").");
+  challenges.push("Inconsistent daily performance — significant variance in daily collections.");
+  challenges.push("Heavy dependency on a limited number of high-performing advisors.");
+
+  const html=`
+<p>Dear Sir / Ma'am,</p>
+<p>Please find below the performance summary of the <strong>Housing Owner Sales Process</strong> as of <strong>${niceDate}</strong>.</p>
+
+<h2>Overall Performance</h2>
+<table>
+  <tr><td><strong>Monthly Target</strong></td><td><strong>${INR(target)}</strong></td></tr>
+  <tr><td>Revenue Achieved (MTD)</td><td>${INR(achieved)}</td></tr>
+  <tr class="highlight"><td><strong>Achievement %</strong></td><td><strong>${Pct(pct)}</strong></td></tr>
+  <tr><td>Remaining Target</td><td>${INR(remaining)}</td></tr>
+  <tr><td>Working Days Remaining</td><td>${daysLeft}</td></tr>
+  <tr><td><strong>Required Daily Run Rate (DRR)</strong></td><td><strong>${INR(Math.round(drr))}</strong></td></tr>
+  <tr><td>Actual DRR (so far)</td><td>${INR(Math.round(actualDrr))}</td></tr>
+  <tr><td>Month-End Forecast (Base)</td><td>${INR(baseFc)} (${Pct(baseFc/target*100)} of target)</td></tr>
+</table>
+
+<h2>Performance Analysis</h2>
+<p>The process has achieved <strong>${Pct(pct)}</strong> of the monthly target and is currently behind the required run rate. The daily revenue gap stands at <strong>${INR(Math.round(drr-actualDrr))}/day</strong> above the current pace. ${trendNote} At the current DRR, the month-end projection is <strong>${INR(baseFc)}</strong> against the committed target of <strong>${INR(target)}</strong>.</p>
+
+<h2>Week-on-Week Breakdown</h2>
+<table>
+  <thead><tr><th>Week</th><th>Wk Target</th><th>Revenue</th><th>Deficit</th><th>WoW Growth</th><th>Share</th></tr></thead>
+  <tbody>
+    ${wkRows.map(w=>`<tr ${w.revenue===0?'style="color:#999"':''}>
+      <td>${w.week}</td>
+      <td>${INR(w.target)}</td>
+      <td>${w.revenue>0?INR(w.revenue):"—"}</td>
+      <td style="color:${w.def>=0?"green":"#cc0000"}">${INR(w.def)}</td>
+      <td>${w.wow!==null?(w.wow>=0?"▲":"▼")+Math.abs(w.wow).toFixed(0)+"%":"—"}</td>
+      <td>${w.share}</td>
+    </tr>`).join("")}
+    <tr style="font-weight:700;background:#f5f5f5">
+      <td>Total</td>
+      <td>${INR(D.juneWeekly.reduce((s,w)=>s+w.target,0))}</td>
+      <td>${INR(achieved)}</td>
+      <td style="color:#cc0000">${INR(achieved-target)}</td>
+      <td>—</td><td>100%</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Agent-wise Performance</h2>
+<table>
+  <thead><tr><th>#</th><th>Agent Name</th>${D.june.daily.slice(0,daysElapsed).map((_,i)=>`<th>${i+1}-Jun</th>`).join("")}<th>Total</th><th>Target</th><th>Achv%</th><th>Status</th></tr></thead>
+  <tbody>
+    ${sortedAgs.map((ag,rank)=>{
+      const p=ag.target>0?ag.tot/ag.target*100:0;
+      const statusText=p>=100?"Over Achieved":p>=50?"On Track":"Under Achieved";
+      const statusColor=p>=100?"green":p>=50?"#d97706":"#cc0000";
+      const dayCells=ag.daily.slice(0,daysElapsed).map(v=>`<td style="text-align:center;font-size:11px">${v>0?S(v):"—"}</td>`).join("");
+      return`<tr ${rank===0?'class="highlight"':''}>
+        <td>${rank+1}</td>
+        <td><strong>${ag.name}</strong></td>
+        ${dayCells}
+        <td><strong>${INR(ag.tot)}</strong></td>
+        <td>${INR(ag.target)}</td>
+        <td style="color:${statusColor};font-weight:700">${Pct(p)}</td>
+        <td style="color:${statusColor};font-weight:700;font-size:11px">${statusText}</td>
+      </tr>`;
+    }).join("")}
+    <tr style="font-weight:700;background:#f5f5f5">
+      <td colspan="2"><strong>Team Total</strong></td>
+      ${D.june.daily.slice(0,daysElapsed).map((_,d)=>`<td style="text-align:center;font-size:11px;font-weight:700">${S(D.agents.reduce((s,ag)=>s+(ag.daily[d]||0),0))}</td>`).join("")}
+      <td><strong>${INR(achieved)}</strong></td>
+      <td><strong>${INR(target)}</strong></td>
+      <td><strong>${Pct(pct)}</strong></td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Agent Performance Highlights</h2>
+<p><strong>Top Performer:</strong> ${topAgent?.name||"—"} has achieved ${INR(topAgent?.tot||0)} (${Pct(topAgent?.tot&&topAgent?.target?topAgent.tot/topAgent.target*100:0)} of individual target) and remains the highest contributor.</p>
+${belowHalf.length>0?`<p><strong>Significantly Behind:</strong> ${belowHalf.map(a=>a.name+" ("+Pct(a.tot/a.target*100,0)+")").join(", ")} are below 50% of their individual targets.</p>`:""}
+${zeroAgents.length>0?`<p><strong>Zero Revenue:</strong> ${zeroAgents.map(a=>a.name).join(", ")} ${zeroAgents.length>1?"have":"has"} recorded ₹0 in ${daysElapsed} elapsed working days.</p>`:""}
+
+<h2>Key Challenges Identified</h2>
+<ul style="padding-left:18px;margin:8px 0">
+  ${challenges.map(c=>`<li style="margin-bottom:5px">${c}</li>`).join("")}
+</ul>
+
+<h2>Action Plan — Remaining ${daysLeft} Days</h2>
+<ul style="padding-left:18px;margin:8px 0">
+  <li style="margin-bottom:5px">Daily process revenue target of <strong>${INR(Math.round(drr))}</strong> — hourly monitoring in place.</li>
+  <li style="margin-bottom:5px">Daily coaching and live call monitoring for underperforming advisors.</li>
+  <li style="margin-bottom:5px">Focused follow-up on hot and payment-ready leads.</li>
+  <li style="margin-bottom:5px">Daily review meetings with Team Leaders to ensure accountability and daily commitment tracking.</li>
+  <li style="margin-bottom:5px">Early login initiative to maximise FIFO lead access before other centres engage.</li>
+</ul>
+
+<p style="margin-top:16px">We are closely monitoring the team's performance and taking corrective actions to improve daily productivity and increase overall sales conversion. Every effort is being made to maximise closures during the remaining days of the month and reduce the current target gap.</p>
+
+<p style="margin-top:16px;color:#666;font-size:12px">—<br><em>This report was auto-generated from the Housing Sales Command Centre · ${new Date().toLocaleString("en-IN")} · Data as of ${niceDate}</em></p>
+`;
+  document.getElementById("emailBody").innerHTML=html;
+}
+
+function copyEmailText(){
+  const body=document.getElementById("emailBody");
+  // Extract plain text for clipboard
+  const clone=body.cloneNode(true);
+  // Convert tables to pipe format
+  clone.querySelectorAll("table").forEach(tbl=>{
+    const rows=[];
+    tbl.querySelectorAll("tr").forEach(tr=>{
+      const cells=[...tr.querySelectorAll("th,td")].map(c=>c.textContent.trim());
+      rows.push(cells.join(" | "));
+    });
+    const pre=document.createElement("pre");
+    pre.style.fontFamily="monospace";pre.style.fontSize="11px";
+    pre.textContent=rows.join("\n");
+    tbl.replaceWith(pre);
+  });
+  clone.querySelectorAll("h2").forEach(h=>{const t=document.createTextNode("\n"+h.textContent+"\n"+"-".repeat(h.textContent.length)+"\n");h.replaceWith(t);});
+  const text=clone.innerText||clone.textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    toast("📋 Email text copied to clipboard!");
+  }).catch(()=>{
+    // fallback: select all text in body
+    const range=document.createRange();
+    range.selectNodeContents(body);
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    toast("📋 Text selected — press Ctrl+C to copy");
+  });
 }
 
 /* ═══════════════════════════════════════════
