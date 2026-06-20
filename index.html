@@ -948,37 +948,57 @@ function normaliseData(raw) {
 }
 
 function connectFirebase() {
+  /* Always show dashboard with DEFAULT_DATA immediately — 
+     Firebase data replaces it when it arrives */
+  showDashboard();
+  renderAll();
+
   const ref = db.ref(DB_KEY);
+
+  /* Seed if empty */
   ref.once("value").then(snap => {
-    if(!snap.exists()) ref.set(DEFAULT_DATA);
+    if(!snap.exists()) {
+      return ref.set(DEFAULT_DATA);
+    }
   }).catch(err => {
+    console.warn("Firebase seed check failed:", err.message);
     setSyncStatus("error","⚠️ Cannot reach Firebase: "+err.message);
   });
 
+  /* Live listener — updates dashboard when Firebase responds */
   ref.on("value", snap => {
-    fbListenerActive=true;
+    fbListenerActive = true;
     if(snap.exists()) {
-      D = normaliseData(snap.val());
-      if(currentMonth==="live") { showDashboard(); renderAll(); }
-      setSyncStatus("live");
-      updateDaysLeftBadge();
+      try {
+        const fresh = normaliseData(snap.val());
+        D = fresh;
+        if(currentMonth==="live") renderAll();
+        setSyncStatus("live");
+        updateDaysLeftBadge();
+      } catch(e) {
+        console.error("normaliseData error:", e);
+        setSyncStatus("live","🟡 Data loaded with warnings");
+      }
+    } else {
+      /* Empty DB — already showing default data */
+      setSyncStatus("live","🟡 No saved data yet — showing defaults");
     }
   }, err => {
     setSyncStatus("error","⚠️ Firebase error: "+err.message);
-    showDashboard(); renderAll();
   });
 
-  /* CDR listener — separate key */
+  /* CDR listener — separate key, non-blocking */
   db.ref(CDR_KEY).on("value", snap => {
-    if(snap.exists()) {
-      CDR_DATA = snap.val();
-      /* normalise CDR agents array */
-      if(CDR_DATA.agents) CDR_DATA.agents = toArr(CDR_DATA.agents);
-    } else {
-      CDR_DATA = null;
-    }
-    renderCDR();
-  }, () => { CDR_DATA=null; renderCDR(); });
+    try {
+      if(snap.exists()) {
+        CDR_DATA = snap.val();
+        if(CDR_DATA.agents) CDR_DATA.agents = toArr(CDR_DATA.agents);
+      } else {
+        CDR_DATA = null;
+      }
+      if(document.getElementById("cdrContent")) safeRun(renderCDR);
+    } catch(e) { console.warn("CDR load error:", e); }
+  }, () => { CDR_DATA=null; });
 }
 
 function showDashboard(){
