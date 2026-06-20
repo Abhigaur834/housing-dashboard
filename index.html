@@ -135,6 +135,8 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .lb-rev{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;}
 .lb-pct{font-size:10px;color:var(--muted);}
 .lb-pill{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:12px;}
+.lb-bar-track{flex:1;height:6px;background:var(--n200);border-radius:3px;overflow:hidden;min-width:80px;}
+.lb-bar-fill{height:100%;border-radius:3px;transition:width .8s var(--ease-spring);}
 /* progress ring */
 .ring-wrap{position:relative;width:38px;height:38px;flex-shrink:0;}
 .ring-wrap svg{width:38px;height:38px;transform:rotate(-90deg);}
@@ -386,7 +388,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   <div id="dashView" style="display:none">
 
     <!-- archive banner -->
-    <div id="archiveBanner" style="display:none;background:linear-gradient(90deg,#1e3a8a,#2563eb);color:#fff;border-radius:var(--r-lg);padding:10px 18px;margin-bottom:14px;font-size:12px;display:flex;align-items:center;gap:10px;">
+    <div id="archiveBanner" style="display:none;background:linear-gradient(90deg,#1e3a8a,#2563eb);color:#fff;border-radius:var(--r-lg);padding:10px 18px;margin-bottom:14px;font-size:12px;align-items:center;gap:10px;">
       <span style="font-size:16px">📦</span>
       <span>Viewing <strong>May 2026 Archive</strong> — this is read-only historical data. Switch back to June for live data.</span>
       <button onclick="switchMonth('live')" style="margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-weight:600;">← Back to June</button>
@@ -876,9 +878,11 @@ function agentTotal(ag){ return (ag.daily||[]).slice(0,D.june.daysElapsed).reduc
 
 /* ── progress ring SVG ── */
 function ringHtml(pct, color) {
-  const r=15, circ=2*Math.PI*r, offset=circ*(1-(Math.min(pct,100)/100));
-  const label=pct>=1000?"999+":(pct>=100?"100":Math.round(pct));
-  return `<div class="ring-wrap"><svg viewBox="0 0 38 38"><circle class="ring-bg" cx="19" cy="19" r="${r}"/><circle class="ring-fg" cx="19" cy="19" r="${r}" stroke="${color}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/></svg><div class="ring-label" style="color:${color}">${label}%</div></div>`;
+  const safePct = isNaN(pct)||!isFinite(pct) ? 0 : Math.min(Math.max(pct,0),100);
+  const r=15, circ=+(2*Math.PI*r).toFixed(3);
+  const offset=+(circ*(1-safePct/100)).toFixed(3);
+  const label=pct>=100?"100%":(Math.round(safePct)+"%");
+  return `<div class="ring-wrap"><svg viewBox="0 0 38 38"><circle class="ring-bg" cx="19" cy="19" r="${r}"/><circle class="ring-fg" cx="19" cy="19" r="${r}" stroke="${color}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/></svg><div class="ring-label" style="color:${color}">${label}</div></div>`;
 }
 
 /* ═══════════════════════════════════════════
@@ -1278,14 +1282,18 @@ function doLogin(){
   if(btoa(document.getElementById("loginPw").value)===ADMIN_B64){
     isAdmin=true;
     closeLogin();
-    openEdit();
     /* show share button */
     if(currentMonth==="live") document.getElementById("shareBtn").classList.add("visible");
+    /* defer so loginOvl finishes closing before editOvl opens */
+    setTimeout(openEdit, 80);
   } else {
     document.getElementById("loginErr").style.display="block";
   }
 }
-function openEdit(){populateEdit();document.getElementById("editOvl").classList.add("on");}
+function openEdit(){
+  try { populateEdit(); } catch(e){ console.error("populateEdit error:",e); }
+  document.getElementById("editOvl").classList.add("on");
+}
 function closeEdit(){document.getElementById("editOvl").classList.remove("on");}
 function swTab(id,idx){
   document.querySelectorAll(".tp").forEach(p=>p.classList.remove("on"));
