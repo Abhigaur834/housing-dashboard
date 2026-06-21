@@ -639,7 +639,29 @@ function saveData(){
 }
 
 /* ═══ BOOT ═══ */
-updateDL();connectFirebase();
+updateDL();
+
+// Hard fallback: if Firebase hasn't resolved in 5s, show dashboard with default data
+let _fbResolved = false;
+const _fbFallbackTimer = setTimeout(() => {
+  if (!_fbResolved) {
+    console.warn('Firebase timeout — showing default data');
+    showDash();
+    renderAll();
+    setSyncStatus('error', '⚠️ Firebase timeout — showing cached data. Will retry…');
+    startRfr();
+  }
+}, 5000);
+
+// Patch showDash to mark resolved
+const _origShowDash = showDash;
+function showDash() {
+  _fbResolved = true;
+  clearTimeout(_fbFallbackTimer);
+  _origShowDash();
+}
+
+connectFirebase();
 </script>
 </body>
 </html>
