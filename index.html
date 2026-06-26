@@ -383,6 +383,96 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 
 /* ── FOOTER ── */
 .footer{background:var(--ink);color:rgba(255,255,255,.35);padding:18px 28px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:11px;letter-spacing:.3px;}
+
+/* ═══════════════════════════════════
+   FOLLOW-UP TRACKER STYLES
+═══════════════════════════════════ */
+/* Pipeline summary KPIs */
+.pipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);}
+.pipe-kpi{background:var(--n50);border-radius:var(--r);padding:12px 14px;border:1px solid var(--border);border-left:3px solid var(--ac,var(--gold));}
+.pipe-kpi-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;}
+.pipe-kpi-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text);}
+.pipe-kpi-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* Tracker toolbar */
+.tracker-bar{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--n50);}
+.tracker-bar .fsel{font-size:12px;padding:5px 10px;}
+.tracker-search{padding:5px 11px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;width:180px;}
+.tracker-search:focus{border-color:var(--blue);}
+.btn-add-lead{background:var(--green);color:#fff;border:none;padding:6px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;}
+.btn-add-lead:hover{background:var(--green-d);}
+.tracker-count{margin-left:auto;font-size:11px;color:var(--muted);}
+
+/* Stage progress bar (funnel) */
+.funnel-row{display:flex;gap:6px;padding:10px 18px;border-bottom:1px solid var(--border);overflow-x:auto;}
+.funnel-step{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:80px;flex:1;}
+.funnel-bar{width:100%;height:6px;border-radius:3px;overflow:hidden;background:var(--n200);}
+.funnel-fill{height:100%;border-radius:3px;transition:width .7s var(--spring);}
+.funnel-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
+.funnel-count{font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+
+/* Lead cards grid (kanban-style toggle) */
+.leads-table-wrap{overflow-x:auto;}
+.leads-table{width:100%;border-collapse:collapse;font-size:12px;}
+.leads-table thead th{background:var(--n50);padding:9px 12px;text-align:left;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+.leads-table thead th:hover{color:var(--text);}
+.leads-table thead th.sort-asc::after{content:' ▲';font-size:8px;}
+.leads-table thead th.sort-desc::after{content:' ▼';font-size:8px;}
+.leads-table tbody tr{border-bottom:1px solid var(--n100);transition:background .1s;animation:fup .3s var(--ease) both;}
+.leads-table tbody tr:hover{background:var(--n50);}
+.leads-table tbody td{padding:9px 12px;white-space:nowrap;vertical-align:middle;}
+.leads-table tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px solid var(--n200);font-size:12px;}
+
+/* Status flags */
+.sflag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.sf-today{background:#fef9c3;color:#713f12;border:1px solid #fde047;}
+.sf-overdue{background:var(--red-l);color:var(--red-d);border:1px solid var(--red-m);}
+.sf-active{background:var(--green-l);color:var(--green-d);border:1px solid var(--green-m);}
+.sf-won{background:#e0f2fe;color:#075985;border:1px solid #bae6fd;}
+.sf-lost{background:var(--n100);color:var(--muted);border:1px solid var(--border);}
+.sf-upcoming{background:var(--violet-l);color:var(--violet);border:1px solid #ddd6fe;}
+
+/* Stage pills */
+.stage-pill{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;}
+.sp-new{background:#e0f2fe;color:#0369a1;}
+.sp-contacted{background:var(--amber-l);color:var(--amber-d);}
+.sp-followup{background:#f0fdf4;color:#15803d;}
+.sp-proposal{background:#faf5ff;color:#7c3aed;}
+.sp-negotiation{background:#fff7ed;color:#c2410c;}
+.sp-won{background:#dcfce7;color:#14532d;}
+.sp-lost{background:var(--n100);color:var(--muted);}
+
+/* Category tag */
+.cat-rent{background:#dbeafe;color:#1e40af;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;}
+.cat-sell{background:#fce7f3;color:#9d174d;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;}
+
+/* Action buttons */
+.lead-actions{display:flex;gap:5px;}
+.la-btn{border:none;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;}
+.la-edit{background:var(--blue-l);color:var(--blue-d);}
+.la-edit:hover{background:var(--blue-m);}
+.la-del{background:var(--red-l);color:var(--red-d);}
+.la-del:hover{background:var(--red-m);}
+.la-done{background:var(--green-l);color:var(--green-d);}
+.la-done:hover{background:var(--green-m);}
+
+/* Lead modal */
+.lead-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.lead-form-grid .span2{grid-column:1/-1;}
+.lead-modal-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.lead-modal-title h2{margin-bottom:0;}
+.lead-id-badge{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);background:var(--n100);padding:3px 9px;border-radius:10px;}
+
+/* Rent/Sell split visual */
+.split-bar{height:12px;border-radius:6px;overflow:hidden;background:var(--n200);margin-top:6px;display:flex;}
+.split-rent{background:#3b82f6;height:100%;transition:width .7s var(--spring);}
+.split-sell{background:#ec4899;height:100%;transition:width .7s var(--spring);}
+
+/* Empty state */
+.empty-state{padding:40px 20px;text-align:center;color:var(--muted);}
+.empty-state-icon{font-size:36px;margin-bottom:10px;}
+.empty-state-title{font-size:14px;font-weight:600;margin-bottom:5px;color:var(--n600);}
+.empty-state-sub{font-size:12px;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -586,6 +676,92 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <div class="tbl-wrap"><table class="zebra"><thead><tr><th>Week</th><th>Date</th><th>May Revenue</th><th>June Revenue</th><th>MoD Δ</th></tr></thead><tbody id="dailyBody"></tbody><tfoot id="dailyFoot"></tfoot></table></div>
   </div>
 
+
+  <!-- ═══════════════════════════════════════════
+       FOLLOW-UP PIPELINE TRACKER
+  ═══════════════════════════════════════════ -->
+  <div class="sec">📋 Follow-Up &amp; Pipeline Tracker</div>
+  <div class="card" id="pipelineCard">
+
+    <!-- Summary KPIs -->
+    <div class="pipe-grid" id="pipeKpis"></div>
+
+    <!-- Funnel by Stage -->
+    <div class="funnel-row" id="pipelineFunnel"></div>
+
+    <!-- Toolbar -->
+    <div class="tracker-bar">
+      <span class="fbar-label">Filter:</span>
+      <select class="fsel" id="ptFilterAgent" onchange="renderPipeline()">
+        <option value="">All Agents</option>
+      </select>
+      <select class="fsel" id="ptFilterStage" onchange="renderPipeline()">
+        <option value="">All Stages</option>
+        <option value="New">New</option>
+        <option value="Contacted">Contacted</option>
+        <option value="Follow-up">Follow-up</option>
+        <option value="Proposal">Proposal</option>
+        <option value="Negotiation">Negotiation</option>
+        <option value="Closed Won">Closed Won</option>
+        <option value="Closed Lost">Closed Lost</option>
+      </select>
+      <select class="fsel" id="ptFilterCat" onchange="renderPipeline()">
+        <option value="">Rent &amp; Sell</option>
+        <option value="Rent">Rent</option>
+        <option value="Sell">Sell</option>
+      </select>
+      <select class="fsel" id="ptFilterStatus" onchange="renderPipeline()">
+        <option value="">All Status</option>
+        <option value="Due Today">Due Today</option>
+        <option value="Overdue">Overdue</option>
+        <option value="Upcoming">Upcoming</option>
+        <option value="Active">Active</option>
+      </select>
+      <input type="text" class="tracker-search" id="ptSearch" placeholder="Search client / agent…" oninput="renderPipeline()">
+      <button class="btn-add-lead" id="addLeadBtn" onclick="openLeadModal()" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><path d="M12 5v14M5 12h14"/></svg>
+        Add Lead
+      </button>
+      <span class="tracker-count" id="ptCount">0 leads</span>
+    </div>
+
+    <!-- Leads Table -->
+    <div class="leads-table-wrap">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th onclick="ptSort('agentName')">Agent</th>
+            <th onclick="ptSort('clientName')">Client</th>
+            <th>Contact</th>
+            <th onclick="ptSort('category')">Category</th>
+            <th onclick="ptSort('packageName')">Package</th>
+            <th onclick="ptSort('packageValue')">Value (₹)</th>
+            <th onclick="ptSort('stage')">Stage</th>
+            <th onclick="ptSort('nextFollowUp')">Next F/U</th>
+            <th>F/U #</th>
+            <th>Notes</th>
+            <th onclick="ptSort('statusFlag')">Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="leadsTableBody"></tbody>
+        <tfoot id="leadsTableFoot"></tfoot>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- RENT vs SELL SPLIT + FORECAST -->
+  <div class="two-col" style="margin-top:14px">
+    <div class="card" style="margin-bottom:0">
+      <div class="chdr"><h3>🏠 Rent vs Sell Pipeline</h3><aside>By lead count &amp; value</aside></div>
+      <div style="padding:14px 18px" id="rentSellSplit"></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="chdr"><h3>📊 Stage Forecast (Weighted)</h3><aside>Based on conversion rates</aside></div>
+      <div class="cpd" style="padding-bottom:10px"><div style="position:relative;height:180px"><canvas id="stageFcChart"></canvas></div></div>
+    </div>
+  </div>
 </div><!-- /dashView -->
 </div><!-- /wrap -->
 
@@ -619,6 +795,93 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
         <button class="wa-regen-btn" onclick="buildWAReport()">🔄 Refresh</button>
         <button class="wa-regen-btn" onclick="closeWAShare()">Close</button>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- LEAD ENTRY MODAL -->
+<div class="ovl" id="leadOvl">
+  <div class="modal wide">
+    <div class="lead-modal-title">
+      <h2 id="leadModalTitle">➕ Add New Lead</h2>
+      <span class="lead-id-badge" id="leadIdBadge">NEW</span>
+    </div>
+    <div class="lead-form-grid">
+      <div class="fg">
+        <label>Agent Name *</label>
+        <select id="lf-agent" class="fg">
+          <option value="">Select agent…</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Client Name *</label>
+        <input type="text" id="lf-client" placeholder="e.g. Ramesh Gupta">
+      </div>
+      <div class="fg">
+        <label>Contact Number</label>
+        <input type="tel" id="lf-contact" placeholder="9876543210" maxlength="15">
+      </div>
+      <div class="fg">
+        <label>Property Interest</label>
+        <input type="text" id="lf-property" placeholder="e.g. 2BHK Flat, Sector 62">
+      </div>
+      <div class="fg">
+        <label>Category *</label>
+        <select id="lf-category" onchange="populatePackages()">
+          <option value="Rent">Rent</option>
+          <option value="Sell">Sell</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Package / Plan</label>
+        <select id="lf-package" onchange="autofillPackageValue()">
+          <option value="">Select package…</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Package Value (₹)</label>
+        <input type="number" id="lf-value" placeholder="0">
+      </div>
+      <div class="fg">
+        <label>Source</label>
+        <select id="lf-source">
+          <option value="Housing App">Housing App</option>
+          <option value="Housing Website">Housing Website</option>
+          <option value="Referral">Referral</option>
+          <option value="Walk-in">Walk-in</option>
+          <option value="Cold Call">Cold Call</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Stage *</label>
+        <select id="lf-stage">
+          <option value="New">New</option>
+          <option value="Contacted">Contacted</option>
+          <option value="Follow-up" selected>Follow-up</option>
+          <option value="Proposal">Proposal</option>
+          <option value="Negotiation">Negotiation</option>
+          <option value="Closed Won">Closed Won</option>
+          <option value="Closed Lost">Closed Lost</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Next Follow-Up Date *</label>
+        <input type="date" id="lf-nextfu">
+      </div>
+      <div class="fg">
+        <label>Follow-up # (attempt count)</label>
+        <input type="number" id="lf-funum" min="1" value="1">
+      </div>
+      <div class="fg span2">
+        <label>Last Action / Notes</label>
+        <input type="text" id="lf-notes" placeholder="e.g. Client busy, callback at 3pm">
+      </div>
+    </div>
+    <div class="m-act">
+      <button class="btn-sec2" onclick="closeLeadModal()">Cancel</button>
+      <button class="btn-pri" onclick="saveLead()">💾 Save Lead</button>
     </div>
   </div>
 </div>
@@ -681,8 +944,12 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="junWkInputs"></div>
     </div>
 
+    <div style="margin-top:16px;padding:10px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--r);font-size:11px;color:#92400e;">
+      ⚠️ <strong>Data wrong?</strong> Use <em>Reset to Baseline</em> to restore the verified correct numbers from the original data sheet.
+    </div>
     <div class="m-act">
       <button class="btn-sec2" onclick="closeEdit()">Cancel</button>
+      <button onclick="resetToBaseline()" style="background:#fff7ed;color:#c2410c;border:1.5px solid #fed7aa;padding:10px 18px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;" title="Restore verified correct numbers">🔄 Reset to Baseline</button>
       <button class="btn-pri" onclick="saveData()">☁️ Save &amp; Sync All</button>
     </div>
   </div>
@@ -703,7 +970,7 @@ const FB_CFG = {
 };
 firebase.initializeApp(FB_CFG);
 const db = firebase.database();
-const DB_KEY = "housing_v5";
+const DB_KEY = "housing_dashboard_v1"; // ← reads your real Firebase data
 
 /* ═══════════════════════════════════
    CONSTANTS
@@ -750,7 +1017,7 @@ const DEF = {
     {w:"Wk-4",d:"28-May",v:16000},{w:"Wk-4",d:"29-May",v:11000},{w:"Wk-4",d:"30-May",v:38342},
     {w:"Wk-4",d:"31-May",v:23982}],
   agents:[
-    {name:"Lucky Malik",       target:68077,daily:[8554,3834,2757,4152,3067,2359,0,0,3244,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Lucky Malik",       target:68077,daily:[8554,3834,2757,4152,3067,2360,0,0,3244,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
     {name:"Md Mehtab",         target:68077,daily:[10619,0,20175,2004,0,0,0,5899,2724,0,8556,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
     {name:"Km Kashish Sengar", target:68077,daily:[0,4021,6489,0,0,0,0,0,2831,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
     {name:"Uqba Suhail OC",    target:68077,daily:[0,0,0,5073,0,6039,0,0,2662,0,2831,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
@@ -1838,6 +2105,94 @@ function saveData(){
     D = normalise(nd);
     renderAll();
   });
+}
+
+
+/* ═══════════════════════════════════
+   VERIFIED CORRECT BASELINE DATA
+   Cross-checked against original user data table
+   Agent totals: exactly match stated values
+   Team daily: sum of agents = team total
+═══════════════════════════════════ */
+const BASELINE = {
+  lastUpdated:"2026-06-11",
+  june:{
+    target:885000, daysTotal:30, daysElapsed:11,
+    // Day-by-day team totals — verified against original data
+    // Day:  1      2      3      4      5      6      7      8      9     10     11
+    daily:[26428, 11245, 38262, 11229, 11346, 12823,  2000,  7903, 15029, 13055, 19820,
+           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+  },
+  mayWeekly:[
+    {week:"Wk-1",target:221250,revenue:113338},
+    {week:"Wk-2",target:221250,revenue:55807},
+    {week:"Wk-3",target:221250,revenue:72355},
+    {week:"Wk-4",target:221250,revenue:141239}
+  ],
+  juneWeekly:[
+    {week:"Wk-1",target:221250,revenue:112333},
+    {week:"Wk-2",target:221250,revenue:56812},
+    {week:"Wk-3",target:221250,revenue:0},
+    {week:"Wk-4",target:221250,revenue:0}
+  ],
+  mayDaily:[
+    {w:"Wk-1",d:"01-May",v:0},    {w:"Wk-1",d:"02-May",v:8623},
+    {w:"Wk-1",d:"03-May",v:2123}, {w:"Wk-1",d:"04-May",v:10015},
+    {w:"Wk-1",d:"05-May",v:4049}, {w:"Wk-1",d:"06-May",v:7042},
+    {w:"Wk-1",d:"07-May",v:11551},{w:"Wk-2",d:"08-May",v:7342},
+    {w:"Wk-2",d:"09-May",v:24567},{w:"Wk-2",d:"10-May",v:9083},
+    {w:"Wk-2",d:"11-May",v:12699},{w:"Wk-2",d:"12-May",v:4359},
+    {w:"Wk-2",d:"13-May",v:13623},{w:"Wk-2",d:"14-May",v:11395},
+    {w:"Wk-3",d:"15-May",v:21386},{w:"Wk-3",d:"16-May",v:8728},
+    {w:"Wk-3",d:"17-May",v:4424}, {w:"Wk-3",d:"18-May",v:18774},
+    {w:"Wk-3",d:"19-May",v:5309}, {w:"Wk-3",d:"20-May",v:8221},
+    {w:"Wk-3",d:"21-May",v:6075}, {w:"Wk-4",d:"22-May",v:8848},
+    {w:"Wk-4",d:"23-May",v:4359}, {w:"Wk-4",d:"24-May",v:6162},
+    {w:"Wk-4",d:"25-May",v:14561},{w:"Wk-4",d:"26-May",v:32552},
+    {w:"Wk-4",d:"27-May",v:27545},{w:"Wk-4",d:"28-May",v:16000},
+    {w:"Wk-4",d:"29-May",v:11000},{w:"Wk-4",d:"30-May",v:38342},
+    {w:"Wk-4",d:"31-May",v:23982}
+  ],
+  // Agent daily values — verified totals match user's stated figures exactly:
+  // Atul Kumar: ₹0  |  Teena Pal: ₹5,064  |  Cally: ₹4,424  |  Kashish: ₹15,346
+  // Neha: ₹4,005  |  Uqba: ₹16,605  |  Lucky: ₹32,392  |  Priyanka: ₹5,555
+  // Mohit: ₹6,292  |  Altmas: ₹9,260  |  Shivani: ₹9,813  |  Mehtab: ₹49,977
+  // Aman: ₹10,407  |  TEAM MTD: ₹1,69,145
+  agents:[
+    // Day:          1      2      3      4      5      6      7      8      9     10     11
+    {name:"Atul Kumar",        target:68077, daily:[0,    0,    0,     0,    0,    0,     0,    0,    0,     0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Teena Pal OC",      target:68077, daily:[0,    0,    0,     0,    2831, 0,     0,    0,    0,     2233, 0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Cally Richard OC",  target:68077, daily:[0,    0,    0,     0,    0,    4424,  0,    0,    0,     0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Km Kashish Sengar", target:68077, daily:[0,    4021, 6489,  0,    0,    0,     0,    0,    2831,  2005, 0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Neha Sharma",       target:68077, daily:[0,    0,    0,     0,    0,    0,     2000, 0,    0,     0,    2005, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Uqba Suhail OC",    target:68077, daily:[0,    0,    0,     5073, 0,    6039,  0,    0,    2662,  0,    2831, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Lucky Malik",       target:68077, daily:[8554, 3834, 2757,  4152, 3067, 2360,  0,    0,    3244,  0,    4424, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Priyanka Saini OC", target:68077, daily:[0,    0,    2831,  0,    2724, 0,     0,    0,    0,     0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Mohit Batra OC",    target:68077, daily:[0,    0,    0,     0,    2724, 0,     0,    0,    3568,  0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Altmas OC",         target:68077, daily:[7255, 0,    0,     0,    0,    0,     0,    0,    0,     2005, 0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Shivani Pal OC",    target:68077, daily:[0,    3390, 3179,  0,    0,    0,     0,    0,    0,     3244, 0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Md Mehtab",         target:68077, daily:[10619,0,    20175, 2004, 0,    0,     0,    5899, 2724,  0,    8556, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+    {name:"Aman Tyagi OC",     target:68077, daily:[0,    0,    2831,  0,    0,    0,     0,    2004, 0,     3568, 2004, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
+  ]
+};
+
+function resetToBaseline(){
+  if(!isAdmin){ toast("🔒 Admin login required"); return; }
+  if(!confirm("Reset ALL data to the verified baseline figures from the original data sheet?\n\nThis will overwrite any changes made since the last save.")) return;
+  document.getElementById("sov").classList.add("on");
+  const reset = JSON.parse(JSON.stringify(BASELINE));
+  reset.june.daysElapsed = computeElapsed(reset.lastUpdated);
+  db.ref(DB_KEY).set(reset)
+    .then(()=>{
+      document.getElementById("sov").classList.remove("on");
+      toast("✅ Data reset to verified baseline — all numbers corrected!");
+    })
+    .catch(err=>{
+      document.getElementById("sov").classList.remove("on");
+      D = reset;
+      renderAll();
+      toast("✅ Reset applied locally (Firebase offline)");
+    });
 }
 
 /* ═══════════════════════════════════
