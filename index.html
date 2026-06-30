@@ -34,8 +34,6 @@ html{scroll-behavior:smooth;}
 body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
 ::selection{background:rgba(247,195,26,.25);}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
-
-/* ── SYNC BAR ── */
 .sbar{background:linear-gradient(90deg,#052e16,#0a3d1e);border-bottom:1px solid rgba(247,195,26,.15);padding:0 28px;height:30px;display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);position:sticky;top:0;z-index:500;}
 .sbar.err-mode{background:linear-gradient(90deg,#450a0a,#5c1a1a);}
 .sdot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;transition:background .3s;}
@@ -46,8 +44,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .sclock{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);}
 .sclock b{color:rgba(255,255,255,.75);}
 .daysleft{display:flex;align-items:center;gap:5px;background:rgba(247,195,26,.12);border:1px solid rgba(247,195,26,.2);padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;color:var(--gold);}
-
-/* ── TOPBAR ── */
 .topbar{background:var(--ink);color:#fff;height:60px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:30px;z-index:400;box-shadow:0 2px 0 var(--gold),0 4px 24px rgba(0,0,0,.5);}
 .tb-l{display:flex;align-items:center;gap:0;}
 .hlogo{display:flex;align-items:center;gap:0;}
@@ -63,8 +59,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .btn-upd{background:var(--gold);color:#000;border:none;padding:8px 18px;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s var(--ease);box-shadow:0 2px 12px rgba(247,195,26,.3);}
 .btn-upd:hover{background:var(--gold-d);transform:translateY(-1px);}
 .btn-upd svg{width:13px;height:13px;}
-
-/* ── FILTER BAR ── */
 .fbar{background:var(--surf);border-bottom:1px solid var(--border);padding:10px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:var(--sh-sm);}
 .fbar-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;flex-shrink:0;}
 .fsel{padding:5px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-family:'Inter',sans-serif;color:var(--text);background:var(--n50);outline:none;cursor:pointer;transition:border .2s;}
@@ -72,26 +66,18 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .fbtn{padding:5px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:11px;font-weight:600;background:var(--n50);color:var(--muted);cursor:pointer;transition:all .15s;}
 .fbtn.on{background:var(--ink);color:var(--gold);border-color:var(--ink);}
 .fbtn:hover:not(.on){border-color:var(--n400);}
-
-/* ── WRAP ── */
 .wrap{max-width:1500px;margin:0 auto;padding:24px 28px;}
 @media(max-width:640px){.wrap{padding:14px 16px;}}
-
-/* ── SECTION LABEL ── */
 .sec{font-size:10px;font-weight:800;color:var(--n500);text-transform:uppercase;letter-spacing:1.4px;margin:28px 0 14px;display:flex;align-items:center;gap:10px;}
 .sec::before{content:'';width:3px;height:12px;background:var(--gold);border-radius:2px;flex-shrink:0;}
 .sec::after{content:'';flex:1;height:1px;background:var(--border);}
 .sec:first-child{margin-top:0;}
-
-/* ── SKELETON ── */
 .skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;}
 .sk{background:var(--surf);border-radius:var(--r-lg);padding:16px 18px;border:1px solid var(--border);border-top:3px solid var(--n200);height:110px;position:relative;overflow:hidden;}
 .sk::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shim 1.4s infinite;}
 @keyframes shim{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
 .skl{height:10px;border-radius:4px;background:var(--n200);margin-bottom:8px;position:relative;overflow:hidden;}
 .skl::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shim 1.4s infinite;}
-
-/* ── KPI GRID ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin-bottom:4px;}
 .kc{background:var(--surf);border-radius:var(--r-lg);padding:16px 18px 14px;border:1px solid var(--border);border-top:3px solid var(--ac,var(--gold));position:relative;overflow:hidden;transition:transform .22s var(--ease),box-shadow .22s;cursor:default;}
 .kc:hover{transform:translateY(-3px);box-shadow:var(--sh-md);}
@@ -106,8 +92,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .tag-ok{background:var(--green-l);color:var(--green-d);}
 .tag-warn{background:var(--red-l);color:var(--red-d);}
 .tag-info{background:var(--blue-l);color:var(--blue-d);}
-
-/* ── CARD ── */
 .card{background:var(--surf);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh-sm);transition:box-shadow .2s;}
 .card:hover{box-shadow:var(--sh);}
 .chdr{padding:13px 18px;border-bottom:2px solid var(--gold);display:flex;align-items:center;justify-content:space-between;background:var(--ink2);}
@@ -116,34 +100,25 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .cpd{padding:16px 18px;}
 .leg{display:flex;gap:16px;padding:0 18px 12px;font-size:11px;color:var(--muted);flex-wrap:wrap;}
 .dot{width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0;}
-
-/* ── LAYOUT ── */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
 @media(max-width:900px){.two-col,.three-col{grid-template-columns:1fr;}}
-
-/* ── LEADERBOARD — SPECTACULAR ── */
 .lb-wrap{padding:0;}
-/* Podium top 3 */
 .lb-podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:0;background:linear-gradient(160deg,#0f0e0b 0%,#1e1c10 60%,#0f0e0b 100%);padding:28px 24px 20px;position:relative;overflow:hidden;}
 .lb-podium::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(247,195,26,.15) 0%,transparent 65%);pointer-events:none;}
 .lb-pod{display:flex;flex-direction:column;align-items:center;gap:0;position:relative;z-index:1;}
 .lb-pod.p2{padding-top:24px;}
 .lb-pod.p3{padding-top:32px;}
-/* Crown ring animation for #1 */
 .lb-crown{font-size:22px;margin-bottom:-4px;animation:crown-bob 2.5s ease-in-out infinite;}
 @keyframes crown-bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
-/* Avatar ring */
 .lb-pod-av-wrap{position:relative;margin-bottom:10px;}
 .lb-pod-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:'Inter',sans-serif;letter-spacing:.5px;border:3px solid rgba(255,255,255,.1);}
 .lb-pod-av.sz1{width:72px;height:72px;font-size:20px;border-color:var(--gold);box-shadow:0 0 0 4px rgba(247,195,26,.2),0 0 24px rgba(247,195,26,.3);}
 .lb-pod-av.sz2{width:60px;height:60px;font-size:17px;border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,184,.18);}
 .lb-pod-av.sz3{width:54px;height:54px;font-size:15px;border-color:#b45309;box-shadow:0 0 0 3px rgba(180,83,9,.18);}
-/* Inactive badge on avatar */
 .lb-pod-av-wrap .inactive-ring{position:absolute;inset:-3px;border-radius:50%;border:2.5px dashed #94a3b8;opacity:.6;}
 .lb-pod-badge{position:absolute;bottom:-4px;right:-4px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid #1e1c18;}
 .lb-pod-badge.g{background:#d97706;}.lb-pod-badge.s{background:#94a3b8;}.lb-pod-badge.b{background:#b45309;}
-/* Inactive indicator */
 .lb-pod-inactive{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);padding:2px 7px;border-radius:10px;border:1px solid rgba(255,255,255,.1);margin-top:2px;}
 .lb-pod-name{font-size:12px;font-weight:700;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;margin-bottom:4px;}
 .lb-pod-rev{font-size:15px;font-weight:900;font-family:'JetBrains Mono',monospace;margin-bottom:2px;}
@@ -151,15 +126,12 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .lb-pod-rev.r2{color:#cbd5e1;}
 .lb-pod-rev.r3{color:#d97706;}
 .lb-pod-pct{font-size:10px;color:rgba(255,255,255,.45);font-family:'JetBrains Mono',monospace;margin-bottom:8px;}
-/* Podium base */
 .lb-pod-base{width:100%;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.5px;}
 .lb-pod-base.b1{height:40px;background:linear-gradient(180deg,rgba(247,195,26,.25),rgba(247,195,26,.1));border:1px solid rgba(247,195,26,.3);border-bottom:none;color:var(--gold);}
 .lb-pod-base.b2{height:30px;background:linear-gradient(180deg,rgba(148,163,184,.2),rgba(148,163,184,.08));border:1px solid rgba(148,163,184,.2);border-bottom:none;color:#94a3b8;}
 .lb-pod-base.b3{height:20px;background:linear-gradient(180deg,rgba(180,83,9,.2),rgba(180,83,9,.08));border:1px solid rgba(180,83,9,.2);border-bottom:none;color:#b45309;}
-/* Podium bar fill mini */
 .lb-pod-bar{width:80px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-bottom:6px;}
 .lb-pod-bar-fill{height:100%;border-radius:2px;transition:width .9s var(--spring);}
-/* REST list */
 .lb-rest-list{padding:4px 0;}
 .lb-row{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--n100);transition:all .12s;animation:fup .35s var(--ease) both;position:relative;}
 .lb-row:last-child{border-bottom:none;}
@@ -181,8 +153,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .lb-rev{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;}
 .lb-pct{font-size:10px;color:var(--muted);}
 .lb-pill{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:12px;}
-
-/* ── AGENT MANAGEMENT ── */
 .agent-mgmt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;padding:14px 18px;}
 .am-card{border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;background:var(--n50);transition:box-shadow .15s;}
 .am-card:hover{box-shadow:var(--sh);}
@@ -203,15 +173,8 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .am-add-form-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
 .am-add-row{display:grid;grid-template-columns:1fr 140px auto;gap:8px;align-items:end;}
 .am-add-row .fg{margin-bottom:0;}
-
-/* ── WHATSAPP SHARE ── */
 .wa-modal-body{padding:0;}
 .wa-preview{background:#0d1117;border-radius:var(--r);margin:0 0 14px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#e2e8f0;white-space:pre-wrap;line-height:1.7;max-height:420px;overflow-y:auto;border:1px solid #30363d;}
-.wa-preview .wa-gold{color:#F7C31A;}
-.wa-preview .wa-green{color:#3fb950;}
-.wa-preview .wa-red{color:#f85149;}
-.wa-preview .wa-amber{color:#d29922;}
-.wa-preview .wa-muted{color:#8b949e;}
 .wa-btn-row{display:flex;gap:10px;}
 .wa-copy-btn{flex:1;background:#25D366;color:#fff;border:none;padding:11px 20px;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
 .wa-copy-btn:hover{background:#128C7E;}
@@ -219,8 +182,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .wa-regen-btn{background:var(--n100);color:var(--text);border:1.5px solid var(--border);padding:11px 16px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
 .wa-regen-btn:hover{background:var(--n200);}
 .wa-copied{background:#128C7E;}
-
-/* ── TOP/BOTTOM PERFORMERS ── */
 .performer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;padding:14px 18px;}
 .performer-card{border-radius:var(--r);padding:14px 16px;border:1px solid transparent;display:flex;align-items:center;gap:12px;transition:box-shadow .18s;}
 .performer-card:hover{box-shadow:var(--sh);}
@@ -233,17 +194,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .pc-sub{font-size:10px;color:var(--muted);margin-top:2px;}
 .pc-bar{height:4px;border-radius:2px;margin-top:6px;overflow:hidden;background:var(--n200);}
 .pc-bar-fill{height:100%;border-radius:2px;}
-
-/* ── TREND ANALYSIS ── */
-.trend-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:14px 18px;}
-.tc{background:var(--n50);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;}
-.tc-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
-.tc-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
-.tc-delta{font-size:11px;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;}
-.tc-bar{height:28px;display:flex;align-items:flex-end;gap:2px;margin-top:8px;}
-.tc-bar-col{flex:1;border-radius:2px 2px 0 0;min-height:2px;transition:height .5s var(--spring);}
-
-/* ── FORECAST ── */
 .fc-scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);}
 @media(max-width:640px){.fc-scenarios{grid-template-columns:1fr;}}
 .fc-sc{border-radius:var(--r);padding:14px 16px;border:1px solid transparent;}
@@ -259,8 +209,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .fchip{background:var(--n50);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;}
 .fchip-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
 .fchip-val{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text);}
-
-/* ── TARGET VS ACHIEVEMENT ── */
 .tva-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;padding:14px 18px;}
 .tva-item{padding:12px 14px;border:1px solid var(--border);border-radius:var(--r);background:var(--n50);}
 .tva-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;}
@@ -270,8 +218,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .tva-track{height:7px;background:var(--n200);border-radius:4px;overflow:hidden;}
 .tva-fill{height:100%;border-radius:4px;transition:width .7s var(--spring);}
 .tva-pct{font-size:10px;font-weight:700;margin-top:4px;text-align:right;}
-
-/* ── INSIGHTS / INTEL ── */
 .intel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:14px 18px;}
 .ic{border-radius:var(--r);border:1px solid transparent;padding:13px 15px;display:flex;gap:11px;transition:box-shadow .18s;}
 .ic:hover{box-shadow:var(--sh);}
@@ -291,8 +237,6 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .ic-desc{font-size:11px;color:var(--muted);line-height:1.6;}
 .ic-names{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
 .ic-name{font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;background:rgba(0,0,0,.07);color:var(--text);}
-
-/* ── TABLES ── */
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;}
 thead th{background:var(--n50);padding:9px 12px;text-align:left;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);white-space:nowrap;}
@@ -312,12 +256,9 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .chip{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;}
 .cg{background:var(--green-l);color:var(--green-d);}.cr{background:var(--red-l);color:var(--red-d);}.cn{background:var(--n100);color:var(--muted);}
 .zebra tbody tr:nth-child(even){background:var(--n50);}
-/* Conditional row formatting */
 .row-green td:first-child{border-left:3px solid var(--green);}
 .row-amber td:first-child{border-left:3px solid var(--amber);}
 .row-red td:first-child{border-left:3px solid var(--red);}
-
-/* ── HEALTH CHECK ── */
 .hc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;padding:14px 18px;}
 .hc-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:var(--r);border:1px solid var(--border);background:var(--n50);}
 .hc-icon{font-size:18px;flex-shrink:0;}
@@ -328,8 +269,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .hcs-ok{background:var(--green-l);color:var(--green-d);}
 .hcs-warn{background:var(--amber-l);color:var(--amber-d);}
 .hcs-err{background:var(--red-l);color:var(--red-d);}
-
-/* ── TOAST / SAVING ── */
 .toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--n800);color:#fff;padding:12px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:10px;transform:translateY(100px);opacity:0;transition:all .4s var(--spring);pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
 .sov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
@@ -337,8 +276,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .sbox{background:#fff;border-radius:var(--r-lg);padding:24px 32px;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;box-shadow:var(--sh-lg);}
 .spin{width:22px;height:22px;border:3px solid var(--n200);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-/* ── MODAL ── */
 .ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .ovl.on{display:flex;}
 .modal{background:var(--surf);border-radius:var(--r-lg);padding:26px 28px;width:440px;max-width:95vw;box-shadow:var(--sh-lg);max-height:90vh;overflow-y:auto;animation:min .3s var(--spring) both;}
@@ -374,110 +311,16 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .li span{display:block;font-size:9px;color:#78620a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
 .li strong{font-size:13px;font-family:'JetBrains Mono',monospace;color:#3d3000;}
 .hint{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;font-size:11px;color:var(--blue-d);margin-bottom:12px;}
-/* agent accordion */
 .ag-acc{border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden;}
 .ag-acc-hdr{background:var(--n50);padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
 .ag-acc-hdr:hover{background:var(--n100);}
 .ag-acc-body{display:none;padding:10px 12px;border-top:1px solid var(--border);}
 .ag-acc-body.open{display:block;}
-
-/* ── FOOTER ── */
 .footer{background:var(--ink);color:rgba(255,255,255,.35);padding:18px 28px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:11px;letter-spacing:.3px;}
-
-/* ═══════════════════════════════════
-   FOLLOW-UP TRACKER STYLES
-═══════════════════════════════════ */
-/* Pipeline summary KPIs */
-.pipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);}
-.pipe-kpi{background:var(--n50);border-radius:var(--r);padding:12px 14px;border:1px solid var(--border);border-left:3px solid var(--ac,var(--gold));}
-.pipe-kpi-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;}
-.pipe-kpi-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text);}
-.pipe-kpi-sub{font-size:10px;color:var(--muted);margin-top:3px;}
-
-/* Tracker toolbar */
-.tracker-bar{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--n50);}
-.tracker-bar .fsel{font-size:12px;padding:5px 10px;}
-.tracker-search{padding:5px 11px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;width:180px;}
-.tracker-search:focus{border-color:var(--blue);}
-.btn-add-lead{background:var(--green);color:#fff;border:none;padding:6px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;}
-.btn-add-lead:hover{background:var(--green-d);}
-.tracker-count{margin-left:auto;font-size:11px;color:var(--muted);}
-
-/* Stage progress bar (funnel) */
-.funnel-row{display:flex;gap:6px;padding:10px 18px;border-bottom:1px solid var(--border);overflow-x:auto;}
-.funnel-step{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:80px;flex:1;}
-.funnel-bar{width:100%;height:6px;border-radius:3px;overflow:hidden;background:var(--n200);}
-.funnel-fill{height:100%;border-radius:3px;transition:width .7s var(--spring);}
-.funnel-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
-.funnel-count{font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;}
-
-/* Lead cards grid (kanban-style toggle) */
-.leads-table-wrap{overflow-x:auto;}
-.leads-table{width:100%;border-collapse:collapse;font-size:12px;}
-.leads-table thead th{background:var(--n50);padding:9px 12px;text-align:left;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
-.leads-table thead th:hover{color:var(--text);}
-.leads-table thead th.sort-asc::after{content:' ▲';font-size:8px;}
-.leads-table thead th.sort-desc::after{content:' ▼';font-size:8px;}
-.leads-table tbody tr{border-bottom:1px solid var(--n100);transition:background .1s;animation:fup .3s var(--ease) both;}
-.leads-table tbody tr:hover{background:var(--n50);}
-.leads-table tbody td{padding:9px 12px;white-space:nowrap;vertical-align:middle;}
-.leads-table tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px solid var(--n200);font-size:12px;}
-
-/* Status flags */
-.sflag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
-.sf-today{background:#fef9c3;color:#713f12;border:1px solid #fde047;}
-.sf-overdue{background:var(--red-l);color:var(--red-d);border:1px solid var(--red-m);}
-.sf-active{background:var(--green-l);color:var(--green-d);border:1px solid var(--green-m);}
-.sf-won{background:#e0f2fe;color:#075985;border:1px solid #bae6fd;}
-.sf-lost{background:var(--n100);color:var(--muted);border:1px solid var(--border);}
-.sf-upcoming{background:var(--violet-l);color:var(--violet);border:1px solid #ddd6fe;}
-
-/* Stage pills */
-.stage-pill{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;}
-.sp-new{background:#e0f2fe;color:#0369a1;}
-.sp-contacted{background:var(--amber-l);color:var(--amber-d);}
-.sp-followup{background:#f0fdf4;color:#15803d;}
-.sp-proposal{background:#faf5ff;color:#7c3aed;}
-.sp-negotiation{background:#fff7ed;color:#c2410c;}
-.sp-won{background:#dcfce7;color:#14532d;}
-.sp-lost{background:var(--n100);color:var(--muted);}
-
-/* Category tag */
-.cat-rent{background:#dbeafe;color:#1e40af;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;}
-.cat-sell{background:#fce7f3;color:#9d174d;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;}
-
-/* Action buttons */
-.lead-actions{display:flex;gap:5px;}
-.la-btn{border:none;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;}
-.la-edit{background:var(--blue-l);color:var(--blue-d);}
-.la-edit:hover{background:var(--blue-m);}
-.la-del{background:var(--red-l);color:var(--red-d);}
-.la-del:hover{background:var(--red-m);}
-.la-done{background:var(--green-l);color:var(--green-d);}
-.la-done:hover{background:var(--green-m);}
-
-/* Lead modal */
-.lead-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.lead-form-grid .span2{grid-column:1/-1;}
-.lead-modal-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.lead-modal-title h2{margin-bottom:0;}
-.lead-id-badge{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);background:var(--n100);padding:3px 9px;border-radius:10px;}
-
-/* Rent/Sell split visual */
-.split-bar{height:12px;border-radius:6px;overflow:hidden;background:var(--n200);margin-top:6px;display:flex;}
-.split-rent{background:#3b82f6;height:100%;transition:width .7s var(--spring);}
-.split-sell{background:#ec4899;height:100%;transition:width .7s var(--spring);}
-
-/* Empty state */
-.empty-state{padding:40px 20px;text-align:center;color:var(--muted);}
-.empty-state-icon{font-size:36px;margin-bottom:10px;}
-.empty-state-title{font-size:14px;font-weight:600;margin-bottom:5px;color:var(--n600);}
-.empty-state-sub{font-size:12px;color:var(--muted);}
 </style>
 </head>
 <body>
 
-<!-- SYNC BAR -->
 <div class="sbar" id="sbar">
   <div class="sdot blink" id="sdot"></div>
   <span id="smsg">Connecting to Firebase…</span>
@@ -487,7 +330,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   </div>
 </div>
 
-<!-- TOPBAR -->
 <div class="topbar">
   <div class="tb-l">
     <div class="hlogo">
@@ -510,7 +352,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   </div>
 </div>
 
-<!-- FILTER BAR -->
 <div class="fbar">
   <span class="fbar-label">Filter:</span>
   <select class="fsel" id="filtAgent" onchange="applyFilters()">
@@ -531,7 +372,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 
 <div class="wrap" id="mainWrap">
 
-<!-- SKELETON -->
 <div id="skelView">
   <div class="sec">Loading…</div>
   <div class="skel-grid">
@@ -546,7 +386,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   </div>
 </div>
 
-<!-- MAIN DASH -->
 <div id="dashView" style="display:none">
 
   <div class="sec">June 2026 — Live Snapshot</div>
@@ -558,7 +397,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <h3>🏆 Agent Rankings — June 2026</h3>
       <div style="display:flex;align-items:center;gap:10px">
         <aside id="lbDate">—</aside>
-        <button onclick="openWAShare()" style="background:#25D366;color:#fff;border:none;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background=&apos;#128C7E&apos;" onmouseout="this.style.background=&apos;#25D366&apos;">
+        <button onclick="openWAShare()" style="background:#25D366;color:#fff;border:none;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background='#128C7E'" onmouseout="this.style.background='#25D366'">
           <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.134.558 4.133 1.532 5.866L0 24l6.278-1.645A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.82a9.817 9.817 0 01-5.032-1.382l-.36-.214-3.728.977.995-3.635-.234-.373A9.818 9.818 0 012.18 12C2.18 6.57 6.57 2.18 12 2.18c5.431 0 9.82 4.39 9.82 9.82 0 5.431-4.389 9.82-9.82 9.82z"/></svg>
           Share MTD Report
         </button>
@@ -566,8 +405,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     </div>
     <div id="lbWrap"></div>
   </div>
-
-
 
   <div class="sec">🥇 Top Performers &amp; ⚠️ Needs Attention</div>
   <div class="two-col">
@@ -676,94 +513,8 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <div class="tbl-wrap"><table class="zebra"><thead><tr><th>Week</th><th>Date</th><th>May Revenue</th><th>June Revenue</th><th>MoD Δ</th></tr></thead><tbody id="dailyBody"></tbody><tfoot id="dailyFoot"></tfoot></table></div>
   </div>
 
-
-  <!-- ═══════════════════════════════════════════
-       FOLLOW-UP PIPELINE TRACKER
-  ═══════════════════════════════════════════ -->
-  <div class="sec">📋 Follow-Up &amp; Pipeline Tracker</div>
-  <div class="card" id="pipelineCard">
-
-    <!-- Summary KPIs -->
-    <div class="pipe-grid" id="pipeKpis"></div>
-
-    <!-- Funnel by Stage -->
-    <div class="funnel-row" id="pipelineFunnel"></div>
-
-    <!-- Toolbar -->
-    <div class="tracker-bar">
-      <span class="fbar-label">Filter:</span>
-      <select class="fsel" id="ptFilterAgent" onchange="renderPipeline()">
-        <option value="">All Agents</option>
-      </select>
-      <select class="fsel" id="ptFilterStage" onchange="renderPipeline()">
-        <option value="">All Stages</option>
-        <option value="New">New</option>
-        <option value="Contacted">Contacted</option>
-        <option value="Follow-up">Follow-up</option>
-        <option value="Proposal">Proposal</option>
-        <option value="Negotiation">Negotiation</option>
-        <option value="Closed Won">Closed Won</option>
-        <option value="Closed Lost">Closed Lost</option>
-      </select>
-      <select class="fsel" id="ptFilterCat" onchange="renderPipeline()">
-        <option value="">Rent &amp; Sell</option>
-        <option value="Rent">Rent</option>
-        <option value="Sell">Sell</option>
-      </select>
-      <select class="fsel" id="ptFilterStatus" onchange="renderPipeline()">
-        <option value="">All Status</option>
-        <option value="Due Today">Due Today</option>
-        <option value="Overdue">Overdue</option>
-        <option value="Upcoming">Upcoming</option>
-        <option value="Active">Active</option>
-      </select>
-      <input type="text" class="tracker-search" id="ptSearch" placeholder="Search client / agent…" oninput="renderPipeline()">
-      <button class="btn-add-lead" id="addLeadBtn" onclick="openLeadModal()" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><path d="M12 5v14M5 12h14"/></svg>
-        Add Lead
-      </button>
-      <span class="tracker-count" id="ptCount">0 leads</span>
-    </div>
-
-    <!-- Leads Table -->
-    <div class="leads-table-wrap">
-      <table class="leads-table">
-        <thead>
-          <tr>
-            <th onclick="ptSort('agentName')">Agent</th>
-            <th onclick="ptSort('clientName')">Client</th>
-            <th>Contact</th>
-            <th onclick="ptSort('category')">Category</th>
-            <th onclick="ptSort('packageName')">Package</th>
-            <th onclick="ptSort('packageValue')">Value (₹)</th>
-            <th onclick="ptSort('stage')">Stage</th>
-            <th onclick="ptSort('nextFollowUp')">Next F/U</th>
-            <th>F/U #</th>
-            <th>Notes</th>
-            <th onclick="ptSort('statusFlag')">Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="leadsTableBody"></tbody>
-        <tfoot id="leadsTableFoot"></tfoot>
-      </table>
-    </div>
-
-  </div>
-
-  <!-- RENT vs SELL SPLIT + FORECAST -->
-  <div class="two-col" style="margin-top:14px">
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>🏠 Rent vs Sell Pipeline</h3><aside>By lead count &amp; value</aside></div>
-      <div style="padding:14px 18px" id="rentSellSplit"></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>📊 Stage Forecast (Weighted)</h3><aside>Based on conversion rates</aside></div>
-      <div class="cpd" style="padding-bottom:10px"><div style="position:relative;height:180px"><canvas id="stageFcChart"></canvas></div></div>
-    </div>
-  </div>
-</div><!-- /dashView -->
-</div><!-- /wrap -->
+</div>
+</div>
 
 <div class="footer">
   <span style="color:var(--gold);font-weight:900;font-size:14px">▲</span>
@@ -777,7 +528,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 <div class="sov" id="sov"><div class="sbox"><div class="spin"></div><span>Saving to Firebase…</span></div></div>
 
-<!-- WHATSAPP SHARE MODAL -->
 <div class="ovl" id="waOvl">
   <div class="modal wide">
     <h2 style="display:flex;align-items:center;gap:10px">
@@ -799,94 +549,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   </div>
 </div>
 
-
-<!-- LEAD ENTRY MODAL -->
-<div class="ovl" id="leadOvl">
-  <div class="modal wide">
-    <div class="lead-modal-title">
-      <h2 id="leadModalTitle">➕ Add New Lead</h2>
-      <span class="lead-id-badge" id="leadIdBadge">NEW</span>
-    </div>
-    <div class="lead-form-grid">
-      <div class="fg">
-        <label>Agent Name *</label>
-        <select id="lf-agent" class="fg">
-          <option value="">Select agent…</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Client Name *</label>
-        <input type="text" id="lf-client" placeholder="e.g. Ramesh Gupta">
-      </div>
-      <div class="fg">
-        <label>Contact Number</label>
-        <input type="tel" id="lf-contact" placeholder="9876543210" maxlength="15">
-      </div>
-      <div class="fg">
-        <label>Property Interest</label>
-        <input type="text" id="lf-property" placeholder="e.g. 2BHK Flat, Sector 62">
-      </div>
-      <div class="fg">
-        <label>Category *</label>
-        <select id="lf-category" onchange="populatePackages()">
-          <option value="Rent">Rent</option>
-          <option value="Sell">Sell</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Package / Plan</label>
-        <select id="lf-package" onchange="autofillPackageValue()">
-          <option value="">Select package…</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Package Value (₹)</label>
-        <input type="number" id="lf-value" placeholder="0">
-      </div>
-      <div class="fg">
-        <label>Source</label>
-        <select id="lf-source">
-          <option value="Housing App">Housing App</option>
-          <option value="Housing Website">Housing Website</option>
-          <option value="Referral">Referral</option>
-          <option value="Walk-in">Walk-in</option>
-          <option value="Cold Call">Cold Call</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Stage *</label>
-        <select id="lf-stage">
-          <option value="New">New</option>
-          <option value="Contacted">Contacted</option>
-          <option value="Follow-up" selected>Follow-up</option>
-          <option value="Proposal">Proposal</option>
-          <option value="Negotiation">Negotiation</option>
-          <option value="Closed Won">Closed Won</option>
-          <option value="Closed Lost">Closed Lost</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Next Follow-Up Date *</label>
-        <input type="date" id="lf-nextfu">
-      </div>
-      <div class="fg">
-        <label>Follow-up # (attempt count)</label>
-        <input type="number" id="lf-funum" min="1" value="1">
-      </div>
-      <div class="fg span2">
-        <label>Last Action / Notes</label>
-        <input type="text" id="lf-notes" placeholder="e.g. Client busy, callback at 3pm">
-      </div>
-    </div>
-    <div class="m-act">
-      <button class="btn-sec2" onclick="closeLeadModal()">Cancel</button>
-      <button class="btn-pri" onclick="saveLead()">💾 Save Lead</button>
-    </div>
-  </div>
-</div>
-
-<!-- LOGIN MODAL -->
 <div class="ovl" id="loginOvl">
   <div class="modal">
     <h2>🔐 Admin Login</h2>
@@ -896,7 +558,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   </div>
 </div>
 
-<!-- EDIT MODAL -->
 <div class="ovl" id="editOvl">
   <div class="modal wide">
     <h2>✏️ Update Dashboard</h2>
@@ -907,7 +568,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <button class="m-tab" onclick="swTab('tpWeekly',2)">Weekly</button>
     </div>
 
-    <!-- TAB: June KPIs -->
     <div class="tp on" id="tpJune">
       <div class="hint">💡 Set <b>Last Updated</b> to today's date — <b>Days Elapsed auto-computes</b> and flows to every formula.</div>
       <div class="two-inp">
@@ -929,13 +589,11 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       </div>
     </div>
 
-    <!-- TAB: All Agents -->
     <div class="tp" id="tpAgents">
       <div class="hint">💡 All agents shown — expand any agent to edit daily values. <b>All agents save together</b> when you click Save &amp; Sync.</div>
       <div id="allAgentsWrap"></div>
     </div>
 
-    <!-- TAB: Weekly -->
     <div class="tp" id="tpWeekly">
       <div class="slbl">May Weekly Revenue (₹)</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="mayWkInputs"></div>
@@ -956,9 +614,6 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 </div>
 
 <script>
-/* ═══════════════════════════════════
-   FIREBASE
-═══════════════════════════════════ */
 const FB_CFG = {
   apiKey:"AIzaSyATL9HIa5E_j69DAa-novWcz8lmA__IliM",
   authDomain:"housing-dashboard-6ab66.firebaseapp.com",
@@ -970,11 +625,8 @@ const FB_CFG = {
 };
 firebase.initializeApp(FB_CFG);
 const db = firebase.database();
-const DB_KEY = "housing_dashboard_v1"; // ← reads your real Firebase data
+const DB_KEY = "housing_dashboard_v1";
 
-/* ═══════════════════════════════════
-   CONSTANTS
-═══════════════════════════════════ */
 const JUNE_MONTH = 5, JUNE_YEAR = 2026, JUNE_DAYS = 30;
 
 function computeElapsed(dateStr){
@@ -990,9 +642,6 @@ function computeDaysLeft(){
   return now < new Date(JUNE_YEAR, JUNE_MONTH, 1) ? JUNE_DAYS : 0;
 }
 
-/* ═══════════════════════════════════
-   DEFAULT DATA
-═══════════════════════════════════ */
 const DEF = {
   lastUpdated:"2026-06-11",
   june:{target:885000,daysTotal:30,daysElapsed:11,
@@ -1036,15 +685,11 @@ const DEF = {
 let D = JSON.parse(JSON.stringify(DEF));
 const ADMIN_B64 = btoa("housing2026");
 
-/* ── Filter state ── */
-let activeView = 'all'; // 'all' | 'top' | 'bot'
+let activeView = 'all';
 let filterAgent = '';
 let filterWeek  = '';
-let isAdmin = false; // set to true only after correct password
+let isAdmin = false;
 
-/* ═══════════════════════════════════
-   SYNC / FIREBASE
-═══════════════════════════════════ */
 let syncedAt = null;
 let syncInterval = null;
 
@@ -1083,16 +728,34 @@ function updateDaysLeft(){
   if(el) el.textContent=`⏳ ${dl} day${dl!==1?"s":""} left`;
 }
 
+/* FIXED — root cause of "numbers not updating":
+   Firebase Realtime Database silently converts JS arrays with trailing
+   falsy/zero values into JSON objects and drops trailing zero-valued
+   keys. A 30-entry daily array (true every day until June 30) round
+   trips through Firebase as a SHORT object. Object.values() on that
+   then returns an array shorter than 30, so every read of daily[i]
+   beyond that length is undefined — future days, charts, forecasts all
+   silently stop updating. toArrPadded() always forces every daily
+   array (team AND each agent) back to a strict fixed length of 30. */
+function toArrPadded(v, len){
+  const arr = v && !Array.isArray(v) ? Object.values(v) : (v || []);
+  const out = arr.slice(0, len);
+  while(out.length < len) out.push(0);
+  return out;
+}
+
 function normalise(raw){
   const toArr = v => v&&!Array.isArray(v)?Object.values(v):(v||[]);
   const d = raw;
-  if(d.june) d.june.daily = toArr(d.june.daily);
+  if(d.june) d.june.daily = toArrPadded(d.june.daily, JUNE_DAYS);
   d.mayDaily   = toArr(d.mayDaily);
   d.mayWeekly  = toArr(d.mayWeekly);
   d.juneWeekly = toArr(d.juneWeekly);
   d.agents     = toArr(d.agents);
-  d.agents.forEach(ag=>{ ag.daily = toArr(ag.daily); while(ag.daily.length<30) ag.daily.push(0); ag.inactive = !!ag.inactive; });
-  // AUTO: re-derive daysElapsed from lastUpdated
+  d.agents.forEach(ag=>{
+    ag.daily = toArrPadded(ag.daily, JUNE_DAYS);
+    ag.inactive = !!ag.inactive;
+  });
   if(d.lastUpdated) d.june.daysElapsed = computeElapsed(d.lastUpdated);
   return d;
 }
@@ -1128,9 +791,6 @@ function populateAgentFilter(){
   if(cur) sel.value=cur;
 }
 
-/* ═══════════════════════════════════
-   HELPERS
-═══════════════════════════════════ */
 const INR = n=>"₹"+Math.round(n).toLocaleString("en-IN");
 const S   = n=>{const a=Math.abs(n),sg=n<0?"-":"";return a>=1e5?sg+"₹"+(a/1e5).toFixed(1)+"L":a>=1000?sg+"₹"+(a/1e3).toFixed(0)+"K":sg+"₹"+Math.round(a);};
 const Pct = (n,d=1)=>n.toFixed(d)+"%";
@@ -1141,7 +801,6 @@ const AVC=["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c"
 const avc=i=>AVC[i%AVC.length];
 const ini=n=>n.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
 
-/* ── Derive all metrics from D (single truth) ── */
 function derive(){
   const {target,daysTotal,daysElapsed,daily}=D.june;
   const achieved = daily.reduce((s,v)=>s+v,0);
@@ -1157,10 +816,8 @@ function derive(){
   return{achieved,remaining,daysLeft,drr,actDrr,dayTgt,pct,baseFc,optFc,consFc,daysElapsed,daysTotal,target,daily};
 }
 
-/* Agent total — always reads from D (live) */
 function agTot(ag,elapsed){ return ag.daily.slice(0,elapsed||D.june.daysElapsed).reduce((s,v)=>s+v,0); }
 
-/* Filtered agent list — inactive agents are included but sorted to bottom */
 function filteredAgents(){
   let agents = D.agents.map((ag,i)=>({...ag,_i:i,tot:agTot(ag)}));
   if(filterAgent!=='') agents=agents.filter(a=>a._i===parseInt(filterAgent));
@@ -1171,7 +828,6 @@ function filteredAgents(){
   }
   if(activeView==='top') agents=agents.filter(a=>!a.inactive&&a.target>0&&a.tot/a.target>=0.6);
   if(activeView==='bot') agents=agents.filter(a=>!a.inactive&&a.target>0&&a.tot/a.target<0.2);
-  // Sort: active by achievement desc, inactive at bottom
   return agents.sort((a,b)=>{
     if(a.inactive && !b.inactive) return 1;
     if(!a.inactive && b.inactive) return -1;
@@ -1179,9 +835,6 @@ function filteredAgents(){
   });
 }
 
-/* ═══════════════════════════════════
-   FILTER CONTROLS
-═══════════════════════════════════ */
 function applyFilters(){
   filterAgent = document.getElementById("filtAgent").value;
   filterWeek  = document.getElementById("filtWeek").value;
@@ -1198,9 +851,6 @@ function setView(v){
   renderAll();
 }
 
-/* ═══════════════════════════════════
-   RENDER: KPIs
-═══════════════════════════════════ */
 function renderKPIs(){
   const{achieved,remaining,daysLeft,drr,actDrr,dayTgt,pct,baseFc,daysElapsed,daysTotal,target}=derive();
   const gap=drr-actDrr;
@@ -1229,24 +879,17 @@ function renderKPIs(){
   document.getElementById("junLogTot").textContent=INR(achieved);
 }
 
-/* ═══════════════════════════════════
-   RENDER: LEADERBOARD — SPECTACULAR
-═══════════════════════════════════ */
 function renderLeaderboard(){
   const el=D.june.daysElapsed;
-  // active agents for ranking; inactive shown dimmed at bottom
-  const allAgents = D.agents.map((ag,i)=>({...ag,_i:i,tot:agTot(ag)}));
-  let agents = filteredAgents(); // respects filters
+  let agents = filteredAgents();
   if(!agents.length){document.getElementById("lbWrap").innerHTML='<div style="padding:20px 18px;color:var(--muted);font-size:13px">No agents match current filter.</div>';return;}
 
-  // Separate active vs inactive
   const active = agents.filter(a=>!a.inactive);
   const inactive = agents.filter(a=>a.inactive);
   const maxTot = active[0]?.tot||1;
 
   let html = '';
 
-  // ── PODIUM (top 3 active only) ──────────────────────────
   if(active.length>=1 && filterAgent==='' && filterWeek===''){
     const podAgents = active.slice(0,3);
     const podOrder = podAgents.length>=3 ? [podAgents[1], podAgents[0], podAgents[2]] :
@@ -1255,17 +898,15 @@ function renderLeaderboard(){
     const podSz    = podAgents.length>=3 ? ['sz2','sz1','sz3'] : ['sz2','sz1'];
     const podBase  = podAgents.length>=3 ? ['b2','b1','b3'] : ['b2','b1'];
     const podRev   = podAgents.length>=3 ? ['r2','r1','r3'] : ['r2','r1'];
-    const crowns   = ['👑','🏆','🎖️'];
     const posLabels= ['#1','#2','#3'];
 
     html += '<div class="lb-podium">';
     podOrder.forEach((ag,oi)=>{
       if(!ag) return;
-      const realRank = active.indexOf(ag); // 0,1,2
+      const realRank = active.indexOf(ag);
       const p = ag.target>0?ag.tot/ag.target*100:0;
       const bw= maxTot>0?Math.min(ag.tot/maxTot*100,100).toFixed(1):'0';
       const bc= pCol(p);
-      const inactClass = ag.inactive ? 'lb-inactive-row' : '';
       html += `<div class="lb-pod ${podClass[oi]}">
         ${realRank===0?`<div class="lb-crown">👑</div>`:`<div style="height:26px"></div>`}
         <div class="lb-pod-av-wrap">
@@ -1282,7 +923,6 @@ function renderLeaderboard(){
     html += '</div>';
   }
 
-  // ── REST LIST (rank 4+) ──────────────────────────────────
   const restActive = filterAgent==='' && filterWeek==='' ? active.slice(3) : active;
   if(restActive.length > 0){
     html += '<div class="lb-rest-list">';
@@ -1307,7 +947,6 @@ function renderLeaderboard(){
     html += '</div>';
   }
 
-  // ── INACTIVE AGENTS (dimmed at bottom) ──────────────────
   if(inactive.length>0){
     html += `<div style="padding:8px 18px 4px;font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.8px;border-top:1px dashed var(--n200);margin-top:4px;">Inactive / Left Organisation</div>`;
     html += '<div class="lb-rest-list">';
@@ -1336,9 +975,6 @@ function renderLeaderboard(){
   document.getElementById("lbDate").textContent=`Jun ${el}, 2026 · ${active.length} active · ${inactive.length} inactive`;
 }
 
-/* ═══════════════════════════════════
-   AGENT MANAGEMENT — Add / Deactivate
-═══════════════════════════════════ */
 function renderAgentMgmt(){
   const actAgents = D.agents.filter(a=>!a.inactive);
   const inactAgents = D.agents.filter(a=>a.inactive);
@@ -1411,9 +1047,6 @@ function pushToFirebase(){
   });
 }
 
-/* ═══════════════════════════════════
-   WHATSAPP MTD SHARE REPORT
-═══════════════════════════════════ */
 function openWAShare(){
   buildWAReport();
   document.getElementById("waOvl").classList.add("on");
@@ -1425,7 +1058,6 @@ function buildWAReport(){
   const today = new Date();
   const dateStr = `${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${today.getFullYear()}`;
 
-  // Sort active agents by revenue
   const activeAgents = D.agents
     .map((ag,i)=>({...ag,_i:i,tot:agTot(ag)}))
     .filter(a=>!a.inactive)
@@ -1467,7 +1099,6 @@ function buildWAReport(){
     lines.push(``);
   });
 
-  // Inactive note
   const inactAgents = D.agents.filter(a=>a.inactive);
   if(inactAgents.length>0){
     lines.push(`🚫 *Inactive:* ${inactAgents.map(a=>a.name.split(' ')[0]).join(', ')}`);
@@ -1476,7 +1107,6 @@ function buildWAReport(){
 
   lines.push(`━━━━━━━━━━━━━━━━━━━━━`);
 
-  // Key alerts
   const zeroMTD = activeAgents.filter(a=>a.tot===0);
   if(zeroMTD.length>0) lines.push(`⚠️ *Zero MTD:* ${zeroMTD.map(a=>a.name.split(' ')[0]).join(', ')}`);
 
@@ -1505,7 +1135,6 @@ function copyWAReport(){
       btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg> Copy to Clipboard`;
     }, 3000);
   }).catch(()=>{
-    // Fallback for browsers without clipboard API
     const ta = document.createElement("textarea");
     ta.value = text;
     document.body.appendChild(ta);
@@ -1516,15 +1145,11 @@ function copyWAReport(){
   });
 }
 
-/* ═══════════════════════════════════
-   RENDER: TOP / BOTTOM PERFORMERS
-═══════════════════════════════════ */
 function renderPerformers(){
-  const el=D.june.daysElapsed;
   const all=D.agents.map((ag,i)=>({...ag,_i:i,tot:agTot(ag),pct:ag.target>0?agTot(ag)/ag.target*100:0})).sort((a,b)=>b.tot-a.tot);
   const top=all.slice(0,Math.min(4,all.length));
   const bot=[...all].sort((a,b)=>a.pct-b.pct).slice(0,4);
-  const maxT=top[0]?.tot||1, maxB=bot[bot.length-1]?.tot||1;
+  const maxT=top[0]?.tot||1;
   document.getElementById("topPerf").innerHTML=top.map(ag=>`
     <div class="performer-card pc-top">
       <div class="pc-av" style="background:${avc(ag._i)}">${ini(ag.name)}</div>
@@ -1547,9 +1172,6 @@ function renderPerformers(){
     </div>`).join("");
 }
 
-/* ═══════════════════════════════════
-   RENDER: TARGET VS ACHIEVEMENT
-═══════════════════════════════════ */
 function renderTVA(){
   const agents=D.agents.map((ag,i)=>({...ag,_i:i,tot:agTot(ag)}));
   document.getElementById("tvaGrid").innerHTML=agents.map(ag=>{
@@ -1565,9 +1187,6 @@ function renderTVA(){
   }).join("");
 }
 
-/* ═══════════════════════════════════
-   RENDER: FORECAST
-═══════════════════════════════════ */
 let fcChart=null;
 function renderForecast(){
   const{achieved,remaining,daysLeft,drr,actDrr,dayTgt,baseFc,optFc,consFc,daysElapsed,daysTotal,target,daily}=derive();
@@ -1598,24 +1217,18 @@ function renderForecast(){
   ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": "+INR(c.parsed.y||0),title:c=>"Jun "+c[0].label}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
 }
 
-/* ═══════════════════════════════════
-   RENDER: CHARTS
-═══════════════════════════════════ */
 let juneChart=null,wowChart=null,cmpChart=null;
 function renderCharts(){
   const{daily,daysElapsed}=D.june;
-  // June daily bar
   const jctx=document.getElementById("juneChart").getContext("2d");
   if(juneChart)juneChart.destroy();
   juneChart=new Chart(jctx,{type:"bar",data:{labels:daily.map((_,i)=>i+1),datasets:[{label:"Revenue",data:daily,backgroundColor:daily.map((v,i)=>i>=daysElapsed?"#e2e8f0":v>0?"rgba(220,38,38,.82)":"rgba(226,232,240,.6)"),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"₹"+c.parsed.y.toLocaleString("en-IN"),title:c=>"Jun "+c[0].label+(c[0].dataIndex<daysElapsed?" (actual)":" (future)")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:false,maxRotation:0}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
-  // WoW line
   const wctx=document.getElementById("wowChart").getContext("2d");
   if(wowChart)wowChart.destroy();
   wowChart=new Chart(wctx,{type:"line",data:{labels:["Wk-1","Wk-2","Wk-3","Wk-4"],datasets:[
     {label:"May",data:D.mayWeekly.map(w=>w.revenue),borderColor:"#2563eb",backgroundColor:"rgba(37,99,235,.08)",borderWidth:2.5,pointRadius:5,pointBackgroundColor:"#2563eb",tension:.3,fill:true},
     {label:"June",data:D.juneWeekly.map(w=>w.revenue),borderColor:"#dc2626",backgroundColor:"rgba(220,38,38,.08)",borderWidth:2.5,pointRadius:5,pointBackgroundColor:"#dc2626",tension:.3,fill:true}
   ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},plugins:{legend:{position:"top",labels:{font:{size:11},boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
-  // Comparison grouped bar
   const cctx=document.getElementById("cmpChart").getContext("2d");
   if(cmpChart)cmpChart.destroy();
   const jun=D.june.daily;
@@ -1625,9 +1238,6 @@ function renderCharts(){
   ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
 }
 
-/* ═══════════════════════════════════
-   RENDER: WEEKLY TABLES
-═══════════════════════════════════ */
 function renderWeekly(){
   const mTot=D.mayWeekly.reduce((s,r)=>s+r.revenue,0),mTgt=D.mayWeekly.reduce((s,r)=>s+r.target,0);
   document.getElementById("mayWkBody").innerHTML=D.mayWeekly.map((r,i)=>{
@@ -1646,11 +1256,6 @@ function renderWeekly(){
   document.getElementById("junWkFoot").innerHTML=`<tr><td><b>Total</b></td><td class="mono">${INR(jTgt)}</td><td class="mono">${INR(jTot)}</td><td class="mono dn">${INR(jTot-jTgt)}</td><td class="mono" colspan="2">${Pct(jTot/jTgt*100)} of target</td></tr>`;
 }
 
-/* ═══════════════════════════════════
-   RENDER: AGENT TRACKER
-   ── ALL agent numbers flow from D.agents[i].daily
-   ── Every column is derived — never hardcoded
-═══════════════════════════════════ */
 function renderAgents(){
   const{daysElapsed,daysTotal}=D.june;
   const{actDrr}=derive();
@@ -1668,7 +1273,6 @@ function renderAgents(){
     const dLeft=daysTotal-daysElapsed;
     const agDrr=dLeft>0?(ag.target-ag.tot)/dLeft:0;
     const ttn=dayTgt*daysElapsed,def=ag.tot-ttn,over=def>=0;
-    // Conditional row class
     const rowCls=p>=60?"row-green":p>=20?"row-amber":"row-red";
     let cells="";
     for(let d=0;d<daysElapsed;d++){
@@ -1696,9 +1300,6 @@ function renderAgents(){
   document.getElementById("agFoot").innerHTML=foot;
 }
 
-/* ═══════════════════════════════════
-   RENDER: DAILY LOG
-═══════════════════════════════════ */
 function renderDaily(){
   const jun=D.june.daily;
   document.getElementById("dailyBody").innerHTML=D.mayDaily.map((r,i)=>{
@@ -1710,14 +1311,10 @@ function renderDaily(){
   document.getElementById("dailyFoot").innerHTML=`<tr><td colspan="2"><b>Total</b></td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#1e3a8a">${INR(mS)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#b91c1c">${INR(jS)}</td><td></td></tr>`;
 }
 
-/* ═══════════════════════════════════
-   RENDER: AUTOMATED INSIGHTS
-═══════════════════════════════════ */
 function renderInsights(){
   const{achieved,remaining,daysLeft,drr,actDrr,dayTgt,pct,baseFc,optFc,consFc,daysElapsed,daily,target}=derive();
   const alerts=[];
 
-  // 1. Zero today
   if(daysElapsed>0){
     const idx=daysElapsed-1,zero=D.agents.filter(ag=>(ag.daily[idx]||0)===0);
     const sev=zero.length>=Math.ceil(D.agents.length*.6)?"crit":zero.length>=3?"warn":zero.length===0?"ok":"info";
@@ -1729,7 +1326,6 @@ function renderInsights(){
       names:zero.map(a=>a.name)});
   }
 
-  // 2. DRR health
   const drrGap=drr-actDrr,gapPct=actDrr>0?(drrGap/actDrr*100):0;
   const drrSev=drrGap>actDrr*.5?"crit":drrGap>0?"warn":"ok";
   alerts.push({sev:drrSev,icon:drrSev==="ok"?"🟢":"📉",bc:{crit:"bc",warn:"bw",ok:"bo"}[drrSev],badge:drrSev==="ok"?"On Pace ✓":gapPct>50?"Critical DRR Gap":"DRR Behind",
@@ -1738,7 +1334,6 @@ function renderInsights(){
     desc:drrSev==="ok"?`Actual DRR (${INR(Math.round(actDrr))}) beats required (${INR(Math.round(drr))}). Maintain this pace.`:`DRR gap: ${INR(Math.round(drrGap))}/day (${gapPct.toFixed(0)}% shortfall). Base forecast: ${INR(baseFc)} = ${Pct(baseFc/target*100)} of target.`,
     names:[]});
 
-  // 3. Zero month-to-date
   const zeroMTD=D.agents.filter(ag=>agTot(ag)===0);
   if(zeroMTD.length>0) alerts.push({sev:"crit",icon:"💤",bc:"bc",badge:"No Revenue — Month to Date",
     title:`${zeroMTD.length} agent${zeroMTD.length>1?"s have":" has"} ₹0 for all of June`,
@@ -1746,7 +1341,6 @@ function renderInsights(){
     desc:zeroMTD.map(a=>a.name.split(" ")[0]).join(", ")+" have not logged a single rupee in "+daysElapsed+" elapsed days.",
     names:zeroMTD.map(a=>a.name)});
 
-  // 4. Revenue concentration
   const sortedByRev=[...D.agents].map(ag=>({...ag,tot:agTot(ag)})).sort((a,b)=>b.tot-a.tot);
   const top3=sortedByRev.slice(0,3).reduce((s,a)=>s+a.tot,0),concPct=achieved>0?top3/achieved*100:0;
   const cSev=concPct>75?"crit":concPct>60?"warn":"ok";
@@ -1756,7 +1350,6 @@ function renderInsights(){
     desc:cSev==="ok"?"Revenue load spread reasonably across team.":sortedByRev[0].name.split(" ")[0]+", "+sortedByRev[1].name.split(" ")[0]+" & "+sortedByRev[2].name.split(" ")[0]+" are carrying the team.",
     names:cSev!=="ok"?sortedByRev.slice(0,3).map(a=>a.name):[]});
 
-  // 5. Month-end forecast
   const fcSev=baseFc>=target?"ok":baseFc>=target*.75?"warn":"crit";
   alerts.push({sev:fcSev,icon:fcSev==="ok"?"🎯":"🔮",bc:{crit:"bc",warn:"bw",ok:"bo"}[fcSev],badge:fcSev==="ok"?"Forecast Meets Target":"Shortfall Risk",
     title:fcSev==="ok"?`On track — base forecast beats target`:`Base forecast short by ${INR(target-baseFc)}`,
@@ -1764,7 +1357,6 @@ function renderInsights(){
     desc:`Optimistic: ${INR(optFc)} (${Pct(optFc/target*100)}). Conservative: ${INR(consFc)} (${Pct(consFc/target*100)}). ${daysLeft} days to close ${INR(remaining)}.`,
     names:[]});
 
-  // 6. Best day
   const filledDays=daily.slice(0,daysElapsed).filter(v=>v>0);
   if(filledDays.length>0){
     const best=Math.max(...filledDays),bestDay=daily.indexOf(best)+1,avg=filledDays.reduce((s,v)=>s+v,0)/filledDays.length;
@@ -1775,7 +1367,6 @@ function renderInsights(){
       names:[]});
   }
 
-  // 7. Coaching priority
   const needCoach=D.agents.filter(ag=>{const p=ag.target>0?agTot(ag)/ag.target*100:0;return p<10&&ag.target>0;});
   if(needCoach.length>0) alerts.push({sev:"warn",icon:"🎙️",bc:"bw",badge:"Coaching Priority",
     title:`${needCoach.length} agent${needCoach.length>1?"s":""} below 10% monthly achievement`,
@@ -1783,7 +1374,6 @@ function renderInsights(){
     desc:`Immediate coaching required. Combined untapped target: ${INR(needCoach.reduce((s,a)=>s+a.target,0))}.`,
     names:needCoach.map(a=>a.name)});
 
-  // 8. 3-day trend
   if(daysElapsed>=3){
     const last3=daily.slice(Math.max(0,daysElapsed-3),daysElapsed).filter(v=>v>0);
     if(last3.length===3){
@@ -1796,7 +1386,6 @@ function renderInsights(){
     }
   }
 
-  // 9. Achievement distribution
   const bands={high:D.agents.filter(ag=>agTot(ag)/ag.target>=.6).length,mid:D.agents.filter(ag=>{const p=agTot(ag)/ag.target;return p>=.2&&p<.6;}).length,low:D.agents.filter(ag=>ag.target>0&&agTot(ag)/ag.target<.2).length};
   alerts.push({sev:"info",icon:"📊",bc:"bi",badge:"Team Distribution",
     title:`Team: ${bands.high} on track · ${bands.mid} halfway · ${bands.low} below 20%`,
@@ -1820,41 +1409,30 @@ function renderInsights(){
   document.getElementById("intelTs").textContent=`${alerts.filter(a=>a.sev==="crit").length} critical · ${alerts.filter(a=>a.sev==="warn").length} warnings · refreshed ${D.lastUpdated}`;
 }
 
-/* ═══════════════════════════════════
-   RENDER: HEALTH CHECK
-═══════════════════════════════════ */
 function renderHealthCheck(){
   const{daysElapsed,daily,target}=D.june;
   const checks=[];
 
-  // Days elapsed valid?
   checks.push({icon:"📅",label:"Days Elapsed Auto-Sync",sub:`Set to ${daysElapsed} from date ${D.lastUpdated}`,status:daysElapsed>0&&daysElapsed<=30?"ok":"warn",st:daysElapsed>0&&daysElapsed<=30?"✓ Valid":"⚠ Check date"});
 
-  // All 30 daily slots exist
   checks.push({icon:"📋",label:"Daily Revenue Array",sub:`${daily.length} of 30 slots populated`,status:daily.length===30?"ok":"err",st:daily.length===30?"✓ Complete":"✗ Missing slots"});
 
-  // Any negative values?
   const neg=daily.filter(v=>v<0).length;
   checks.push({icon:"❌",label:"Negative Values",sub:neg>0?`${neg} negative entries found`:"No negative daily values",status:neg>0?"err":"ok",st:neg>0?"✗ Fix entries":"✓ Clean"});
 
-  // All agents have 30-day arrays
   const badAg=D.agents.filter(ag=>!ag.daily||ag.daily.length<daysElapsed);
   checks.push({icon:"👥",label:"Agent Data Completeness",sub:badAg.length>0?badAg.map(a=>a.name).join(", "):`All ${D.agents.length} agents have data`,status:badAg.length>0?"warn":"ok",st:badAg.length>0?"⚠ Incomplete":"✓ All Complete"});
 
-  // Team total matches sum of agent daily
   const teamFromAgents=D.agents.reduce((s,ag)=>s+ag.daily.slice(0,daysElapsed).reduce((x,v)=>x+v,0),0);
   const teamFromDaily=daily.reduce((s,v)=>s+v,0);
   const mismatch=Math.abs(teamFromAgents-teamFromDaily);
   checks.push({icon:"🔄",label:"Agent ↔ Team Totals Match",sub:mismatch>0?`Gap: ${INR(mismatch)} (update agent daily values)`:` Team: ${INR(teamFromDaily)} = Agents: ${INR(teamFromAgents)}`,status:mismatch>100?"warn":"ok",st:mismatch>100?"⚠ Mismatch":"✓ Match"});
 
-  // Target set?
   checks.push({icon:"🎯",label:"Monthly Target",sub:`₹${target.toLocaleString("en-IN")} for June 2026`,status:target>0?"ok":"err",st:target>0?"✓ Set":"✗ Missing"});
 
-  // Any agent with target=0?
   const zeroTgt=D.agents.filter(ag=>!ag.target||ag.target===0);
   checks.push({icon:"⚠️",label:"Agent Targets",sub:zeroTgt.length>0?`${zeroTgt.length} agents have no target`:`All ${D.agents.length} agents have targets`,status:zeroTgt.length>0?"err":"ok",st:zeroTgt.length>0?"✗ Missing targets":"✓ All Set"});
 
-  // Firebase sync
   checks.push({icon:"☁️",label:"Firebase Sync",sub:`Last synced: ${document.getElementById("sclk").textContent||"—"}`,status:"ok",st:"✓ Connected"});
 
   document.getElementById("hcGrid").innerHTML=checks.map(c=>`
@@ -1865,9 +1443,6 @@ function renderHealthCheck(){
     </div>`).join("");
 }
 
-/* ═══════════════════════════════════
-   RENDER ALL — one call cascades everywhere
-═══════════════════════════════════ */
 function renderAll(){
   renderKPIs();
   renderLeaderboard();
@@ -1883,9 +1458,6 @@ function renderAll(){
   renderHealthCheck();
 }
 
-/* ═══════════════════════════════════
-   TOAST / SAVING
-═══════════════════════════════════ */
 function toast(msg){
   const t=document.getElementById("toast");
   document.getElementById("toastMsg").textContent=msg;
@@ -1893,12 +1465,8 @@ function toast(msg){
   setTimeout(()=>t.classList.remove("show"),3500);
 }
 
-/* ═══════════════════════════════════
-   AUTH
-═══════════════════════════════════ */
 function openLogin(){
   if(isAdmin){
-    // Already authenticated — go straight to edit
     openEdit();
     return;
   }
@@ -1925,35 +1493,28 @@ function logout(){
   toast("🔒 Admin session ended");
 }
 
-/* Show/hide admin-only UI based on isAdmin flag */
 function applyAdminMode(){
-  // Toggle roster card visibility
   const rosterCard = document.getElementById("agMgmtCard");
   if(rosterCard) rosterCard.style.display = isAdmin ? "" : "none";
 
-  // Toggle roster section label visibility
   const rosterSec = document.getElementById("rosterSec");
   if(rosterSec) rosterSec.style.display = isAdmin ? "" : "none";
 
-  // Toggle add-agent form (admin only)
   const addForm = document.getElementById("addAgentForm");
   if(addForm) addForm.style.display = isAdmin ? "" : "none";
 
-  // Toggle topbar buttons
   const logoutBtn = document.getElementById("logoutBtn");
   const updateBtn = document.getElementById("updateBtn");
   if(logoutBtn) logoutBtn.style.display = isAdmin ? "flex" : "none";
   if(updateBtn) {
-    updateBtn.textContent = isAdmin ? "✏️ Edit Data" : "🔐 Admin Login";
+    updateBtn.innerHTML = isAdmin
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Edit Data`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Admin Login`;
   }
 
-  // Re-render agent mgmt to show/hide action buttons
   if(isAdmin) renderAgentMgmt();
 }
 
-/* ═══════════════════════════════════
-   EDIT MODAL
-═══════════════════════════════════ */
 function openEdit(){ populateEdit(); document.getElementById("editOvl").classList.add("on"); }
 function closeEdit(){ document.getElementById("editOvl").classList.remove("on"); }
 function swTab(id,idx){
@@ -1976,7 +1537,6 @@ function populateEdit(){
   document.getElementById("eUpdated").value=D.lastUpdated;
   document.getElementById("eDaysElapsed").value=D.june.daysElapsed;
 
-  // June daily grid
   document.getElementById("juneDayGrid").innerHTML=D.june.daily.map((v,i)=>`
     <div class="dw">
       <span>Jun ${i+1}</span>
@@ -1985,7 +1545,6 @@ function populateEdit(){
         style="border-color:${i<D.june.daysElapsed?"var(--border)":"var(--n200)"};background:${i<D.june.daysElapsed?"#fff":"var(--n50)"}">
     </div>`).join("");
 
-  // All agents accordion
   document.getElementById("allAgentsWrap").innerHTML=D.agents.map((ag,ai)=>{
     const tot=agTot(ag);
     const p=ag.target>0?((tot/ag.target)*100).toFixed(1):0;
@@ -2064,30 +1623,31 @@ function livePreview(){
   document.getElementById("lvDrrNeeded").textContent=INR(Math.round(Math.max(0,drrN)));
 }
 
-/* ═══════════════════════════════════
-   SAVE DATA → FIREBASE
-   Saves ALL agents. Every section auto-derives.
-═══════════════════════════════════ */
+/* FIXED — write side now uses padArr() to guarantee every saved daily
+   array is exactly 30 entries, written explicitly to Firebase. This
+   closes the loop with normalise() on the read side. */
+function padArr(arr, len){
+  const out = (arr||[]).slice(0, len);
+  while(out.length < len) out.push(0);
+  return out;
+}
+
 function saveData(){
   const nd=JSON.parse(JSON.stringify(D));
   nd.june.target    = parseInt(document.getElementById("eTarget").value)||nd.june.target;
   nd.june.daysTotal = parseInt(document.getElementById("eDaysTotal").value)||30;
   nd.lastUpdated    = document.getElementById("eUpdated").value;
-  nd.june.daysElapsed = computeElapsed(nd.lastUpdated); // auto-derive
+  nd.june.daysElapsed = computeElapsed(nd.lastUpdated);
 
-  // June daily — flows to all team-level calculations
-  nd.june.daily = nd.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0);
+  nd.june.daily = padArr(nd.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0), JUNE_DAYS);
 
-  // ALL agents — every agent's numbers flow to leaderboard, tracker, insights, health check
-  // Preserve inactive flag; only update target+daily for agents that have edit inputs
   nd.agents = D.agents.map((ag,ai)=>({
     name: ag.name,
     target: parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target,
-    daily: ag.daily.map((_,d)=>parseInt(document.getElementById(`agd${ai}_${d}`)?.value)||0),
+    daily: padArr(ag.daily.map((_,d)=>parseInt(document.getElementById(`agd${ai}_${d}`)?.value)||0), JUNE_DAYS),
     inactive: !!ag.inactive
   }));
 
-  // Weekly
   nd.mayWeekly.forEach((_,i)=>{ nd.mayWeekly[i].revenue=parseInt(document.getElementById("mw"+i)?.value)||0; });
   nd.juneWeekly.forEach((_,i)=>{ nd.juneWeekly[i].revenue=parseInt(document.getElementById("jw"+i)?.value)||0; });
 
@@ -2101,25 +1661,15 @@ function saveData(){
     document.getElementById("sov").classList.remove("on");
     setSyncState("error","Save failed: "+err.message);
     toast("❌ Save failed — check your connection");
-    // Fallback: update local and re-render
     D = normalise(nd);
     renderAll();
   });
 }
 
-
-/* ═══════════════════════════════════
-   VERIFIED CORRECT BASELINE DATA
-   Cross-checked against original user data table
-   Agent totals: exactly match stated values
-   Team daily: sum of agents = team total
-═══════════════════════════════════ */
 const BASELINE = {
   lastUpdated:"2026-06-11",
   june:{
     target:885000, daysTotal:30, daysElapsed:11,
-    // Day-by-day team totals — verified against original data
-    // Day:  1      2      3      4      5      6      7      8      9     10     11
     daily:[26428, 11245, 38262, 11229, 11346, 12823,  2000,  7903, 15029, 13055, 19820,
            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
   },
@@ -2153,13 +1703,7 @@ const BASELINE = {
     {w:"Wk-4",d:"29-May",v:11000},{w:"Wk-4",d:"30-May",v:38342},
     {w:"Wk-4",d:"31-May",v:23982}
   ],
-  // Agent daily values — verified totals match user's stated figures exactly:
-  // Atul Kumar: ₹0  |  Teena Pal: ₹5,064  |  Cally: ₹4,424  |  Kashish: ₹15,346
-  // Neha: ₹4,005  |  Uqba: ₹16,605  |  Lucky: ₹32,392  |  Priyanka: ₹5,555
-  // Mohit: ₹6,292  |  Altmas: ₹9,260  |  Shivani: ₹9,813  |  Mehtab: ₹49,977
-  // Aman: ₹10,407  |  TEAM MTD: ₹1,69,145
   agents:[
-    // Day:          1      2      3      4      5      6      7      8      9     10     11
     {name:"Atul Kumar",        target:68077, daily:[0,    0,    0,     0,    0,    0,     0,    0,    0,     0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
     {name:"Teena Pal OC",      target:68077, daily:[0,    0,    0,     0,    2831, 0,     0,    0,    0,     2233, 0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
     {name:"Cally Richard OC",  target:68077, daily:[0,    0,    0,     0,    0,    4424,  0,    0,    0,     0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
@@ -2182,6 +1726,8 @@ function resetToBaseline(){
   document.getElementById("sov").classList.add("on");
   const reset = JSON.parse(JSON.stringify(BASELINE));
   reset.june.daysElapsed = computeElapsed(reset.lastUpdated);
+  reset.june.daily = padArr(reset.june.daily, JUNE_DAYS);
+  reset.agents.forEach(ag=>{ ag.daily = padArr(ag.daily, JUNE_DAYS); ag.inactive = false; });
   db.ref(DB_KEY).set(reset)
     .then(()=>{
       document.getElementById("sov").classList.remove("on");
@@ -2195,9 +1741,6 @@ function resetToBaseline(){
     });
 }
 
-/* ═══════════════════════════════════
-   BOOT
-═══════════════════════════════════ */
 setSyncState("connecting");
 updateDaysLeft();
 connectFirebase();
