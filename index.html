@@ -3,48 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Housing.com · Sales Command Centre</title>
+<title>Housing.com &middot; Multi-Month Sales Command Centre</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root{
-  --gold:#F7C31A;--gold-d:#c9980e;--gold-l:#fef9e7;--gold-m:#fde68a;
+  --gold:#F7C31A;--gold-d:#c9980e;--gold-l:#fef9e7;
   --ink:#09090b;--ink2:#18181b;
-  --red:#dc2626;--red-d:#b91c1c;--red-l:#fef2f2;--red-m:#fca5a5;
-  --green:#16a34a;--green-l:#f0fdf4;--green-m:#86efac;--green-d:#14532d;
-  --amber:#d97706;--amber-l:#fffbeb;--amber-m:#fcd34d;--amber-d:#78350f;
-  --blue:#2563eb;--blue-l:#eff6ff;--blue-m:#93c5fd;--blue-d:#1e3a8a;
-  --violet:#7c3aed;--teal:#0d9488;
+  --red:#dc2626;--red-d:#b91c1c;--red-l:#fef2f2;
+  --green:#16a34a;--green-l:#f0fdf4;--green-d:#14532d;
+  --amber:#d97706;--amber-l:#fffbeb;--amber-d:#78350f;
+  --blue:#2563eb;--blue-l:#eff6ff;--blue-d:#1e3a8a;
   --n0:#fff;--n50:#fafaf9;--n100:#f4f3ef;--n200:#e8e6df;
   --n300:#d0cdc4;--n400:#9e9b92;--n500:#6b6860;--n600:#514e47;
-  --n700:#35322c;--n800:#1e1c18;--n900:#0f0e0b;
+  --n700:#35322c;--n800:#1e1c18;
   --page:#f0efe9;--surf:#fff;--border:#e0ddd5;--text:#0f0e0b;--muted:#6b6860;
   --r:10px;--r-lg:14px;--r-sm:6px;
-  --sh-sm:0 1px 3px rgba(0,0,0,.07);
-  --sh:0 2px 8px rgba(0,0,0,.09);
-  --sh-md:0 4px 16px rgba(0,0,0,.11);
-  --sh-lg:0 8px 32px rgba(0,0,0,.16);
-  --ease:cubic-bezier(.16,1,.3,1);
-  --spring:cubic-bezier(.34,1.56,.64,1);
+  --sh-sm:0 1px 3px rgba(0,0,0,.07);--sh:0 2px 8px rgba(0,0,0,.09);--sh-md:0 4px 16px rgba(0,0,0,.11);
+  --ease:cubic-bezier(.16,1,.3,1);--spring:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
 body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
 ::selection{background:rgba(247,195,26,.25);}
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
-.sbar{background:linear-gradient(90deg,#052e16,#0a3d1e);border-bottom:1px solid rgba(247,195,26,.15);padding:0 28px;height:30px;display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.6);position:sticky;top:0;z-index:500;}
-.sbar.err-mode{background:linear-gradient(90deg,#450a0a,#5c1a1a);}
-.sdot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;transition:background .3s;}
-.sdot.blink{background:#fbbf24;animation:blink .8s infinite;}
-.sdot.dead{background:#ef4444;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
-.sbar-r{margin-left:auto;display:flex;align-items:center;gap:12px;}
-.sclock{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);}
-.sclock b{color:rgba(255,255,255,.75);}
-.daysleft{display:flex;align-items:center;gap:5px;background:rgba(247,195,26,.12);border:1px solid rgba(247,195,26,.2);padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;color:var(--gold);}
-.topbar{background:var(--ink);color:#fff;height:60px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:30px;z-index:400;box-shadow:0 2px 0 var(--gold),0 4px 24px rgba(0,0,0,.5);}
+.topbar{background:var(--ink);color:#fff;height:60px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:400;box-shadow:0 2px 0 var(--gold),0 4px 24px rgba(0,0,0,.5);}
 .tb-l{display:flex;align-items:center;gap:0;}
 .hlogo{display:flex;align-items:center;gap:0;}
 .hlogo-tri{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid var(--gold);margin-right:8px;flex-shrink:0;}
@@ -52,36 +33,23 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .hlogo-word span{color:var(--gold);}
 .tb-sep{width:1px;height:26px;background:rgba(255,255,255,.15);margin:0 16px;}
 .tb-sub{font-size:11px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.8px;text-transform:uppercase;}
-.tb-r{display:flex;align-items:center;gap:10px;}
-.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);}
-.lpulse{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pdot 2s ease-in-out infinite;}
-@keyframes pdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
-.btn-upd{background:var(--gold);color:#000;border:none;padding:8px 18px;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s var(--ease);box-shadow:0 2px 12px rgba(247,195,26,.3);}
-.btn-upd:hover{background:var(--gold-d);transform:translateY(-1px);}
-.btn-upd svg{width:13px;height:13px;}
-.fbar{background:var(--surf);border-bottom:1px solid var(--border);padding:10px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:var(--sh-sm);}
-.fbar-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;flex-shrink:0;}
-.fsel{padding:5px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-family:'Inter',sans-serif;color:var(--text);background:var(--n50);outline:none;cursor:pointer;transition:border .2s;}
-.fsel:focus{border-color:var(--blue);}
-.fbtn{padding:5px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:11px;font-weight:600;background:var(--n50);color:var(--muted);cursor:pointer;transition:all .15s;}
-.fbtn.on{background:var(--ink);color:var(--gold);border-color:var(--ink);}
-.fbtn:hover:not(.on){border-color:var(--n400);}
+.tb-r{font-size:11px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);}
+.mtabs{background:var(--surf);border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:4px;position:sticky;top:60px;z-index:390;box-shadow:var(--sh-sm);overflow-x:auto;}
+.mtab{padding:12px 20px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;transition:all .18s;white-space:nowrap;display:flex;align-items:center;gap:7px;}
+.mtab:hover{color:var(--text);}
+.mtab.on{color:var(--text);border-bottom-color:var(--gold);}
+.mtab .mtag{font-size:9px;font-weight:800;padding:1px 7px;border-radius:10px;letter-spacing:.4px;}
+.mtag-live{background:var(--green-l);color:var(--green-d);}
+.mtag-done{background:var(--n200);color:var(--n600);}
 .wrap{max-width:1500px;margin:0 auto;padding:24px 28px;}
-@media(max-width:640px){.wrap{padding:14px 16px;}}
+@media(max-width:640px){.wrap{padding:14px 16px;}.topbar{padding:0 16px}.mtabs{padding:0 16px}}
 .sec{font-size:10px;font-weight:800;color:var(--n500);text-transform:uppercase;letter-spacing:1.4px;margin:28px 0 14px;display:flex;align-items:center;gap:10px;}
 .sec::before{content:'';width:3px;height:12px;background:var(--gold);border-radius:2px;flex-shrink:0;}
 .sec::after{content:'';flex:1;height:1px;background:var(--border);}
 .sec:first-child{margin-top:0;}
-.skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;}
-.sk{background:var(--surf);border-radius:var(--r-lg);padding:16px 18px;border:1px solid var(--border);border-top:3px solid var(--n200);height:110px;position:relative;overflow:hidden;}
-.sk::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shim 1.4s infinite;}
-@keyframes shim{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
-.skl{height:10px;border-radius:4px;background:var(--n200);margin-bottom:8px;position:relative;overflow:hidden;}
-.skl::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shim 1.4s infinite;}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin-bottom:4px;}
-.kc{background:var(--surf);border-radius:var(--r-lg);padding:16px 18px 14px;border:1px solid var(--border);border-top:3px solid var(--ac,var(--gold));position:relative;overflow:hidden;transition:transform .22s var(--ease),box-shadow .22s;cursor:default;}
+.kc{background:var(--surf);border-radius:var(--r-lg);padding:16px 18px 14px;border:1px solid var(--border);border-top:3px solid var(--ac,var(--gold));position:relative;overflow:hidden;transition:transform .22s var(--ease),box-shadow .22s;}
 .kc:hover{transform:translateY(-3px);box-shadow:var(--sh-md);}
-.kc::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle at top right,var(--ac-glow,transparent),transparent 70%);pointer-events:none;opacity:.4;}
 .kc-icon{font-size:17px;margin-bottom:10px;display:block;}
 .kc-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
 .kc-val{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text);line-height:1.2;}
@@ -91,152 +59,15 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 .kc-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:7px;}
 .tag-ok{background:var(--green-l);color:var(--green-d);}
 .tag-warn{background:var(--red-l);color:var(--red-d);}
-.tag-info{background:var(--blue-l);color:var(--blue-d);}
-.card{background:var(--surf);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh-sm);transition:box-shadow .2s;}
-.card:hover{box-shadow:var(--sh);}
-.chdr{padding:13px 18px;border-bottom:2px solid var(--gold);display:flex;align-items:center;justify-content:space-between;background:var(--ink2);}
+.card{background:var(--surf);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh-sm);}
+.chdr{padding:13px 18px;border-bottom:2px solid var(--gold);display:flex;align-items:center;justify-content:space-between;background:var(--ink2);flex-wrap:wrap;gap:8px;}
 .chdr h3{font-size:13px;font-weight:700;color:#fff;}
 .chdr aside{font-size:11px;color:rgba(255,255,255,.45);}
 .cpd{padding:16px 18px;}
 .leg{display:flex;gap:16px;padding:0 18px 12px;font-size:11px;color:var(--muted);flex-wrap:wrap;}
 .dot{width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0;}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
-@media(max-width:900px){.two-col,.three-col{grid-template-columns:1fr;}}
-.lb-wrap{padding:0;}
-.lb-podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:0;background:linear-gradient(160deg,#0f0e0b 0%,#1e1c10 60%,#0f0e0b 100%);padding:28px 24px 20px;position:relative;overflow:hidden;}
-.lb-podium::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(247,195,26,.15) 0%,transparent 65%);pointer-events:none;}
-.lb-pod{display:flex;flex-direction:column;align-items:center;gap:0;position:relative;z-index:1;}
-.lb-pod.p2{padding-top:24px;}
-.lb-pod.p3{padding-top:32px;}
-.lb-crown{font-size:22px;margin-bottom:-4px;animation:crown-bob 2.5s ease-in-out infinite;}
-@keyframes crown-bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
-.lb-pod-av-wrap{position:relative;margin-bottom:10px;}
-.lb-pod-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:'Inter',sans-serif;letter-spacing:.5px;border:3px solid rgba(255,255,255,.1);}
-.lb-pod-av.sz1{width:72px;height:72px;font-size:20px;border-color:var(--gold);box-shadow:0 0 0 4px rgba(247,195,26,.2),0 0 24px rgba(247,195,26,.3);}
-.lb-pod-av.sz2{width:60px;height:60px;font-size:17px;border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,184,.18);}
-.lb-pod-av.sz3{width:54px;height:54px;font-size:15px;border-color:#b45309;box-shadow:0 0 0 3px rgba(180,83,9,.18);}
-.lb-pod-av-wrap .inactive-ring{position:absolute;inset:-3px;border-radius:50%;border:2.5px dashed #94a3b8;opacity:.6;}
-.lb-pod-badge{position:absolute;bottom:-4px;right:-4px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid #1e1c18;}
-.lb-pod-badge.g{background:#d97706;}.lb-pod-badge.s{background:#94a3b8;}.lb-pod-badge.b{background:#b45309;}
-.lb-pod-inactive{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);padding:2px 7px;border-radius:10px;border:1px solid rgba(255,255,255,.1);margin-top:2px;}
-.lb-pod-name{font-size:12px;font-weight:700;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;margin-bottom:4px;}
-.lb-pod-rev{font-size:15px;font-weight:900;font-family:'JetBrains Mono',monospace;margin-bottom:2px;}
-.lb-pod-rev.r1{color:var(--gold);}
-.lb-pod-rev.r2{color:#cbd5e1;}
-.lb-pod-rev.r3{color:#d97706;}
-.lb-pod-pct{font-size:10px;color:rgba(255,255,255,.45);font-family:'JetBrains Mono',monospace;margin-bottom:8px;}
-.lb-pod-base{width:100%;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.5px;}
-.lb-pod-base.b1{height:40px;background:linear-gradient(180deg,rgba(247,195,26,.25),rgba(247,195,26,.1));border:1px solid rgba(247,195,26,.3);border-bottom:none;color:var(--gold);}
-.lb-pod-base.b2{height:30px;background:linear-gradient(180deg,rgba(148,163,184,.2),rgba(148,163,184,.08));border:1px solid rgba(148,163,184,.2);border-bottom:none;color:#94a3b8;}
-.lb-pod-base.b3{height:20px;background:linear-gradient(180deg,rgba(180,83,9,.2),rgba(180,83,9,.08));border:1px solid rgba(180,83,9,.2);border-bottom:none;color:#b45309;}
-.lb-pod-bar{width:80px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-bottom:6px;}
-.lb-pod-bar-fill{height:100%;border-radius:2px;transition:width .9s var(--spring);}
-.lb-rest-list{padding:4px 0;}
-.lb-row{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--n100);transition:all .12s;animation:fup .35s var(--ease) both;position:relative;}
-.lb-row:last-child{border-bottom:none;}
-.lb-row:hover{background:var(--n50);}
-.lb-row.lb-inactive-row{opacity:.55;}
-.lb-row.lb-inactive-row:hover{opacity:.75;}
-@keyframes fup{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
-.lb-num{font-size:12px;font-weight:800;width:28px;text-align:center;font-family:'JetBrains Mono',monospace;flex-shrink:0;color:var(--n400);}
-.lb-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;position:relative;}
-.lb-av .inact-dot{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:#94a3b8;border:2px solid #fff;display:flex;align-items:center;justify-content:center;}
-.lb-av .inact-dot::after{content:'';width:4px;height:1px;background:#fff;border-radius:2px;}
-.lb-info{flex:1;min-width:0;}
-.lb-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px;}
-.lb-inactive-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0;letter-spacing:.3px;flex-shrink:0;}
-.lb-meta{font-size:10px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace;}
-.lb-bar-track{flex:1;height:5px;background:var(--n200);border-radius:3px;overflow:hidden;min-width:60px;}
-.lb-bar-fill{height:100%;border-radius:3px;transition:width .8s var(--spring);}
-.lb-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:130px;}
-.lb-rev{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;}
-.lb-pct{font-size:10px;color:var(--muted);}
-.lb-pill{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:12px;}
-.agent-mgmt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;padding:14px 18px;}
-.am-card{border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;background:var(--n50);transition:box-shadow .15s;}
-.am-card:hover{box-shadow:var(--sh);}
-.am-card.am-inactive{opacity:.6;border-style:dashed;}
-.am-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
-.am-info{flex:1;min-width:0;}
-.am-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.am-meta{font-size:10px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace;}
-.am-actions{display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
-.am-btn{font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;white-space:nowrap;}
-.am-btn-deact{background:var(--amber-l);color:var(--amber-d);border:1px solid var(--amber-m);}
-.am-btn-deact:hover{background:var(--amber-m);}
-.am-btn-react{background:var(--green-l);color:var(--green-d);border:1px solid var(--green-m);}
-.am-btn-react:hover{background:var(--green-m);}
-.am-btn-del{background:var(--red-l);color:var(--red-d);border:1px solid var(--red-m);}
-.am-btn-del:hover{background:var(--red-m);}
-.am-add-form{margin:0 18px 16px;padding:14px 16px;border:1.5px dashed var(--border);border-radius:var(--r);background:var(--n50);}
-.am-add-form-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
-.am-add-row{display:grid;grid-template-columns:1fr 140px auto;gap:8px;align-items:end;}
-.am-add-row .fg{margin-bottom:0;}
-.wa-modal-body{padding:0;}
-.wa-preview{background:#0d1117;border-radius:var(--r);margin:0 0 14px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#e2e8f0;white-space:pre-wrap;line-height:1.7;max-height:420px;overflow-y:auto;border:1px solid #30363d;}
-.wa-btn-row{display:flex;gap:10px;}
-.wa-copy-btn{flex:1;background:#25D366;color:#fff;border:none;padding:11px 20px;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
-.wa-copy-btn:hover{background:#128C7E;}
-.wa-copy-btn svg{width:18px;height:18px;}
-.wa-regen-btn{background:var(--n100);color:var(--text);border:1.5px solid var(--border);padding:11px 16px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
-.wa-regen-btn:hover{background:var(--n200);}
-.wa-copied{background:#128C7E;}
-.performer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;padding:14px 18px;}
-.performer-card{border-radius:var(--r);padding:14px 16px;border:1px solid transparent;display:flex;align-items:center;gap:12px;transition:box-shadow .18s;}
-.performer-card:hover{box-shadow:var(--sh);}
-.pc-top{background:#f0fdf4;border-color:#bbf7d0;}
-.pc-bot{background:var(--red-l);border-color:var(--red-m);}
-.pc-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
-.pc-info{flex:1;min-width:0;}
-.pc-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pc-rev{font-size:15px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-top:2px;}
-.pc-sub{font-size:10px;color:var(--muted);margin-top:2px;}
-.pc-bar{height:4px;border-radius:2px;margin-top:6px;overflow:hidden;background:var(--n200);}
-.pc-bar-fill{height:100%;border-radius:2px;}
-.fc-scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);}
-@media(max-width:640px){.fc-scenarios{grid-template-columns:1fr;}}
-.fc-sc{border-radius:var(--r);padding:14px 16px;border:1px solid transparent;}
-.fc-sc.opt{background:#f0fdf4;border-color:#bbf7d0;}
-.fc-sc.base{background:var(--blue-l);border-color:var(--blue-m);}
-.fc-sc.cons{background:var(--amber-l);border-color:var(--amber-m);}
-.fc-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
-.fc-lbl.opt{color:var(--green-d);}.fc-lbl.base{color:var(--blue-d);}.fc-lbl.cons{color:var(--amber-d);}
-.fc-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
-.fc-val.opt{color:var(--green);}.fc-val.base{color:var(--blue);}.fc-val.cons{color:var(--amber);}
-.fc-pct{font-size:10px;color:var(--muted);margin-top:4px;}
-.fc-chips{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px 14px;}
-.fchip{background:var(--n50);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;}
-.fchip-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.fchip-val{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text);}
-.tva-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;padding:14px 18px;}
-.tva-item{padding:12px 14px;border:1px solid var(--border);border-radius:var(--r);background:var(--n50);}
-.tva-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;}
-.tva-nums{display:flex;justify-content:space-between;margin-bottom:5px;}
-.tva-ach{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;}
-.tva-tgt{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px;}
-.tva-track{height:7px;background:var(--n200);border-radius:4px;overflow:hidden;}
-.tva-fill{height:100%;border-radius:4px;transition:width .7s var(--spring);}
-.tva-pct{font-size:10px;font-weight:700;margin-top:4px;text-align:right;}
-.intel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:14px 18px;}
-.ic{border-radius:var(--r);border:1px solid transparent;padding:13px 15px;display:flex;gap:11px;transition:box-shadow .18s;}
-.ic:hover{box-shadow:var(--sh);}
-.ic.crit{background:#fff1f2;border-color:#fecdd3;}
-.ic.warn{background:var(--amber-l);border-color:var(--amber-m);}
-.ic.ok{background:var(--green-l);border-color:#bbf7d0;}
-.ic.info{background:var(--blue-l);border-color:var(--blue-m);}
-.ic.neutral{background:var(--n50);border-color:var(--border);}
-.ic-icon{font-size:22px;flex-shrink:0;line-height:1;margin-top:1px;}
-.ic-body{flex:1;min-width:0;}
-.ic-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:1px 7px;border-radius:10px;margin-bottom:5px;}
-.bc{background:#fee2e2;color:#991b1b;} .bw{background:#fef3c7;color:#92400e;}
-.bo{background:#dcfce7;color:#14532d;} .bi{background:#dbeafe;color:#1e3a8a;}
-.bn{background:var(--n200);color:var(--n700);}
-.ic-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.2;margin-bottom:3px;}
-.ic-title{font-size:12px;font-weight:700;line-height:1.3;margin-bottom:3px;}
-.ic-desc{font-size:11px;color:var(--muted);line-height:1.6;}
-.ic-names{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-.ic-name{font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;background:rgba(0,0,0,.07);color:var(--text);}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;}
 thead th{background:var(--n50);padding:9px 12px;text-align:left;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);white-space:nowrap;}
@@ -251,84 +82,78 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .pg{background:var(--green-l);color:var(--green-d);}
 .pr{background:var(--red-l);color:var(--red-d);}
 .pa{background:var(--amber-l);color:var(--amber-d);}
-.bw2{background:var(--n200);border-radius:3px;height:5px;width:70px;overflow:hidden;display:inline-block;vertical-align:middle;}
-.bf2{height:100%;border-radius:3px;transition:width .6s var(--spring);}
-.chip{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;}
-.cg{background:var(--green-l);color:var(--green-d);}.cr{background:var(--red-l);color:var(--red-d);}.cn{background:var(--n100);color:var(--muted);}
 .zebra tbody tr:nth-child(even){background:var(--n50);}
-.row-green td:first-child{border-left:3px solid var(--green);}
-.row-amber td:first-child{border-left:3px solid var(--amber);}
-.row-red td:first-child{border-left:3px solid var(--red);}
-.hc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;padding:14px 18px;}
-.hc-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:var(--r);border:1px solid var(--border);background:var(--n50);}
-.hc-icon{font-size:18px;flex-shrink:0;}
-.hc-body{flex:1;min-width:0;}
-.hc-label{font-size:12px;font-weight:600;}
-.hc-sub{font-size:10px;color:var(--muted);margin-top:2px;}
-.hc-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;flex-shrink:0;}
-.hcs-ok{background:var(--green-l);color:var(--green-d);}
-.hcs-warn{background:var(--amber-l);color:var(--amber-d);}
-.hcs-err{background:var(--red-l);color:var(--red-d);}
-.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--n800);color:#fff;padding:12px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:10px;transform:translateY(100px);opacity:0;transition:all .4s var(--spring);pointer-events:none;}
-.toast.show{transform:translateY(0);opacity:1;}
-.sov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
-.sov.on{display:flex;}
-.sbox{background:#fff;border-radius:var(--r-lg);padding:24px 32px;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;box-shadow:var(--sh-lg);}
-.spin{width:22px;height:22px;border:3px solid var(--n200);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.lb-rest-list{padding:4px 0;}
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--n100);transition:all .12s;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row:hover{background:var(--n50);}
+.lb-row.lb-inactive-row{opacity:.55;}
+.lb-num{font-size:12px;font-weight:800;width:28px;text-align:center;font-family:'JetBrains Mono',monospace;flex-shrink:0;color:var(--n400);}
+.lb-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;position:relative;}
+.lb-info{flex:1;min-width:0;}
+.lb-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px;}
+.lb-inactive-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0;letter-spacing:.3px;flex-shrink:0;}
+.lb-meta{font-size:10px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.lb-bar-track{flex:1;height:5px;background:var(--n200);border-radius:3px;overflow:hidden;min-width:60px;}
+.lb-bar-fill{height:100%;border-radius:3px;transition:width .8s var(--spring);}
+.lb-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:130px;}
+.lb-rev{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.lb-pct{font-size:10px;color:var(--muted);}
+.intel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:14px 18px;}
+.ic{border-radius:var(--r);border:1px solid transparent;padding:13px 15px;display:flex;gap:11px;}
+.ic.crit{background:#fff1f2;border-color:#fecdd3;}
+.ic.warn{background:var(--amber-l);border-color:#fcd34d;}
+.ic.ok{background:var(--green-l);border-color:#bbf7d0;}
+.ic.info{background:var(--blue-l);border-color:#93c5fd;}
+.ic-icon{font-size:22px;flex-shrink:0;line-height:1;margin-top:1px;}
+.ic-body{flex:1;min-width:0;}
+.ic-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:1px 7px;border-radius:10px;margin-bottom:5px;}
+.bc{background:#fee2e2;color:#991b1b;} .bw{background:#fef3c7;color:#92400e;}
+.bo{background:#dcfce7;color:#14532d;} .bi{background:#dbeafe;color:#1e3a8a;}
+.ic-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.2;margin-bottom:3px;}
+.ic-title{font-size:12px;font-weight:700;line-height:1.3;margin-bottom:3px;}
+.ic-desc{font-size:11px;color:var(--muted);line-height:1.6;}
+.note{background:var(--blue-l);border:1px solid #93c5fd;border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--blue-d);margin:0 18px 14px;}
+.footer{background:var(--ink);color:rgba(255,255,255,.35);padding:18px 28px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:11px;letter-spacing:.3px;flex-wrap:wrap;}
+.btn-upd{background:var(--gold);color:#000;border:none;padding:8px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;}
+.btn-upd:hover{background:var(--gold-d);}
+.btn-ghost{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.18);padding:8px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;}
+.btn-ghost:hover{background:rgba(255,255,255,.18);}
+.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:20px;}
 .ovl.on{display:flex;}
-.modal{background:var(--surf);border-radius:var(--r-lg);padding:26px 28px;width:440px;max-width:95vw;box-shadow:var(--sh-lg);max-height:90vh;overflow-y:auto;animation:min .3s var(--spring) both;}
-.modal.wide{width:680px;}
-@keyframes min{from{transform:scale(.92) translateY(20px);opacity:0;}to{transform:none;opacity:1;}}
-.modal h2{font-size:17px;font-weight:800;margin-bottom:5px;}
-.modal>p{font-size:13px;color:var(--muted);margin-bottom:20px;}
-.fg{margin-bottom:13px;}
+.modal{background:var(--surf);border-radius:var(--r-lg);padding:24px 26px;width:760px;max-width:100%;box-shadow:var(--sh-md);max-height:92vh;overflow-y:auto;}
+.modal h2{font-size:17px;font-weight:800;margin-bottom:4px;}
+.modal>p.sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.fg{margin-bottom:12px;}
 .fg label{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
-.fg input,.fg select{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;font-family:'Inter',sans-serif;color:var(--text);background:var(--surf);outline:none;transition:border .2s,box-shadow .2s;}
-.fg input:focus,.fg select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.fg input[readonly]{background:var(--n100);color:var(--muted);}
-.m-act{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
-.btn-pri{background:var(--gold);color:#000;border:none;padding:10px 22px;border-radius:var(--r);font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;}
-.btn-pri:hover{background:var(--gold-d);}
-.btn-sec2{background:var(--n100);color:var(--text);border:1.5px solid var(--border);padding:10px 22px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
-.btn-sec2:hover{background:var(--n200);}
-.err{color:var(--red-d);font-size:12px;margin-top:5px;display:none;}
-.m-tabs{display:flex;margin-bottom:20px;border-radius:var(--r);overflow:hidden;border:1.5px solid var(--border);}
-.m-tab{flex:1;text-align:center;padding:9px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:var(--n50);color:var(--muted);transition:all .2s;}
-.m-tab.on{background:var(--ink);color:var(--gold);}
-.tp{display:none;}.tp.on{display:block;}
-.daygrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
-.dw span{display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600;}
-.dw input{width:100%;padding:5px 6px;font-size:11px;border:1px solid var(--border);border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;transition:border .15s,background .15s;}
-.dw input:focus{border-color:var(--blue);}
-.dw input.has-val{background:#f0fdf4;border-color:#86efac;}
-.agrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;}
+.fg input,.fg select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;font-family:'Inter',sans-serif;color:var(--text);background:var(--surf);outline:none;}
+.fg input:focus,.fg select:focus{border-color:var(--blue);}
 .two-inp{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.dvdr{height:1px;background:var(--border);margin:12px 0 16px;}
-.slbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;}
-.lbar{background:var(--gold-l);border:1px solid var(--gold-m);border-radius:var(--r);padding:10px 14px;margin-top:12px;display:flex;gap:20px;flex-wrap:wrap;}
-.li span{display:block;font-size:9px;color:#78620a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
-.li strong{font-size:13px;font-family:'JetBrains Mono',monospace;color:#3d3000;}
-.hint{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:var(--r);padding:8px 12px;font-size:11px;color:var(--blue-d);margin-bottom:12px;}
-.ag-acc{border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden;}
+.three-inp{display:grid;grid-template-columns:2fr 1fr auto;gap:10px;align-items:end;}
+.dvdr{height:1px;background:var(--border);margin:14px 0;}
+.slbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;}
+.daygrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.dw span{display:block;font-size:9px;color:var(--muted);margin-bottom:2px;font-weight:600;}
+.dw input{width:100%;padding:5px 6px;font-size:11px;border:1px solid var(--border);border-radius:5px;font-family:'JetBrains Mono',monospace;outline:none;}
+.dw input.has-val{background:#f0fdf4;border-color:#86efac;}
+.ag-acc{border:1px solid var(--border);border-radius:var(--r);margin-bottom:7px;overflow:hidden;}
 .ag-acc-hdr{background:var(--n50);padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
 .ag-acc-hdr:hover{background:var(--n100);}
 .ag-acc-body{display:none;padding:10px 12px;border-top:1px solid var(--border);}
 .ag-acc-body.open{display:block;}
-.footer{background:var(--ink);color:rgba(255,255,255,.35);padding:18px 28px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:11px;letter-spacing:.3px;}
+.m-act{display:flex;gap:9px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;}
+.btn-pri{background:var(--gold);color:#000;border:none;padding:10px 20px;border-radius:var(--r);font-size:13px;font-weight:800;cursor:pointer;}
+.btn-pri:hover{background:var(--gold-d);}
+.btn-sec2{background:var(--n100);color:var(--text);border:1.5px solid var(--border);padding:10px 20px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
+.btn-sec2:hover{background:var(--n200);}
+.btn-danger{background:var(--red-l);color:var(--red-d);border:1.5px solid var(--red);padding:10px 18px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--n800);color:#fff;padding:12px 20px;border-radius:var(--r-lg);font-size:13px;font-weight:500;box-shadow:var(--sh-md);transform:translateY(100px);opacity:0;transition:all .35s var(--spring);pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.persist-badge{font-size:10px;color:rgba(255,255,255,.4);}
 </style>
 </head>
 <body>
-
-<div class="sbar" id="sbar">
-  <div class="sdot blink" id="sdot"></div>
-  <span id="smsg">Connecting to Firebase…</span>
-  <div class="sbar-r">
-    <span class="sclock">Synced: <b id="sclk">—</b></span>
-    <span class="daysleft" id="dlbadge">⏳ — days left</span>
-  </div>
-</div>
 
 <div class="topbar">
   <div class="tb-l">
@@ -337,1413 +162,626 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
       <div class="hlogo-word">HOUSING<span>.com</span></div>
     </div>
     <div class="tb-sep"></div>
-    <span class="tb-sub">Sales Command Centre</span>
+    <span class="tb-sub">Multi-Month Sales Command Centre</span>
   </div>
-  <div class="tb-r">
-    <span class="live-badge"><span class="lpulse"></span><span id="lbadge">Connecting…</span></span>
-    <button id="logoutBtn" onclick="logout()" style="display:none;background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.18);padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;align-items:center;gap:6px;transition:all .2s;" onmouseover="this.style.background='rgba(220,38,38,.35)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-      Logout
-    </button>
-    <button class="btn-upd" id="updateBtn" onclick="openLogin()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-      Admin Login
-    </button>
-  </div>
-</div>
-
-<div class="fbar">
-  <span class="fbar-label">Filter:</span>
-  <select class="fsel" id="filtAgent" onchange="applyFilters()">
-    <option value="">All Agents</option>
-  </select>
-  <select class="fsel" id="filtWeek" onchange="applyFilters()">
-    <option value="">All Weeks</option>
-    <option value="1">Week 1 (Jun 1–7)</option>
-    <option value="2">Week 2 (Jun 8–14)</option>
-    <option value="3">Week 3 (Jun 15–21)</option>
-    <option value="4">Week 4 (Jun 22–30)</option>
-  </select>
-  <button class="fbtn on" id="fAll" onclick="setView('all')">All Data</button>
-  <button class="fbtn" id="fTop" onclick="setView('top')">Top Performers</button>
-  <button class="fbtn" id="fBot" onclick="setView('bot')">Needs Attention</button>
-  <span style="margin-left:auto;font-size:11px;color:var(--muted);" id="filterInfo">Showing all agents</span>
-</div>
-
-<div class="wrap" id="mainWrap">
-
-<div id="skelView">
-  <div class="sec">Loading…</div>
-  <div class="skel-grid">
-    <div class="sk"><div class="skl" style="width:40%"></div><div class="skl" style="height:24px;width:70%"></div><div class="skl" style="width:60%"></div><div class="skl" style="height:3px;margin-top:12px"></div></div>
-    <div class="sk"><div class="skl" style="width:40%"></div><div class="skl" style="height:24px;width:70%"></div><div class="skl" style="width:60%"></div><div class="skl" style="height:3px;margin-top:12px"></div></div>
-    <div class="sk"><div class="skl" style="width:40%"></div><div class="skl" style="height:24px;width:70%"></div><div class="skl" style="width:60%"></div><div class="skl" style="height:3px;margin-top:12px"></div></div>
-    <div class="sk"><div class="skl" style="width:40%"></div><div class="skl" style="height:24px;width:70%"></div><div class="skl" style="width:60%"></div><div class="skl" style="height:3px;margin-top:12px"></div></div>
-    <div class="sk"><div class="skl" style="width:40%"></div><div class="skl" style="height:24px;width:70%"></div><div class="skl" style="width:60%"></div><div class="skl" style="height:3px;margin-top:12px"></div></div>
-    <div class="sk"><div class="skl" style="width:40%"></div><div class="skl" style="height:24px;width:70%"></div><div class="skl" style="width:60%"></div><div class="skl" style="height:3px;margin-top:12px"></div></div>
-    <div class="sk"><div class="skl" style="width:40%"></div><div class="skl" style="height:24px;width:70%"></div><div class="skl" style="width:60%"></div><div class="skl" style="height:3px;margin-top:12px"></div></div>
-    <div class="sk"><div class="skl" style="width:40%"></div><div class="skl" style="height:24px;width:70%"></div><div class="skl" style="width:60%"></div><div class="skl" style="height:3px;margin-top:12px"></div></div>
-  </div>
-</div>
-
-<div id="dashView" style="display:none">
-
-  <div class="sec">June 2026 — Live Snapshot</div>
-  <div class="kpi-grid" id="kpiGrid"></div>
-
-  <div class="sec">🏆 Performance Leaderboard</div>
-  <div class="card">
-    <div class="chdr" style="justify-content:space-between">
-      <h3>🏆 Agent Rankings — June 2026</h3>
-      <div style="display:flex;align-items:center;gap:10px">
-        <aside id="lbDate">—</aside>
-        <button onclick="openWAShare()" style="background:#25D366;color:#fff;border:none;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background='#128C7E'" onmouseout="this.style.background='#25D366'">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.134.558 4.133 1.532 5.866L0 24l6.278-1.645A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.82a9.817 9.817 0 01-5.032-1.382l-.36-.214-3.728.977.995-3.635-.234-.373A9.818 9.818 0 012.18 12C2.18 6.57 6.57 2.18 12 2.18c5.431 0 9.82 4.39 9.82 9.82 0 5.431-4.389 9.82-9.82 9.82z"/></svg>
-          Share MTD Report
-        </button>
-      </div>
-    </div>
-    <div id="lbWrap"></div>
-  </div>
-
-  <div class="sec">🥇 Top Performers &amp; ⚠️ Needs Attention</div>
-  <div class="two-col">
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>🥇 Top Performers (This Month)</h3><aside>By revenue collected</aside></div>
-      <div class="performer-grid" id="topPerf"></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>⚠️ Needs Immediate Attention</h3><aside>Low / zero achievement</aside></div>
-      <div class="performer-grid" id="botPerf"></div>
-    </div>
-  </div>
-
-  <div class="sec">📈 Target vs Achievement — Agent View</div>
-  <div class="card">
-    <div class="chdr"><h3>Individual Target Progress</h3><aside>Conditional highlighting: Green ≥60% · Amber 20–60% · Red &lt;20%</aside></div>
-    <div class="tva-grid" id="tvaGrid"></div>
-  </div>
-
-  <div class="sec">📡 Forecast &amp; Projections</div>
-  <div class="card">
-    <div class="chdr"><h3>Month-End Scenarios</h3><aside>Auto-calculated from current DRR</aside></div>
-    <div class="fc-scenarios" id="fcScenarios"></div>
-    <div class="fc-chips" id="fcChips"></div>
-    <div class="leg">
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual (cumulative)</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#2563eb;opacity:.7"></span>Base forecast</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#16a34a;opacity:.6"></span>Optimistic (+20%)</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(22,163,74,.3)"></span>Target line</span>
-    </div>
-    <div class="cpd"><div style="position:relative;height:230px"><canvas id="fcChart"></canvas></div></div>
-  </div>
-
-  <div class="sec">📅 Trend Analysis — Day &amp; Week</div>
-  <div class="two-col">
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>Day-wise Revenue — June 2026</h3><aside id="juneTotalLbl">—</aside></div>
-      <div class="leg">
-        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#dc2626"></span>Actual</span>
-        <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:#e2e8f0"></span>Future</span>
-      </div>
-      <div class="cpd"><div style="position:relative;height:200px"><canvas id="juneChart"></canvas></div></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>Week-on-Week Trend</h3><aside>May vs June weekly</aside></div>
-      <div class="cpd"><div style="position:relative;height:200px"><canvas id="wowChart"></canvas></div></div>
-    </div>
-  </div>
-
-  <div class="sec">📊 Weekly Breakdown — May vs June</div>
-  <div class="two-col">
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>May 2026 — Weekly</h3><aside>₹2,21,250 / wk target</aside></div>
-      <div class="tbl-wrap"><table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ Target</th><th>WoW</th><th>Share</th></tr></thead><tbody id="mayWkBody"></tbody><tfoot id="mayWkFoot"></tfoot></table></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>June 2026 — Weekly</h3><aside id="junWkNote">In progress</aside></div>
-      <div class="tbl-wrap"><table><thead><tr><th>Week</th><th>Target</th><th>Revenue</th><th>Δ Target</th><th>Share</th><th>vs May</th></tr></thead><tbody id="junWkBody"></tbody><tfoot id="junWkFoot"></tfoot></table></div>
-    </div>
-  </div>
-
-  <div class="sec">👥 Agent-wise Daily Tracker</div>
-  <div class="card">
-    <div class="chdr"><h3>Full Daily Tracker</h3><aside>Auto-sorted · Conditional formatting · All columns computed</aside></div>
-    <div class="tbl-wrap"><table class="zebra"><thead><tr id="agHdr"></tr></thead><tbody id="agBody"></tbody><tfoot id="agFoot"></tfoot></table></div>
-  </div>
-
-  <div class="sec">📅 Month-on-Month Daily Comparison</div>
-  <div class="card">
-    <div class="chdr"><h3>Day-wise Revenue — May vs June</h3><aside>May: ₹3,82,739 | June: <span id="junLogTot">—</span></aside></div>
-    <div class="leg">
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(37,99,235,.75)"></span>May 2026</span>
-      <span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:rgba(220,38,38,.75)"></span>June 2026</span>
-    </div>
-    <div class="cpd"><div style="position:relative;height:200px"><canvas id="cmpChart"></canvas></div></div>
-  </div>
-
-  <div class="sec">🔍 Automated Insights &amp; Performance Intelligence</div>
-  <div class="card">
-    <div class="chdr"><h3>Auto-Generated Observations</h3><aside id="intelTs">—</aside></div>
-    <div class="intel-grid" id="intelGrid"></div>
-  </div>
-
-  <div class="sec" id="rosterSec" style="display:none">🔐 Admin Only — Team Roster &amp; Agent Management</div>
-  <div class="card" id="agMgmtCard" style="display:none">
-    <div class="chdr" style="justify-content:space-between"><h3>👥 Manage Team Roster</h3><div style="display:flex;align-items:center;gap:10px"><span style="background:rgba(247,195,26,.15);color:var(--gold);font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid rgba(247,195,26,.3);letter-spacing:.3px">🔐 ADMIN ONLY</span><aside id="agMgmtCount">—</aside></div></div>
-    <div class="am-add-form" id="addAgentForm">
-      <div class="am-add-form-title">➕ Add New Agent</div>
-      <div class="am-add-row">
-        <div class="fg"><label>Agent Name</label><input type="text" id="newAgentName" placeholder="e.g. Rahul Sharma" maxlength="40"></div>
-        <div class="fg"><label>Monthly Target (₹)</label><input type="number" id="newAgentTarget" placeholder="68077"></div>
-        <button onclick="addNewAgent()" style="background:var(--ink);color:var(--gold);border:none;padding:8px 16px;border-radius:var(--r);font-size:12px;font-weight:700;cursor:pointer;height:36px;margin-bottom:13px;white-space:nowrap;flex-shrink:0;">➕ Add Agent</button>
-      </div>
-    </div>
-    <div class="agent-mgmt-grid" id="agentMgmtGrid"></div>
-  </div>
-
-  <div class="sec">🩺 Dashboard Health Check</div>
-  <div class="card">
-    <div class="chdr"><h3>Data Quality &amp; Formula Check</h3><aside>Auto-runs on every save</aside></div>
-    <div class="hc-grid" id="hcGrid"></div>
-  </div>
-
-  <div class="card">
-    <div class="chdr"><h3>Daily Revenue Log — May &amp; June 2026</h3><aside>May total: ₹3,82,739</aside></div>
-    <div class="tbl-wrap"><table class="zebra"><thead><tr><th>Week</th><th>Date</th><th>May Revenue</th><th>June Revenue</th><th>MoD Δ</th></tr></thead><tbody id="dailyBody"></tbody><tfoot id="dailyFoot"></tfoot></table></div>
-  </div>
-
-</div>
-</div>
-
-<div class="footer">
-  <span style="color:var(--gold);font-weight:900;font-size:14px">▲</span>
-  <span>HOUSING<span style="color:var(--gold)">.com</span></span>
-  <span style="opacity:.3">·</span><span>Housing Owner Process</span>
-  <span style="opacity:.3">·</span><span>Sales Command Centre 2026</span>
-  <span style="opacity:.3">·</span><span>Powered by OcubeServices</span>
-  <span style="opacity:.3">·</span><span>Confidential</span>
-</div>
-
-<div class="toast" id="toast"><span id="toastMsg"></span></div>
-<div class="sov" id="sov"><div class="sbox"><div class="spin"></div><span>Saving to Firebase…</span></div></div>
-
-<div class="ovl" id="waOvl">
-  <div class="modal wide">
-    <h2 style="display:flex;align-items:center;gap:10px">
-      <svg viewBox="0 0 24 24" fill="#25D366" style="width:24px;height:24px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.134.558 4.133 1.532 5.866L0 24l6.278-1.645A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.82a9.817 9.817 0 01-5.032-1.382l-.36-.214-3.728.977.995-3.635-.234-.373A9.818 9.818 0 012.18 12C2.18 6.57 6.57 2.18 12 2.18c5.431 0 9.82 4.39 9.82 9.82 0 5.431-4.389 9.82-9.82 9.82z"/></svg>
-      MTD Performance Report
-    </h2>
-    <p style="margin-bottom:12px">Ready to paste into your WhatsApp group. Tap Copy to copy the full message.</p>
-    <div class="wa-modal-body">
-      <pre class="wa-preview" id="waText"></pre>
-      <div class="wa-btn-row">
-        <button class="wa-copy-btn" id="waCopyBtn" onclick="copyWAReport()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-          Copy to Clipboard
-        </button>
-        <button class="wa-regen-btn" onclick="buildWAReport()">🔄 Refresh</button>
-        <button class="wa-regen-btn" onclick="closeWAShare()">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="ovl" id="loginOvl">
-  <div class="modal">
-    <h2>🔐 Admin Login</h2>
-    <p>Enter your password to update data.</p>
-    <div class="fg"><label>Password</label><input type="password" id="loginPw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"><div class="err" id="loginErr">Incorrect password.</div></div>
-    <div class="m-act"><button class="btn-sec2" onclick="closeLogin()">Cancel</button><button class="btn-pri" onclick="doLogin()">Login</button></div>
+  <div class="tb-r" style="display:flex;align-items:center;gap:12px;background:none;border:none;padding:0">
+    <span class="persist-badge" id="persistBadge"></span>
+    <span id="lastUpd" style="font-size:11px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);">Data as of &mdash;</span>
+    <button class="btn-upd" onclick="openEdit()">+ Add / Update Data</button>
   </div>
 </div>
 
 <div class="ovl" id="editOvl">
-  <div class="modal wide">
-    <h2>✏️ Update Dashboard</h2>
-    <p>All KPIs, charts, rankings, forecasts, and insights update automatically across the entire dashboard on Save &amp; Sync.</p>
-    <div class="m-tabs">
-      <button class="m-tab on" onclick="swTab('tpJune',0)">June KPIs</button>
-      <button class="m-tab" onclick="swTab('tpAgents',1)">All Agents</button>
-      <button class="m-tab" onclick="swTab('tpWeekly',2)">Weekly</button>
-    </div>
+  <div class="modal">
+    <h2>Add / Update Data</h2>
+    <p class="sub">Enter revenue agent-wise (by day) or edit the team's day-wise and week-wise totals directly. Changes save to this browser and recompute every section on the dashboard.</p>
 
-    <div class="tp on" id="tpJune">
-      <div class="hint">💡 Set <b>Last Updated</b> to today's date — <b>Days Elapsed auto-computes</b> and flows to every formula.</div>
-      <div class="two-inp">
-        <div class="fg"><label>Monthly Target (₹)</label><input type="number" id="eTarget" oninput="livePreview()"></div>
-        <div class="fg"><label>Days in Month</label><input type="number" id="eDaysTotal" oninput="livePreview()"></div>
-        <div class="fg"><label>Last Updated (sets Days Elapsed)</label><input type="date" id="eUpdated" oninput="autoCalcDays()"></div>
-        <div class="fg"><label>Days Elapsed (auto-computed)</label><input type="number" id="eDaysElapsed" readonly style="background:var(--n100);color:var(--muted)"></div>
+    <div class="two-inp">
+      <div class="fg"><label>Month</label>
+        <select id="editMonth" onchange="populateEditForMonth()">
+          <option value="May">May 2026</option>
+          <option value="June">June 2026</option>
+          <option value="July">July 2026</option>
+          <option value="August" selected>August 2026</option>
+        </select>
       </div>
-      <div class="dvdr"></div>
-      <div class="slbl">June Daily Revenue (₹) — Days 1 – 30</div>
-      <div class="daygrid" id="juneDayGrid"></div>
-      <div class="lbar">
-        <div class="li"><span>Daily Total</span><strong id="lvTotal">₹0</strong></div>
-        <div class="li"><span>Avg DRR</span><strong id="lvDrr">₹0</strong></div>
-        <div class="li"><span>Forecast</span><strong id="lvFc">₹0</strong></div>
-        <div class="li"><span>Achievement</span><strong id="lvPct">0%</strong></div>
-        <div class="li"><span>Remaining</span><strong id="lvRem">₹0</strong></div>
-        <div class="li"><span>DRR Needed</span><strong id="lvDrrNeeded">₹0</strong></div>
-      </div>
+      <div class="fg"><label>Monthly Target (&#8377;)</label><input type="number" id="editTarget"></div>
+    </div>
+    <div class="two-inp">
+      <div class="fg"><label>Days Elapsed (for LIVE / in-progress months)</label><input type="number" id="editDaysElapsed"></div>
+      <div class="fg"><label>Days in Month</label><input type="number" id="editDaysTotal" readonly style="background:var(--n100);color:var(--muted)"></div>
     </div>
 
-    <div class="tp" id="tpAgents">
-      <div class="hint">💡 All agents shown — expand any agent to edit daily values. <b>All agents save together</b> when you click Save &amp; Sync.</div>
-      <div id="allAgentsWrap"></div>
-    </div>
+    <div class="dvdr"></div>
+    <div class="slbl">Team Day-wise Revenue (&#8377;) &mdash; overall total per day</div>
+    <div class="daygrid" id="teamDayGrid"></div>
 
-    <div class="tp" id="tpWeekly">
-      <div class="slbl">May Weekly Revenue (₹)</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="mayWkInputs"></div>
-      <div class="dvdr"></div>
-      <div class="slbl">June Weekly Revenue (₹)</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="junWkInputs"></div>
-    </div>
+    <div class="dvdr"></div>
+    <div class="slbl">Week-wise Revenue (&#8377;) &mdash; used for the weekly comparison chart</div>
+    <div class="two-inp" id="weekGrid" style="grid-template-columns:repeat(4,1fr)"></div>
 
-    <div style="margin-top:16px;padding:10px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--r);font-size:11px;color:#92400e;">
-      ⚠️ <strong>Data wrong?</strong> Use <em>Reset to Baseline</em> to restore the verified correct numbers from the original data sheet.
+    <div class="dvdr"></div>
+    <div class="slbl">Agent-wise Daily Revenue &mdash; expand an agent to enter their days</div>
+    <div class="three-inp" style="margin-bottom:10px">
+      <div class="fg" style="margin-bottom:0"><label>Add New Agent to This Month</label><input type="text" id="newAgentName" placeholder="e.g. Rahul Sharma"></div>
+      <div class="fg" style="margin-bottom:0"><label>Target (&#8377;)</label><input type="number" id="newAgentTarget" placeholder="90000"></div>
+      <button class="btn-sec2" onclick="addAgentToMonth()" style="height:37px">+ Add</button>
     </div>
+    <div id="agentEditWrap"></div>
+
     <div class="m-act">
+      <button class="btn-danger" onclick="resetData()">Reset to Original Data</button>
       <button class="btn-sec2" onclick="closeEdit()">Cancel</button>
-      <button onclick="resetToBaseline()" style="background:#fff7ed;color:#c2410c;border:1.5px solid #fed7aa;padding:10px 18px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;" title="Restore verified correct numbers">🔄 Reset to Baseline</button>
-      <button class="btn-pri" onclick="saveData()">☁️ Save &amp; Sync All</button>
+      <button class="btn-pri" onclick="saveEditedData()">Save &amp; Sync</button>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<div class="mtabs" id="mtabs"></div>
+
+<div class="wrap" id="mainWrap">
+
+  <div class="sec">Selected Month &mdash; Live Snapshot</div>
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="sec">Month-over-Month Overview &mdash; May &rarr; August 2026</div>
+  <div class="card">
+    <div class="chdr"><h3>All Months at a Glance</h3><aside>Target vs Achievement vs Growth</aside></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Month</th><th>Target</th><th>Achieved</th><th>Achv %</th><th>MoM Growth</th><th>Weeks (Wk1&ndash;4)</th></tr></thead><tbody id="monthBody"></tbody></table></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card" style="margin-bottom:0">
+      <div class="chdr"><h3>Week-wise Comparison</h3><aside>Revenue by week, across months</aside></div>
+      <div class="leg" id="wkLeg"></div>
+      <div class="cpd"><div style="position:relative;height:230px"><canvas id="wkChart"></canvas></div></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="chdr"><h3>Day-wise Pace Comparison</h3><aside>Daily revenue by day-of-month</aside></div>
+      <div class="leg" id="dayLeg"></div>
+      <div class="cpd"><div style="position:relative;height:230px"><canvas id="dayChart"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="lbSecTitle">Agent Leaderboard</div>
+  <div class="card">
+    <div class="chdr" style="justify-content:space-between"><h3 id="lbTitle">Rankings</h3><aside id="lbMeta">&mdash;</aside></div>
+    <div id="monthNote"></div>
+    <div id="lbWrap"></div>
+  </div>
+
+  <div class="sec" id="trkSecTitle">Agent Daily Tracker</div>
+  <div class="card" id="trkCard">
+    <div class="chdr"><h3 id="trkTitle">Full Daily Tracker</h3><aside id="trkMeta">&mdash;</aside></div>
+    <div class="tbl-wrap"><table class="zebra"><thead><tr id="agHdr"></tr></thead><tbody id="agBody"></tbody><tfoot id="agFoot"></tfoot></table></div>
+  </div>
+
+  <div class="sec">Automated Insights</div>
+  <div class="card">
+    <div class="chdr"><h3>Auto-Generated Observations</h3><aside id="intelMeta">&mdash;</aside></div>
+    <div class="intel-grid" id="intelGrid"></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <span style="color:var(--gold);font-weight:900;font-size:14px">&#9650;</span>
+  <span>HOUSING<span style="color:var(--gold)">.com</span></span>
+  <span style="opacity:.3">&middot;</span><span>Housing Owner Process</span>
+  <span style="opacity:.3">&middot;</span><span>Multi-Month Command Centre</span>
+  <span style="opacity:.3">&middot;</span><span>Powered by OcubeServices</span>
+  <span style="opacity:.3">&middot;</span><span>Confidential</span>
+</div>
+
 <script>
-const FB_CFG = {
-  apiKey:"AIzaSyATL9HIa5E_j69DAa-novWcz8lmA__IliM",
-  authDomain:"housing-dashboard-6ab66.firebaseapp.com",
-  databaseURL:"https://housing-dashboard-6ab66-default-rtdb.firebaseio.com",
-  projectId:"housing-dashboard-6ab66",
-  storageBucket:"housing-dashboard-6ab66.firebasestorage.app",
-  messagingSenderId:"1020378573497",
-  appId:"1:1020378573497:web:bf3f8c0e2011ca4ce84968"
-};
-firebase.initializeApp(FB_CFG);
-const db = firebase.database();
-const DB_KEY = "housing_dashboard_v1";
-
-const JUNE_MONTH = 5, JUNE_YEAR = 2026, JUNE_DAYS = 30;
-
-function computeElapsed(dateStr){
-  if(!dateStr) return 0;
-  const d = new Date(dateStr + "T00:00:00");
-  if(d.getFullYear()!==JUNE_YEAR || d.getMonth()!==JUNE_MONTH) return 0;
-  return Math.min(d.getDate(), JUNE_DAYS);
+const BUNDLED_DATA = {"monthsMeta":{"May":{"target":500000,"weeklyTarget":125000,"weekly":[43403,83068,72917,183351],"total":382739,"daysTotal":31,"daysElapsed":31},"June":{"target":885000,"weeklyTarget":221250,"weekly":[113338.3,79523,123598,163995],"total":480454.3,"daysTotal":30,"daysElapsed":30},"July":{"target":900000,"weeklyTarget":225000,"weekly":[94290,135261,139903,277605],"total":647059,"daysTotal":31,"daysElapsed":31},"August":{"target":900000,"weeklyTarget":225000,"weekly":[164801.6,117882,0,0],"total":282683.6,"daysTotal":31,"daysElapsed":11}},"dailyTeam":{"May":[0,8623,2123,10015,4049,7042,11551,7342,24567,9083,12699,4359,13623,11395,21386,8728,4424,18774,5309,8221,6075,8848,4359,6162,14561,32552,27545,16000,11000,38342,23982],"June":[26428,11245,38262,11229,11346.3,12823,2005,7903,15029,13055,19820,7435,9792,6489.41,29143.1,13653.4,28141,17705,14501.41,9911,10544,14513,15734,15718,14186,20758,11076,17162,21112,33736],"July":[0,12681,16142,21147,16743,13458,14119,8111,16869,22515,42600,21172,19253,4741,17972,32380,12918,20836,21677,31271,2849,14839,16515,22019,17562,16979,41405,19205,30661,27712,70728],"August":[19850,21212,28871,6287,45916.6,31417,11248,23816,26011,33683,21021,13351,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},"agents":[{"name":"Altmas","active":true,"june":[7255,0,0,0,0,0,0,0,0,2005,0,0,0,0,0,3244.4,6447,4424,2406,0,0,2831,885,0,5311,0,0,2831,0,0],"july":[0,2595,0,12409,0,0,6942,2831,0,4424,0,0,0,0,4737,887,0,0,2005,0,2849,0,0,0,6665,1704,2004,0,0,0,5148],"august":[0,4424,0,0,0,0,0,0,0,6489,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":68076.92,"julyTarget":90000,"augustTarget":90000},{"name":"Aman Tyagi","active":true,"june":[0,0,2831,0,0,0,0,2004,0,3568,2004,0,0,0,2420.65,2831,2005,2831,8910.41,0,2878,0,4427,8405,0,12406,2784,0,7963,0],"july":[0,0,2399,0,0,0,0,0,2831,0,13779,0,0,1910,2005,3324,4424,13450,0,9733,0,0,6489,0,0,5899,5088,0,3503,5662,6075],"august":[0,6489,0,0,10619,10619,0,2005,6489,0,0,3133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":68076.92,"julyTarget":90000,"augustTarget":90000},{"name":"Gopal Dubey","active":true,"june":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2784,2831,2958,5899],"july":[0,2831,3244,0,3590,0,1910,0,0,0,5311,0,0,0,0,0,0,0,3244,0,0,3244,3893,2878,4055,0,2500,5899,0,3244,0],"august":[0,0,2860,0,3208.8,0,0,0,2831,2724,4443,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":68076.92,"julyTarget":90000,"augustTarget":90000},{"name":"Km Kashish Sengar","active":true,"june":[0,4021,6489,0,0,0,0,0,2831,2005,0,5368,0,0,0,2005,6489,4009,0,3834,0,0,0,0,5036,2784,0,6665,2972,4424],"july":[0,0,2831,0,4719,0,4380,0,0,2004,2831,2204,2065,0,0,21826,5663,0,2831,0,0,0,0,3834,0,2831,4719,4424,0,10619,12388],"august":[0,0,0,4424,0,4424,3244,5002,0,5985,2831,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":68076.92,"julyTarget":90000,"augustTarget":90000},{"name":"Lucky Malik","active":true,"june":[8553.7,3834.4,2757,4152,3067,2359.41,0,0,3244,0,4424,0,0,0,2831,0,4447,0,0,0,0,0,0,2831,0,0,0,2004,2005,0],"july":[0,0,0,0,0,10619,887,2802,0,0,3309,4424,0,0,6489,6343,0,0,0,3244,0,3439,0,0,0,0,6076,0,7333,0,3656],"august":[2067,0,0,1863,0,2831,0,0,0,4741,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":68076.92,"julyTarget":90000,"augustTarget":90000},{"name":"Md Mehtab","active":true,"june":[10619.41,0,20175,2004,0,0,0,5899,2724,0,8556,0,0,0,10853,0,2478,1984,1180,2005,2831,2802,1180,0,0,2784,2784,2831,0,2832],"july":[0,4424,0,0,6075,0,0,2478,6489,10354,2831,0,12764,0,1910,0,2831,5662,2004,7675,0,1654,4378,2831,2831,0,3566,0,8024,1804,5662],"august":[0,0,7255,0,0,5073,0,0,11973,0,9323,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":68076.92,"julyTarget":90000,"augustTarget":90000},{"name":"Mohit Batra","active":false,"june":[0,0,0,0,2724,0,0,0,3568,0,0,0,0,6489.41,0,0,0,0,0,2005,0,0,2831,0,0,2784,0,0,0,0],"july":null,"august":null,"juneTarget":68076.92,"julyTarget":null,"augustTarget":null},{"name":"Mohit Tyagi","active":false,"june":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2084,0,0,0,0,0],"july":[0,0,0,0,2359,0,0,0,0,0,5898,0,0,0,0,0,0,0,1652,0,0,0,0,0,0,0,2065,2807,0,0,0],"august":null,"juneTarget":68076.92,"julyTarget":90000,"augustTarget":null},{"name":"OM Negi","active":true,"june":null,"july":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3244,2724,0],"august":[4866,4589,2831,0,2878,6453,1904,0,0,4424,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":null,"julyTarget":90000,"augustTarget":90000},{"name":"Priyanka Saini","active":true,"june":[0,0,2831,0,2724,0,0,0,0,0,0,0,2005,0,6424.45,2005,2831,0,2005,0,4835,4425,0,2004,0,0,0,0,0,9615],"july":[0,0,7668,2548,0,2839,0,0,0,0,0,0,0,0,0,0,0,0,887,0,0,0,1755,0,0,0,0,0,2005,0,7408],"august":[2831,0,0,0,6489,0,0,5662,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":68076.92,"julyTarget":90000,"augustTarget":90000},{"name":"Tanishka","active":true,"june":null,"july":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2004,0,0,2831,0,0,0,4708],"august":[0,0,0,0,5899,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":null,"julyTarget":90000,"augustTarget":90000},{"name":"Uqba Suhail","active":true,"june":[0,0,0,5073.41,0,6039,0,0,2662,0,2831,2067,7787,0,0,0,3444,4457,0,2067,0,4455,6411,2478,1755,0,2724,0,5214,10966],"july":[0,2831,0,6190,0,0,0,0,2831,2831,4217,6580,0,2831,0,0,0,1724,6223,10619,0,0,0,7641,4011,3244,12556,0,1654,3659,19133],"august":[0,5710,2062,0,0,2017,0,0,0,6489,0,10218,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":68076.92,"julyTarget":90000,"augustTarget":90000},{"name":"Yash Kumar","active":true,"june":null,"july":[0,0,0,0,0,0,0,0,4718,2902,4424,7964,4424,0,2831,0,0,0,2831,0,0,6502,0,2831,0,3301,0,3244,4898,0,2067],"august":[7255,0,13863,0,7125,0,6100,11147,4718,2831,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":null,"julyTarget":90000,"augustTarget":90000},{"name":"Zaid","active":true,"june":null,"july":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2831,0,0,4483],"august":[2831,0,0,0,9697.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"juneTarget":null,"julyTarget":90000,"augustTarget":90000}],"lastUpdated":"2026-08-12"};
+const LS_KEY = "housing_multimonth_data_v1";
+let DATA = null;
+try{
+  const saved = localStorage.getItem(LS_KEY);
+  DATA = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(BUNDLED_DATA));
+}catch(e){
+  DATA = JSON.parse(JSON.stringify(BUNDLED_DATA));
 }
-function computeDaysLeft(){
-  const now = new Date();
-  if(now.getFullYear()===JUNE_YEAR && now.getMonth()===JUNE_MONTH)
-    return Math.max(0, JUNE_DAYS - now.getDate() + 1);
-  return now < new Date(JUNE_YEAR, JUNE_MONTH, 1) ? JUNE_DAYS : 0;
-}
+const MONTH_DAYS = {May:31, June:30, July:31, August:31};
+const MONTHS = ["May","June","July","August"];
+let activeMonth = "August";
 
-const DEF = {
-  lastUpdated:"2026-06-11",
-  june:{target:885000,daysTotal:30,daysElapsed:11,
-    daily:[26428,11245,38262,11229,11346,12823,2000,7903,15029,13055,19820,
-           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-  mayWeekly:[
-    {week:"Wk-1",target:221250,revenue:113338},{week:"Wk-2",target:221250,revenue:55807},
-    {week:"Wk-3",target:221250,revenue:72355},{week:"Wk-4",target:221250,revenue:141239}],
-  juneWeekly:[
-    {week:"Wk-1",target:221250,revenue:112333},{week:"Wk-2",target:221250,revenue:56812},
-    {week:"Wk-3",target:221250,revenue:0},{week:"Wk-4",target:221250,revenue:0}],
-  mayDaily:[
-    {w:"Wk-1",d:"01-May",v:0},{w:"Wk-1",d:"02-May",v:8623},{w:"Wk-1",d:"03-May",v:2123},
-    {w:"Wk-1",d:"04-May",v:10015},{w:"Wk-1",d:"05-May",v:4049},{w:"Wk-1",d:"06-May",v:7042},
-    {w:"Wk-1",d:"07-May",v:11551},{w:"Wk-2",d:"08-May",v:7342},{w:"Wk-2",d:"09-May",v:24567},
-    {w:"Wk-2",d:"10-May",v:9083},{w:"Wk-2",d:"11-May",v:12699},{w:"Wk-2",d:"12-May",v:4359},
-    {w:"Wk-2",d:"13-May",v:13623},{w:"Wk-2",d:"14-May",v:11395},{w:"Wk-3",d:"15-May",v:21386},
-    {w:"Wk-3",d:"16-May",v:8728},{w:"Wk-3",d:"17-May",v:4424},{w:"Wk-3",d:"18-May",v:18774},
-    {w:"Wk-3",d:"19-May",v:5309},{w:"Wk-3",d:"20-May",v:8221},{w:"Wk-3",d:"21-May",v:6075},
-    {w:"Wk-4",d:"22-May",v:8848},{w:"Wk-4",d:"23-May",v:4359},{w:"Wk-4",d:"24-May",v:6162},
-    {w:"Wk-4",d:"25-May",v:14561},{w:"Wk-4",d:"26-May",v:32552},{w:"Wk-4",d:"27-May",v:27545},
-    {w:"Wk-4",d:"28-May",v:16000},{w:"Wk-4",d:"29-May",v:11000},{w:"Wk-4",d:"30-May",v:38342},
-    {w:"Wk-4",d:"31-May",v:23982}],
-  agents:[
-    {name:"Lucky Malik",       target:68077,daily:[8554,3834,2757,4152,3067,2360,0,0,3244,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Md Mehtab",         target:68077,daily:[10619,0,20175,2004,0,0,0,5899,2724,0,8556,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Km Kashish Sengar", target:68077,daily:[0,4021,6489,0,0,0,0,0,2831,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Uqba Suhail OC",    target:68077,daily:[0,0,0,5073,0,6039,0,0,2662,0,2831,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Aman Tyagi OC",     target:68077,daily:[0,0,2831,0,0,0,0,2004,0,3568,2004,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Shivani Pal OC",    target:68077,daily:[0,3390,3179,0,0,0,0,0,0,3244,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Atul Kumar",        target:68077,daily:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Teena Pal OC",      target:68077,daily:[0,0,0,0,2831,0,0,0,0,2233,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Cally Richard OC",  target:68077,daily:[0,0,0,0,0,4424,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Neha Sharma",       target:68077,daily:[0,0,0,0,0,0,2000,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Priyanka Saini OC", target:68077,daily:[0,0,2831,0,2724,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Mohit Batra OC",    target:68077,daily:[0,0,0,0,2724,0,0,0,3568,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Altmas OC",         target:68077,daily:[7255,0,0,0,0,0,0,0,0,2005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
-  ]
-};
+const INR = n => "\u20b9" + Math.round(n).toLocaleString("en-IN");
+const S = n => { const a = Math.abs(n), sg = n < 0 ? "-" : ""; return a >= 1e5 ? sg + "\u20b9" + (a/1e5).toFixed(1) + "L" : a >= 1000 ? sg + "\u20b9" + (a/1e3).toFixed(0) + "K" : sg + "\u20b9" + Math.round(a); };
+const Pct = (n, d) => { d = d===undefined?1:d; return (isFinite(n) ? n.toFixed(d) : "0.0") + "%"; };
+const pCol = p => p >= 60 ? "#16a34a" : p >= 20 ? "#d97706" : "#dc2626";
+const pillCls = p => p >= 60 ? "pg" : p >= 20 ? "pa" : "pr";
+const pillTxt = p => p >= 60 ? "On Track" : p >= 20 ? "Halfway" : "Behind";
+const AVC = ["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c","#ea580c","#4f46e5","#0284c7","#65a30d","#9333ea","#db2777","#0891b2"];
+const avc = i => AVC[i % AVC.length];
+const ini = n => n.split(" ").map(function(w){return w[0];}).slice(0,2).join("").toUpperCase();
 
-let D = JSON.parse(JSON.stringify(DEF));
-const ADMIN_B64 = btoa("housing2026");
-
-let activeView = 'all';
-let filterAgent = '';
-let filterWeek  = '';
-let isAdmin = false;
-
-let syncedAt = null;
-let syncInterval = null;
-
-function setSyncState(state, msg){
-  const bar=document.getElementById("sbar");
-  const dot=document.getElementById("sdot");
-  const txt=document.getElementById("smsg");
-  dot.className="sdot";
-  bar.className="sbar";
-  if(state==="live"){
-    txt.textContent = msg||"🟢 Live — Firebase real-time sync active";
-    syncedAt = Date.now();
-    startSyncClock();
-  } else if(state==="connecting"){
-    dot.classList.add("blink");
-    txt.textContent = msg||"Connecting to Firebase…";
-  } else if(state==="error"){
-    dot.classList.add("dead");
-    bar.classList.add("err-mode");
-    txt.textContent = msg||"⚠️ Firebase offline — displaying cached data";
-  }
-}
-function startSyncClock(){
-  if(syncInterval) clearInterval(syncInterval);
-  syncInterval = setInterval(()=>{
-    if(!syncedAt) return;
-    const sec=Math.floor((Date.now()-syncedAt)/1000);
-    const el=document.getElementById("sclk"); if(!el) return;
-    el.textContent = sec<60?sec+"s ago":Math.floor(sec/60)+"m ago";
-  },5000);
-  document.getElementById("sclk").textContent="just now";
-}
-function updateDaysLeft(){
-  const el=document.getElementById("dlbadge");
-  const dl=computeDaysLeft();
-  if(el) el.textContent=`⏳ ${dl} day${dl!==1?"s":""} left`;
+function monthKey(m){ return m.toLowerCase(); }
+function agentDaily(agent, month){ return agent[monthKey(month)] || null; }
+function agentTarget(agent, month){ return agent[monthKey(month) + "Target"] || null; }
+function agentTotal(agent, month){ const d = agentDaily(agent, month); return d ? d.reduce(function(s,v){return s+v;},0) : 0; }
+function isActiveInMonth(agent, month){ return !!agentDaily(agent, month); }
+function teamAchievedSoFar(month){
+  const meta = DATA.monthsMeta[month];
+  return DATA.dailyTeam[month].slice(0, meta.daysElapsed).reduce(function(s,v){return s+v;},0);
 }
 
-/* FIXED — root cause of "numbers not updating":
-   Firebase Realtime Database silently converts JS arrays with trailing
-   falsy/zero values into JSON objects and drops trailing zero-valued
-   keys. A 30-entry daily array (true every day until June 30) round
-   trips through Firebase as a SHORT object. Object.values() on that
-   then returns an array shorter than 30, so every read of daily[i]
-   beyond that length is undefined — future days, charts, forecasts all
-   silently stop updating. toArrPadded() always forces every daily
-   array (team AND each agent) back to a strict fixed length of 30. */
-function toArrPadded(v, len){
-  const arr = v && !Array.isArray(v) ? Object.values(v) : (v || []);
-  const out = arr.slice(0, len);
-  while(out.length < len) out.push(0);
-  return out;
+function renderTabs(){
+  document.getElementById("mtabs").innerHTML = MONTHS.map(function(m){
+    const live = m === "August";
+    return '<button class="mtab ' + (m===activeMonth?'on':'') + '" onclick="setMonth(\'' + m + '\')">' + m + ' 2026 <span class="mtag ' + (live?'mtag-live':'mtag-done') + '">' + (live?'LIVE':'COMPLETE') + '</span></button>';
+  }).join("");
+  document.getElementById("lastUpd").textContent = "Data as of " + DATA.lastUpdated;
 }
 
-function normalise(raw){
-  const toArr = v => v&&!Array.isArray(v)?Object.values(v):(v||[]);
-  const d = raw;
-  if(d.june) d.june.daily = toArrPadded(d.june.daily, JUNE_DAYS);
-  d.mayDaily   = toArr(d.mayDaily);
-  d.mayWeekly  = toArr(d.mayWeekly);
-  d.juneWeekly = toArr(d.juneWeekly);
-  d.agents     = toArr(d.agents);
-  d.agents.forEach(ag=>{
-    ag.daily = toArrPadded(ag.daily, JUNE_DAYS);
-    ag.inactive = !!ag.inactive;
-  });
-  if(d.lastUpdated) d.june.daysElapsed = computeElapsed(d.lastUpdated);
-  return d;
-}
-
-function connectFirebase(){
-  const ref = db.ref(DB_KEY);
-  ref.once("value").then(snap=>{ if(!snap.exists()) ref.set(DEF); }).catch(()=>{});
-  ref.on("value", snap=>{
-    if(snap.exists()){
-      D = normalise(snap.val());
-      populateAgentFilter();
-      showDash();
-      renderAll();
-      setSyncState("live");
-      updateDaysLeft();
-    }
-  }, err=>{
-    setSyncState("error","⚠️ Firebase error: "+err.message);
-    showDash();
-    renderAll();
-  });
-}
-function showDash(){
-  document.getElementById("skelView").style.display="none";
-  document.getElementById("dashView").style.display="block";
-}
-
-function populateAgentFilter(){
-  const sel=document.getElementById("filtAgent");
-  const cur=sel.value;
-  sel.innerHTML='<option value="">All Agents</option>'+
-    D.agents.map((a,i)=>`<option value="${i}">${a.inactive?'🚫 ':''} ${a.name}</option>`).join("");
-  if(cur) sel.value=cur;
-}
-
-const INR = n=>"₹"+Math.round(n).toLocaleString("en-IN");
-const S   = n=>{const a=Math.abs(n),sg=n<0?"-":"";return a>=1e5?sg+"₹"+(a/1e5).toFixed(1)+"L":a>=1000?sg+"₹"+(a/1e3).toFixed(0)+"K":sg+"₹"+Math.round(a);};
-const Pct = (n,d=1)=>n.toFixed(d)+"%";
-const pCol= p=>p>=60?"#16a34a":p>=20?"#d97706":"#dc2626";
-const pillCls=p=>p>=60?"pg":p>=20?"pa":"pr";
-const pillTxt=p=>p>=60?"✓ On Track":p>=20?"▲ Halfway":"✗ Behind";
-const AVC=["#dc2626","#2563eb","#16a34a","#7c3aed","#d97706","#0d9488","#c2255c","#ea580c","#4f46e5","#0284c7","#65a30d","#9333ea","#db2777"];
-const avc=i=>AVC[i%AVC.length];
-const ini=n=>n.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
-
-function derive(){
-  const {target,daysTotal,daysElapsed,daily}=D.june;
-  const achieved = daily.reduce((s,v)=>s+v,0);
-  const remaining= target-achieved;
-  const daysLeft = daysTotal-daysElapsed;
-  const drr      = daysLeft>0?remaining/daysLeft:0;
-  const actDrr   = daysElapsed>0?achieved/daysElapsed:0;
-  const dayTgt   = Math.round(target/daysTotal);
-  const pct      = target>0?achieved/target*100:0;
-  const baseFc   = Math.round(actDrr*daysTotal);
-  const optFc    = Math.round(achieved+actDrr*1.2*daysLeft);
-  const consFc   = Math.round(achieved+actDrr*0.8*daysLeft);
-  return{achieved,remaining,daysLeft,drr,actDrr,dayTgt,pct,baseFc,optFc,consFc,daysElapsed,daysTotal,target,daily};
-}
-
-function agTot(ag,elapsed){ return ag.daily.slice(0,elapsed||D.june.daysElapsed).reduce((s,v)=>s+v,0); }
-
-function filteredAgents(){
-  let agents = D.agents.map((ag,i)=>({...ag,_i:i,tot:agTot(ag)}));
-  if(filterAgent!=='') agents=agents.filter(a=>a._i===parseInt(filterAgent));
-  if(filterWeek!==''){
-    const wk=parseInt(filterWeek);
-    const s=(wk-1)*7, e=Math.min(wk*7,D.june.daysElapsed);
-    agents=agents.map(a=>({...a,tot:a.daily.slice(s,e).reduce((s,v)=>s+v,0)}));
-  }
-  if(activeView==='top') agents=agents.filter(a=>!a.inactive&&a.target>0&&a.tot/a.target>=0.6);
-  if(activeView==='bot') agents=agents.filter(a=>!a.inactive&&a.target>0&&a.tot/a.target<0.2);
-  return agents.sort((a,b)=>{
-    if(a.inactive && !b.inactive) return 1;
-    if(!a.inactive && b.inactive) return -1;
-    return (b.tot/b.target)-(a.tot/a.target);
-  });
-}
-
-function applyFilters(){
-  filterAgent = document.getElementById("filtAgent").value;
-  filterWeek  = document.getElementById("filtWeek").value;
-  const fa=D.agents[parseInt(filterAgent)]?.name||"";
-  const fw=filterWeek?`Week ${filterWeek}`:"";
-  const parts=[fa,fw].filter(Boolean);
-  document.getElementById("filterInfo").textContent=parts.length?`Filtering: ${parts.join(" · ")}`:"Showing all agents";
-  renderAll();
-}
-function setView(v){
-  activeView=v;
-  ['fAll','fTop','fBot'].forEach(id=>document.getElementById(id).classList.remove('on'));
-  document.getElementById({all:'fAll',top:'fTop',bot:'fBot'}[v]).classList.add('on');
+function setMonth(m){
+  activeMonth = m;
+  renderTabs();
   renderAll();
 }
 
 function renderKPIs(){
-  const{achieved,remaining,daysLeft,drr,actDrr,dayTgt,pct,baseFc,daysElapsed,daysTotal,target}=derive();
-  const gap=drr-actDrr;
-  const extra=actDrr>0?(gap>0?`<span class="kc-tag tag-warn">⚠ +${S(gap)}/day needed</span>`:`<span class="kc-tag tag-ok">✓ Ahead of pace</span>`):"";
-  const kpis=[
-    {icon:"🎯",l:"Monthly Target",   v:INR(target),   s:"June 2026",              ac:"#dc2626"},
-    {icon:"💰",l:"Achievement",      v:INR(achieved), s:Pct(pct)+" of target",    ac:"#16a34a",bar:Math.min(pct,100),bc:pCol(pct)},
-    {icon:"⏳",l:"Remaining",         v:INR(remaining),s:daysLeft+" days left",    ac:"#d97706"},
-    {icon:"📈",l:"DRR Required",      v:INR(drr),      s:"Daily run rate to close",ac:"#2563eb",ext:extra},
-    {icon:"📅",l:"Days Elapsed",      v:daysElapsed,   s:"of "+daysTotal+" days",  ac:"#7c3aed",bar:Math.round(daysElapsed/daysTotal*100),bc:"#7c3aed"},
-    {icon:"⚡",l:"Actual DRR",        v:INR(actDrr),   s:"Average so far",         ac:"#0d9488"},
-    {icon:"📊",l:"May Revenue",       v:"₹3,82,739",   s:"77% of May target",      ac:"#c2255c",bar:77,bc:"#c2255c"},
-    {icon:"🔮",l:"Month-End Forecast",v:INR(baseFc),   s:Pct(baseFc/target*100)+" of target",ac:"#5f3dc4",bar:Math.min(baseFc/target*100,100),bc:"#5f3dc4"},
+  const month = activeMonth;
+  const meta = DATA.monthsMeta[month];
+  const achieved = teamAchievedSoFar(month);
+  const target = meta.target;
+  const remaining = Math.max(0, target - achieved);
+  const daysLeft = meta.daysTotal - meta.daysElapsed;
+  const actDrr = meta.daysElapsed > 0 ? achieved / meta.daysElapsed : 0;
+  const drrReq = daysLeft > 0 ? remaining / daysLeft : 0;
+  const pct = target > 0 ? achieved / target * 100 : 0;
+  const baseFc = Math.round(actDrr * meta.daysTotal);
+  const gap = drrReq - actDrr;
+  const extra = actDrr > 0 ? (gap > 0 ? '<span class="kc-tag tag-warn">+' + S(gap) + '/day needed</span>' : '<span class="kc-tag tag-ok">Ahead of pace</span>') : "";
+  const kpis = [
+    {icon:"[T]", l:"Monthly Target", v:INR(target), s:month+" 2026", ac:"#dc2626"},
+    {icon:"[R]", l:"Achievement", v:INR(achieved), s:Pct(pct)+" of target", ac:"#16a34a", bar:Math.min(pct,100), bc:pCol(pct)},
+    {icon:"[!]", l:"Remaining", v:INR(remaining), s:daysLeft+" days left", ac:"#d97706"},
+    {icon:"[D]", l:"DRR Required", v:INR(drrReq), s:"Daily run rate to close", ac:"#2563eb", ext:extra},
+    {icon:"[C]", l:"Days Elapsed", v:meta.daysElapsed, s:"of "+meta.daysTotal+" days", ac:"#7c3aed", bar:Math.round(meta.daysElapsed/meta.daysTotal*100), bc:"#7c3aed"},
+    {icon:"[A]", l:"Actual DRR", v:INR(actDrr), s:"Average so far", ac:"#0d9488"},
+    {icon:"[F]", l:"Month-End Forecast", v:INR(baseFc), s:Pct(baseFc/target*100)+" of target", ac:"#5f3dc4", bar:Math.min(baseFc/target*100,100), bc:"#5f3dc4"},
+    {icon:"[M]", l:"Full-Month Total", v:INR(meta.total), s:month==="August"?"Partial (in progress)":"Final", ac:"#c2255c"},
   ];
-  document.getElementById("kpiGrid").innerHTML=kpis.map((k,i)=>`
-    <div class="kc" style="--ac:${k.ac};--ac-glow:${k.ac}18;animation-delay:${i*40}ms">
-      <span class="kc-icon">${k.icon}</span>
-      <div class="kc-lbl">${k.l}</div>
-      <div class="kc-val">${k.v}</div>
-      <div class="kc-sub">${k.s}</div>
-      ${k.ext||""}
-      ${k.bar!=null?`<div class="kc-track"><div class="kc-fill" style="background:${k.bc||k.ac};width:${k.bar}%"></div></div>`:""}
-    </div>`).join("");
-  document.getElementById("lbadge").textContent="Updated: "+D.lastUpdated;
-  document.getElementById("juneTotalLbl").textContent="Total: "+INR(achieved);
-  document.getElementById("junLogTot").textContent=INR(achieved);
+  document.getElementById("kpiGrid").innerHTML = kpis.map(function(k){
+    return '<div class="kc" style="--ac:'+k.ac+'">' +
+      '<span class="kc-lbl">'+k.l+'</span>' +
+      '<div class="kc-val">'+k.v+'</div>' +
+      '<div class="kc-sub">'+k.s+'</div>' +
+      (k.ext||"") +
+      (k.bar!=null?'<div class="kc-track"><div class="kc-fill" style="background:'+(k.bc||k.ac)+';width:'+k.bar+'%"></div></div>':"") +
+    '</div>';
+  }).join("");
+}
+
+function renderMonthTable(){
+  let prevTotal = null;
+  document.getElementById("monthBody").innerHTML = MONTHS.map(function(m){
+    const meta = DATA.monthsMeta[m];
+    const pct = meta.target>0 ? meta.total/meta.target*100 : 0;
+    const growth = (prevTotal!=null && prevTotal>0) ? (meta.total-prevTotal)/prevTotal*100 : null;
+    prevTotal = meta.total;
+    const wkStr = meta.weekly.map(function(w){return S(w);}).join(" &middot; ");
+    return '<tr style="' + (m===activeMonth?'background:var(--gold-l)':'') + '">' +
+      '<td><b>'+m+' 2026</b> ' + (m==='August'?'<span class="pill pg" style="margin-left:6px">LIVE</span>':'') + '</td>' +
+      '<td class="mono">'+INR(meta.target)+'</td>' +
+      '<td class="mono">'+INR(meta.total)+'</td>' +
+      '<td><span class="pill '+pillCls(pct)+'">'+Pct(pct)+'</span></td>' +
+      '<td class="mono '+(growth==null?'':(growth>=0?'up':'dn'))+'">'+(growth==null?'&mdash;':(growth>=0?'+':'')+Pct(growth,1))+'</td>' +
+      '<td class="mono" style="font-size:10px">'+wkStr+'</td>' +
+    '</tr>';
+  }).join("");
+}
+
+let wkChart=null, dayChart=null;
+const MONTH_COLORS = {May:"#9333ea", June:"#2563eb", July:"#d97706", August:"#dc2626"};
+
+function renderWeekChart(){
+  const ctx = document.getElementById("wkChart").getContext("2d");
+  if(wkChart) wkChart.destroy();
+  wkChart = new Chart(ctx, {type:"bar", data:{
+    labels:["Wk-1","Wk-2","Wk-3","Wk-4"],
+    datasets: MONTHS.map(function(m){
+      return {label:m, data:DATA.monthsMeta[m].weekly, backgroundColor: MONTH_COLORS[m]+(m===activeMonth?"ee":"55"), borderRadius:4, borderSkipped:false};
+    })
+  }, options:{responsive:true, maintainAspectRatio:false, animation:{duration:500}, plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){return c.dataset.label+": "+INR(c.parsed.y);}}}}, scales:{x:{grid:{display:false}}, y:{grid:{color:"#f1f5f9"}, ticks:{callback:function(v){return S(v);}, font:{size:10}}}}}});
+  document.getElementById("wkLeg").innerHTML = MONTHS.map(function(m){
+    return '<span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:'+MONTH_COLORS[m]+'"></span>'+m+'</span>';
+  }).join("");
+}
+
+function renderDayChart(){
+  const ctx = document.getElementById("dayChart").getContext("2d");
+  if(dayChart) dayChart.destroy();
+  const labels = Array.from({length:31}, function(_,i){return i+1;});
+  dayChart = new Chart(ctx, {type:"line", data:{
+    labels: labels,
+    datasets: MONTHS.map(function(m){
+      const meta = DATA.monthsMeta[m];
+      const raw = DATA.dailyTeam[m];
+      const padded = labels.map(function(_,i){
+        if(i >= meta.daysTotal) return null;
+        if(m === "August" && i >= meta.daysElapsed) return null;
+        return raw[i];
+      });
+      return {label:m, data:padded, borderColor:MONTH_COLORS[m], backgroundColor:"transparent", borderWidth: m===activeMonth?2.5:1.5, pointRadius:0, tension:.3};
+    })
+  }, options:{responsive:true, maintainAspectRatio:false, animation:{duration:500}, interaction:{mode:"index",intersect:false}, plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){return c.dataset.label+": "+INR(c.parsed.y||0);}, title:function(c){return "Day "+c[0].label;}}}}, scales:{x:{grid:{display:false}, ticks:{font:{size:9}, maxTicksLimit:16}}, y:{grid:{color:"#f1f5f9"}, ticks:{callback:function(v){return S(v);}, font:{size:10}}}}}});
+  document.getElementById("dayLeg").innerHTML = MONTHS.map(function(m){
+    return '<span style="display:flex;align-items:center;gap:5px"><span class="dot" style="background:'+MONTH_COLORS[m]+'"></span>'+m+'</span>';
+  }).join("");
 }
 
 function renderLeaderboard(){
-  const el=D.june.daysElapsed;
-  let agents = filteredAgents();
-  if(!agents.length){document.getElementById("lbWrap").innerHTML='<div style="padding:20px 18px;color:var(--muted);font-size:13px">No agents match current filter.</div>';return;}
-
-  const active = agents.filter(a=>!a.inactive);
-  const inactive = agents.filter(a=>a.inactive);
-  const maxTot = active[0]?.tot||1;
-
-  let html = '';
-
-  if(active.length>=1 && filterAgent==='' && filterWeek===''){
-    const podAgents = active.slice(0,3);
-    const podOrder = podAgents.length>=3 ? [podAgents[1], podAgents[0], podAgents[2]] :
-                     podAgents.length===2 ? [podAgents[1], podAgents[0]] : [podAgents[0]];
-    const podClass = podAgents.length>=3 ? ['p2','p1','p3'] : ['p2','p1'];
-    const podSz    = podAgents.length>=3 ? ['sz2','sz1','sz3'] : ['sz2','sz1'];
-    const podBase  = podAgents.length>=3 ? ['b2','b1','b3'] : ['b2','b1'];
-    const podRev   = podAgents.length>=3 ? ['r2','r1','r3'] : ['r2','r1'];
-    const posLabels= ['#1','#2','#3'];
-
-    html += '<div class="lb-podium">';
-    podOrder.forEach((ag,oi)=>{
-      if(!ag) return;
-      const realRank = active.indexOf(ag);
-      const p = ag.target>0?ag.tot/ag.target*100:0;
-      const bw= maxTot>0?Math.min(ag.tot/maxTot*100,100).toFixed(1):'0';
-      const bc= pCol(p);
-      html += `<div class="lb-pod ${podClass[oi]}">
-        ${realRank===0?`<div class="lb-crown">👑</div>`:`<div style="height:26px"></div>`}
-        <div class="lb-pod-av-wrap">
-          <div class="lb-pod-av ${podSz[oi]}" style="background:${avc(ag._i)}">${ini(ag.name)}</div>
-          <div class="lb-pod-badge ${podBase[oi]==='b1'?'g':podBase[oi]==='b2'?'s':'b'}">${realRank===0?'①':realRank===1?'②':'③'}</div>
-        </div>
-        <div class="lb-pod-name">${ag.name.split(' ')[0]}</div>
-        <div class="lb-pod-rev ${podRev[oi]}">${INR(ag.tot)}</div>
-        <div class="lb-pod-pct">${Pct(p)} of target</div>
-        <div class="lb-pod-bar"><div class="lb-pod-bar-fill" style="width:${bw}%;background:${bc}"></div></div>
-        <div class="lb-pod-base ${podBase[oi]}">${posLabels[realRank]}</div>
-      </div>`;
-    });
-    html += '</div>';
+  const month = activeMonth;
+  document.getElementById("lbTitle").textContent = "Agent Rankings \u2014 " + month + " 2026";
+  const noteEl = document.getElementById("monthNote");
+  if(month === "May"){
+    noteEl.innerHTML = '<div class="note">Agent-level breakdown is not available for May in the source data \u2014 only team totals were tracked. Leaderboard resumes from June.</div>';
+    document.getElementById("lbWrap").innerHTML = "";
+    document.getElementById("lbMeta").textContent = "No agent data for May";
+    return;
   }
+  noteEl.innerHTML = "";
+  const rows = DATA.agents.map(function(ag,i){
+    const has = isActiveInMonth(ag, month);
+    const tot = agentTotal(ag, month);
+    const tgt = agentTarget(ag, month) || (has?90000:68076.92);
+    return {ag:ag, i:i, has:has, tot:tot, tgt:tgt, p: tgt>0 ? tot/tgt*100 : 0};
+  });
+  const withData = rows.filter(function(r){return r.has;}).sort(function(a,b){return b.tot-a.tot;});
+  const noData = rows.filter(function(r){return !r.has;});
+  const maxTot = withData.length ? withData[0].tot : 1;
 
-  const restActive = filterAgent==='' && filterWeek==='' ? active.slice(3) : active;
-  if(restActive.length > 0){
-    html += '<div class="lb-rest-list">';
-    restActive.forEach((ag,i)=>{
-      const rank = (filterAgent===''&&filterWeek==='' ? active.indexOf(ag) : i);
-      const p=ag.target>0?ag.tot/ag.target*100:0,bc=pCol(p),bw=Math.min(ag.tot/maxTot*100,100).toFixed(1);
-      html += `<div class="lb-row" style="animation-delay:${(rank)*25}ms">
-        <div class="lb-num">#${rank+1}</div>
-        <div class="lb-av" style="background:${avc(ag._i)}">${ini(ag.name)}</div>
-        <div class="lb-info">
-          <div class="lb-name">${ag.name}</div>
-          <div class="lb-meta">${INR(ag.tot)} · ${Pct(p)} of target</div>
-        </div>
-        <div class="lb-bar-track"><div class="lb-bar-fill" style="width:${bw}%;background:${bc}"></div></div>
-        <div class="lb-right">
-          <div class="lb-rev" style="color:${bc}">${INR(ag.tot)}</div>
-          <div class="lb-pct">${Pct(p)} of target</div>
-          <span class="lb-pill ${pillCls(p)}">${pillTxt(p)}</span>
-        </div>
-      </div>`;
-    });
-    html += '</div>';
-  }
+  let html = '<div class="lb-rest-list">';
+  withData.forEach(function(r,rank){
+    const bc = pCol(r.p), bw = Math.min(r.tot/maxTot*100,100).toFixed(1);
+    html += '<div class="lb-row">' +
+      '<div class="lb-num">#'+(rank+1)+'</div>' +
+      '<div class="lb-av" style="background:'+avc(r.i)+'">'+ini(r.ag.name)+'</div>' +
+      '<div class="lb-info">' +
+        '<div class="lb-name">'+r.ag.name+'</div>' +
+        '<div class="lb-meta">'+INR(r.tot)+' &middot; '+Pct(r.p)+' of target</div>' +
+      '</div>' +
+      '<div class="lb-bar-track"><div class="lb-bar-fill" style="width:'+bw+'%;background:'+bc+'"></div></div>' +
+      '<div class="lb-right">' +
+        '<div class="lb-rev" style="color:'+bc+'">'+INR(r.tot)+'</div>' +
+        '<div class="lb-pct">'+Pct(r.p)+' of target</div>' +
+        '<span class="pill '+pillCls(r.p)+'">'+pillTxt(r.p)+'</span>' +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
 
-  if(inactive.length>0){
-    html += `<div style="padding:8px 18px 4px;font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.8px;border-top:1px dashed var(--n200);margin-top:4px;">Inactive / Left Organisation</div>`;
-    html += '<div class="lb-rest-list">';
-    inactive.forEach((ag,i)=>{
-      const p=ag.target>0?ag.tot/ag.target*100:0;
-      html += `<div class="lb-row lb-inactive-row" style="animation-delay:${i*20}ms">
-        <div class="lb-num" style="color:var(--n300)">—</div>
-        <div class="lb-av" style="background:#94a3b8;opacity:.7">${ini(ag.name)}<div class="inact-dot"></div></div>
-        <div class="lb-info">
-          <div class="lb-name" style="color:var(--muted)">
-            ${ag.name}
-            <span class="lb-inactive-badge">🚫 Inactive</span>
-          </div>
-          <div class="lb-meta" style="color:var(--n300)">Left organisation · ${INR(ag.tot)} MTD</div>
-        </div>
-        <div class="lb-right">
-          <div class="lb-rev" style="color:var(--n400)">${INR(ag.tot)}</div>
-          <div class="lb-pct">${Pct(p)} (final)</div>
-        </div>
-      </div>`;
+  if(noData.length){
+    const label = month==="June" ? "Not Yet Joined" : "Inactive / Left Team";
+    html += '<div style="padding:8px 18px 4px;font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.8px;border-top:1px dashed var(--n200);margin-top:4px;">'+label+'</div><div class="lb-rest-list">';
+    noData.forEach(function(r){
+      html += '<div class="lb-row lb-inactive-row">' +
+        '<div class="lb-num" style="color:var(--n300)">&mdash;</div>' +
+        '<div class="lb-av" style="background:#94a3b8">'+ini(r.ag.name)+'</div>' +
+        '<div class="lb-info">' +
+          '<div class="lb-name" style="color:var(--muted)">'+r.ag.name+'<span class="lb-inactive-badge">'+(label==='Not Yet Joined'?'Not joined yet':'Inactive')+'</span></div>' +
+          '<div class="lb-meta" style="color:var(--n300)">No data this month</div>' +
+        '</div>' +
+      '</div>';
     });
     html += '</div>';
   }
 
   document.getElementById("lbWrap").innerHTML = html;
-  document.getElementById("lbDate").textContent=`Jun ${el}, 2026 · ${active.length} active · ${inactive.length} inactive`;
+  document.getElementById("lbMeta").textContent = withData.length + " active \u00b7 " + noData.length + " without data this month";
 }
 
-function renderAgentMgmt(){
-  const actAgents = D.agents.filter(a=>!a.inactive);
-  const inactAgents = D.agents.filter(a=>a.inactive);
-  document.getElementById("agMgmtCount").textContent = `${actAgents.length} active · ${inactAgents.length} inactive`;
-
-  document.getElementById("agentMgmtGrid").innerHTML = D.agents.map((ag,i)=>{
-    const tot = agTot(ag);
-    const p = ag.target>0?(tot/ag.target*100).toFixed(1):0;
-    const bc = pCol(parseFloat(p));
-    const isInact = !!ag.inactive;
-    return `<div class="am-card ${isInact?'am-inactive':''}">
-      <div class="am-av" style="background:${isInact?'#94a3b8':avc(i)}">${ini(ag.name)}</div>
-      <div class="am-info">
-        <div class="am-name">${ag.name}</div>
-        <div class="am-meta" style="color:${isInact?'var(--n300)':bc}">${INR(tot)} · ${p}%${isInact?' · 🚫 Inactive':''}</div>
-      </div>
-      <div class="am-actions">
-        ${isAdmin
-          ? (isInact
-              ? `<button class="am-btn am-btn-react" onclick="toggleAgentActive(${i},true)">✅ Reactivate</button>`
-              : `<button class="am-btn am-btn-deact" onclick="toggleAgentActive(${i},false)">🚫 Mark Inactive</button>`)
-          : `<span style="font-size:10px;color:var(--n400);font-style:italic">Admin only</span>`}
-        ${isAdmin ? `<button class="am-btn am-btn-del" onclick="deleteAgent(${i})">🗑️ Remove</button>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function addNewAgent(){
-  if(!isAdmin){ toast("🔒 Admin login required"); return; }
-  const name = document.getElementById("newAgentName").value.trim();
-  const tgt  = parseInt(document.getElementById("newAgentTarget").value)||68077;
-  if(!name){ toast("⚠️ Enter agent name first"); return; }
-  if(D.agents.find(a=>a.name.toLowerCase()===name.toLowerCase())){ toast("⚠️ Agent already exists"); return; }
-  const newAgent = { name, target:tgt, daily:Array(30).fill(0), inactive:false };
-  D.agents.push(newAgent);
-  document.getElementById("newAgentName").value='';
-  document.getElementById("newAgentTarget").value='';
-  pushToFirebase();
-}
-
-function toggleAgentActive(idx, active){
-  if(!isAdmin){ toast("🔒 Admin login required"); return; }
-  if(idx<0||idx>=D.agents.length) return;
-  const confirmMsg = active
-    ? `Reactivate ${D.agents[idx].name}? They will appear in rankings again.`
-    : `Mark ${D.agents[idx].name} as inactive? They will appear dimmed at the bottom of the leaderboard.`;
-  if(!confirm(confirmMsg)) return;
-  D.agents[idx].inactive = !active;
-  pushToFirebase();
-}
-
-function deleteAgent(idx){
-  if(!isAdmin){ toast("🔒 Admin login required"); return; }
-  if(idx<0||idx>=D.agents.length) return;
-  if(!confirm(`Permanently remove ${D.agents[idx].name} from the dashboard? This cannot be undone.`)) return;
-  D.agents.splice(idx,1);
-  pushToFirebase();
-}
-
-function pushToFirebase(){
-  document.getElementById("sov").classList.add("on");
-  db.ref(DB_KEY).set(D).then(()=>{
-    document.getElementById("sov").classList.remove("on");
-    toast("☁️ Team roster updated & synced!");
-  }).catch(err=>{
-    document.getElementById("sov").classList.remove("on");
-    toast("❌ Sync failed — local view updated");
-    renderAll();
-  });
-}
-
-function openWAShare(){
-  buildWAReport();
-  document.getElementById("waOvl").classList.add("on");
-}
-function closeWAShare(){ document.getElementById("waOvl").classList.remove("on"); }
-
-function buildWAReport(){
-  const{achieved,remaining,daysLeft,drr,actDrr,dayTgt,pct,baseFc,daysElapsed,daysTotal,target}=derive();
-  const today = new Date();
-  const dateStr = `${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${today.getFullYear()}`;
-
-  const activeAgents = D.agents
-    .map((ag,i)=>({...ag,_i:i,tot:agTot(ag)}))
-    .filter(a=>!a.inactive)
-    .sort((a,b)=>b.tot-a.tot);
-
-  const bar = (pct)=>{
-    const filled = Math.round(pct/10);
-    return '🟩'.repeat(Math.min(filled,10)) + '⬜'.repeat(Math.max(0,10-filled));
-  };
-
-  const medal = (i)=>i===0?'🥇':i===1?'🥈':i===2?'🥉':'  ';
-  const status = (p)=>p>=60?'✅':p>=20?'⚡':'🔴';
-
-  let lines = [];
-  lines.push(`🏠 *HOUSING.COM — MTD PERFORMANCE*`);
-  lines.push(`📅 *${dateStr}* | Day ${daysElapsed} of ${daysTotal}`);
-  lines.push(`━━━━━━━━━━━━━━━━━━━━━`);
-  lines.push(``);
-  lines.push(`📊 *TEAM OVERVIEW*`);
-  lines.push(`🎯 Target:     ${INR(target)}`);
-  lines.push(`💰 Achieved:   ${INR(achieved)} *(${Pct(pct)})*`);
-  lines.push(`⏳ Remaining:  ${INR(remaining)}`);
-  lines.push(`📈 Actual DRR: ${INR(Math.round(actDrr))}`);
-  lines.push(`🔮 Need DRR:   ${INR(Math.round(drr))}`);
-  lines.push(`🔭 Forecast:   ${INR(baseFc)} *(${Pct(baseFc/target*100)})*`);
-  lines.push(``);
-  lines.push(`${bar(pct)} *${Pct(pct,0)}*`);
-  lines.push(``);
-  lines.push(`━━━━━━━━━━━━━━━━━━━━━`);
-  lines.push(`🏆 *AGENT LEADERBOARD*`);
-  lines.push(``);
-
-  activeAgents.forEach((ag,i)=>{
-    const p = ag.target>0?ag.tot/ag.target*100:0;
-    const agBar = bar(Math.min(p,100));
-    lines.push(`${medal(i)} *${ag.name.split(' ')[0].toUpperCase()}*`);
-    lines.push(`   ${status(p)} ${INR(ag.tot)} | ${Pct(p,0)} of target`);
-    if(i<3) lines.push(`   ${agBar}`);
-    lines.push(``);
-  });
-
-  const inactAgents = D.agents.filter(a=>a.inactive);
-  if(inactAgents.length>0){
-    lines.push(`🚫 *Inactive:* ${inactAgents.map(a=>a.name.split(' ')[0]).join(', ')}`);
-    lines.push(``);
+function renderTracker(){
+  const month = activeMonth;
+  const meta = DATA.monthsMeta[month];
+  const trkCard = document.getElementById("trkCard");
+  if(month === "May"){
+    trkCard.style.display = "none";
+    return;
   }
+  trkCard.style.display = "";
+  const showDays = month === "August" ? meta.daysElapsed : meta.daysTotal;
+  let hdr = "<th>#</th><th>Agent</th>";
+  for(let d=1; d<=showDays; d++) hdr += "<th style=\"min-width:38px\">"+d+"</th>";
+  hdr += "<th>Total</th><th>Target</th><th>Achv%</th><th>Status</th>";
+  document.getElementById("agHdr").innerHTML = hdr;
 
-  lines.push(`━━━━━━━━━━━━━━━━━━━━━`);
+  const rows = DATA.agents.filter(function(ag){return isActiveInMonth(ag, month);}).map(function(ag){
+    const daily = agentDaily(ag, month);
+    const tot = daily.slice(0, showDays).reduce(function(s,v){return s+v;},0);
+    const tgt = agentTarget(ag, month);
+    return {ag:ag, daily:daily, tot:tot, tgt:tgt, p: tgt>0 ? tot/tgt*100 : 0, idx: DATA.agents.indexOf(ag)};
+  }).sort(function(a,b){return b.tot-a.tot;});
 
-  const zeroMTD = activeAgents.filter(a=>a.tot===0);
-  if(zeroMTD.length>0) lines.push(`⚠️ *Zero MTD:* ${zeroMTD.map(a=>a.name.split(' ')[0]).join(', ')}`);
-
-  const top3tot = activeAgents.slice(0,3).reduce((s,a)=>s+a.tot,0);
-  const concPct = achieved>0?(top3tot/achieved*100).toFixed(0):0;
-  if(parseInt(concPct)>65) lines.push(`📌 Top 3 carry ${concPct}% of team revenue`);
-
-  lines.push(``);
-  lines.push(`⏰ ${daysLeft} days remaining to close gap`);
-  lines.push(`💪 *Let's push hard! Every conversion counts.*`);
-  lines.push(``);
-  lines.push(`_Powered by Housing.com Sales Command Centre_`);
-
-  const reportText = lines.join('\n');
-  document.getElementById("waText").textContent = reportText;
-}
-
-function copyWAReport(){
-  const text = document.getElementById("waText").textContent;
-  navigator.clipboard.writeText(text).then(()=>{
-    const btn = document.getElementById("waCopyBtn");
-    btn.classList.add("wa-copied");
-    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px"><path d="M20 6L9 17l-5-5"/></svg> Copied! Paste in WhatsApp`;
-    setTimeout(()=>{
-      btn.classList.remove("wa-copied");
-      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg> Copy to Clipboard`;
-    }, 3000);
-  }).catch(()=>{
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    document.body.removeChild(ta);
-    toast("✅ Copied to clipboard!");
-  });
-}
-
-function renderPerformers(){
-  const all=D.agents.map((ag,i)=>({...ag,_i:i,tot:agTot(ag),pct:ag.target>0?agTot(ag)/ag.target*100:0})).sort((a,b)=>b.tot-a.tot);
-  const top=all.slice(0,Math.min(4,all.length));
-  const bot=[...all].sort((a,b)=>a.pct-b.pct).slice(0,4);
-  const maxT=top[0]?.tot||1;
-  document.getElementById("topPerf").innerHTML=top.map(ag=>`
-    <div class="performer-card pc-top">
-      <div class="pc-av" style="background:${avc(ag._i)}">${ini(ag.name)}</div>
-      <div class="pc-info">
-        <div class="pc-name">${ag.name}</div>
-        <div class="pc-rev" style="color:var(--green)">${INR(ag.tot)}</div>
-        <div class="pc-sub">${Pct(ag.pct)} of target</div>
-        <div class="pc-bar"><div class="pc-bar-fill" style="width:${Math.min(ag.tot/maxT*100,100)}%;background:var(--green)"></div></div>
-      </div>
-    </div>`).join("");
-  document.getElementById("botPerf").innerHTML=bot.map(ag=>`
-    <div class="performer-card pc-bot">
-      <div class="pc-av" style="background:${avc(ag._i)}">${ini(ag.name)}</div>
-      <div class="pc-info">
-        <div class="pc-name">${ag.name}</div>
-        <div class="pc-rev" style="color:var(--red)">${INR(ag.tot)}</div>
-        <div class="pc-sub">${Pct(ag.pct)} of target</div>
-        <div class="pc-bar"><div class="pc-bar-fill" style="width:${Math.min(ag.pct,100)}%;background:var(--red)"></div></div>
-      </div>
-    </div>`).join("");
-}
-
-function renderTVA(){
-  const agents=D.agents.map((ag,i)=>({...ag,_i:i,tot:agTot(ag)}));
-  document.getElementById("tvaGrid").innerHTML=agents.map(ag=>{
-    const p=ag.target>0?ag.tot/ag.target*100:0,bc=pCol(p);
-    return`<div class="tva-item">
-      <div class="tva-name">${ag.name}</div>
-      <div class="tva-nums">
-        <div><div class="tva-ach" style="color:${bc}">${INR(ag.tot)}</div><div class="tva-tgt">of ${INR(ag.target)}</div></div>
-        <div class="tva-pct" style="color:${bc}">${Pct(p)}</div>
-      </div>
-      <div class="tva-track"><div class="tva-fill" style="width:${Math.min(p,100)}%;background:${bc}"></div></div>
-    </div>`;
-  }).join("");
-}
-
-let fcChart=null;
-function renderForecast(){
-  const{achieved,remaining,daysLeft,drr,actDrr,dayTgt,baseFc,optFc,consFc,daysElapsed,daysTotal,target,daily}=derive();
-  document.getElementById("fcScenarios").innerHTML=`
-    <div class="fc-sc opt"><div class="fc-lbl opt">🚀 Optimistic (+20%)</div><div class="fc-val opt">${INR(optFc)}</div><div class="fc-pct">${Pct(optFc/target*100)} of target</div></div>
-    <div class="fc-sc base"><div class="fc-lbl base">📊 Base (current DRR)</div><div class="fc-val base">${INR(baseFc)}</div><div class="fc-pct">${Pct(baseFc/target*100)} of target</div></div>
-    <div class="fc-sc cons"><div class="fc-lbl cons">⚠️ Conservative (−20%)</div><div class="fc-val cons">${INR(consFc)}</div><div class="fc-pct">${Pct(consFc/target*100)} of target</div></div>`;
-  document.getElementById("fcChips").innerHTML=[
-    {l:"Daily Target",v:INR(dayTgt)},{l:"Actual DRR",v:INR(Math.round(actDrr))},
-    {l:"DRR Required",v:INR(Math.round(drr))},{l:"DRR Gap",v:(drr>actDrr?"+":"")+S(Math.round(drr-actDrr))},
-    {l:"Weekly Forecast",v:INR(Math.round(actDrr*7))},{l:"Days Remaining",v:daysLeft+" days"},
-    {l:"Gap to Target",v:INR(remaining)},{l:"Best Case",v:INR(optFc)},
-  ].map(c=>`<div class="fchip"><div class="fchip-lbl">${c.l}</div><div class="fchip-val">${c.v}</div></div>`).join("");
-  const labels=Array.from({length:daysTotal},(_,i)=>i+1);
-  let cum=0;
-  const actLine=labels.map((_,i)=>{if(i<daysElapsed){cum+=daily[i];return cum;}return null;});
-  let fc2=achieved,opt2=achieved;
-  const baseL=labels.map((_,i)=>{if(i<daysElapsed)return null;fc2+=drr;return Math.round(fc2);});
-  const optL=labels.map((_,i)=>{if(i<daysElapsed)return null;opt2+=actDrr*1.2;return Math.round(opt2);});
-  const tgtL=labels.map((_,i)=>Math.round(dayTgt*(i+1)));
-  const ctx=document.getElementById("fcChart").getContext("2d");
-  if(fcChart)fcChart.destroy();
-  fcChart=new Chart(ctx,{type:"line",data:{labels,datasets:[
-    {label:"Actual",data:actLine,borderColor:"#dc2626",backgroundColor:"rgba(220,38,38,.08)",borderWidth:2.5,pointRadius:2.5,pointBackgroundColor:"#dc2626",tension:.3,fill:true},
-    {label:"Forecast",data:baseL,borderColor:"#2563eb",backgroundColor:"rgba(37,99,235,.05)",borderWidth:2,pointRadius:0,tension:.3,borderDash:[5,4],fill:true},
-    {label:"Optimistic",data:optL,borderColor:"#16a34a",borderWidth:1.5,pointRadius:0,tension:.3,borderDash:[3,3],fill:false},
-    {label:"Target",data:tgtL,borderColor:"rgba(22,163,74,.3)",borderWidth:1.5,pointRadius:0,tension:0,borderDash:[2,4],fill:false}
-  ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": "+INR(c.parsed.y||0),title:c=>"Jun "+c[0].label}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
-}
-
-let juneChart=null,wowChart=null,cmpChart=null;
-function renderCharts(){
-  const{daily,daysElapsed}=D.june;
-  const jctx=document.getElementById("juneChart").getContext("2d");
-  if(juneChart)juneChart.destroy();
-  juneChart=new Chart(jctx,{type:"bar",data:{labels:daily.map((_,i)=>i+1),datasets:[{label:"Revenue",data:daily,backgroundColor:daily.map((v,i)=>i>=daysElapsed?"#e2e8f0":v>0?"rgba(220,38,38,.82)":"rgba(226,232,240,.6)"),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"₹"+c.parsed.y.toLocaleString("en-IN"),title:c=>"Jun "+c[0].label+(c[0].dataIndex<daysElapsed?" (actual)":" (future)")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:false,maxRotation:0}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
-  const wctx=document.getElementById("wowChart").getContext("2d");
-  if(wowChart)wowChart.destroy();
-  wowChart=new Chart(wctx,{type:"line",data:{labels:["Wk-1","Wk-2","Wk-3","Wk-4"],datasets:[
-    {label:"May",data:D.mayWeekly.map(w=>w.revenue),borderColor:"#2563eb",backgroundColor:"rgba(37,99,235,.08)",borderWidth:2.5,pointRadius:5,pointBackgroundColor:"#2563eb",tension:.3,fill:true},
-    {label:"June",data:D.juneWeekly.map(w=>w.revenue),borderColor:"#dc2626",backgroundColor:"rgba(220,38,38,.08)",borderWidth:2.5,pointRadius:5,pointBackgroundColor:"#dc2626",tension:.3,fill:true}
-  ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},plugins:{legend:{position:"top",labels:{font:{size:11},boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
-  const cctx=document.getElementById("cmpChart").getContext("2d");
-  if(cmpChart)cmpChart.destroy();
-  const jun=D.june.daily;
-  cmpChart=new Chart(cctx,{type:"bar",data:{labels:D.mayDaily.map(r=>r.d.replace("-May","")),datasets:[
-    {label:"May",data:D.mayDaily.map(r=>r.v),backgroundColor:"rgba(37,99,235,.72)",borderRadius:2,borderSkipped:false},
-    {label:"June",data:D.mayDaily.map((_,i)=>i<jun.length?jun[i]:0),backgroundColor:"rgba(220,38,38,.72)",borderRadius:2,borderSkipped:false}
-  ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": ₹"+c.parsed.y.toLocaleString("en-IN")}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:"#f1f5f9"},ticks:{callback:v=>S(v),font:{size:10}}}}}});
-}
-
-function renderWeekly(){
-  const mTot=D.mayWeekly.reduce((s,r)=>s+r.revenue,0),mTgt=D.mayWeekly.reduce((s,r)=>s+r.target,0);
-  document.getElementById("mayWkBody").innerHTML=D.mayWeekly.map((r,i)=>{
-    const def=r.revenue-r.target,prev=i>0?D.mayWeekly[i-1].revenue:null;
-    const wow=prev&&prev>0?((r.revenue-prev)/prev*100).toFixed(0)+"%":"—";
-    return`<tr><td><b>${r.week}</b></td><td class="mono">${INR(r.target)}</td><td class="mono">${INR(r.revenue)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td class="mono ${wow.startsWith("-")?"dn":"up"}">${wow}</td><td class="mono">${mTot>0?Pct(r.revenue/mTot*100,0):"0%"}</td></tr>`;
-  }).join("");
-  document.getElementById("mayWkFoot").innerHTML=`<tr><td><b>Total</b></td><td class="mono">${INR(mTgt)}</td><td class="mono">${INR(mTot)}</td><td class="mono dn">${INR(mTot-mTgt)}</td><td colspan="2" class="mono">${Pct(mTot/mTgt*100)} of target</td></tr>`;
-  const jTot=D.juneWeekly.reduce((s,r)=>s+r.revenue,0),jTgt=D.juneWeekly.reduce((s,r)=>s+r.target,0);
-  document.getElementById("junWkBody").innerHTML=D.juneWeekly.map((r,i)=>{
-    const def=r.revenue-r.target,sh=jTot>0?Pct(r.revenue/jTot*100,0):"0%";
-    const mR=D.mayWeekly[i]?.revenue||0,vM=mR>0?r.revenue-mR:null;
-    const vmHtml=vM!==null?`<span class="chip ${vM>=0?"cg":"cr"}">${vM>=0?"▲":"▼"}${S(Math.abs(vM))}</span>`:"—";
-    return`<tr><td><b>${r.week}</b></td><td class="mono">${INR(r.target)}</td><td class="mono">${INR(r.revenue)}</td><td class="mono ${def>=0?"up":"dn"}">${def>=0?"+":""}${INR(def)}</td><td class="mono">${sh}</td><td>${vmHtml}</td></tr>`;
-  }).join("");
-  document.getElementById("junWkFoot").innerHTML=`<tr><td><b>Total</b></td><td class="mono">${INR(jTgt)}</td><td class="mono">${INR(jTot)}</td><td class="mono dn">${INR(jTot-jTgt)}</td><td class="mono" colspan="2">${Pct(jTot/jTgt*100)} of target</td></tr>`;
-}
-
-function renderAgents(){
-  const{daysElapsed,daysTotal}=D.june;
-  const{actDrr}=derive();
-  let hdr=`<th>#</th><th>Agent</th>`;
-  for(let d=1;d<=daysElapsed;d++) hdr+=`<th style="min-width:40px">${d}</th>`;
-  hdr+=`<th>Total</th><th>Target</th><th>Achv%</th><th>DRR Needed</th><th>Tgt Till Now</th><th>Deficit</th><th>Status</th>`;
-  document.getElementById("agHdr").innerHTML=hdr;
-
-  const agents=filteredAgents();
-  let grand=0;
-  document.getElementById("agBody").innerHTML=agents.map((ag,rank)=>{
-    grand+=ag.tot;
-    const p=ag.target>0?ag.tot/ag.target*100:0,bc=pCol(p);
-    const dayTgt=Math.round(ag.target/daysTotal);
-    const dLeft=daysTotal-daysElapsed;
-    const agDrr=dLeft>0?(ag.target-ag.tot)/dLeft:0;
-    const ttn=dayTgt*daysElapsed,def=ag.tot-ttn,over=def>=0;
-    const rowCls=p>=60?"row-green":p>=20?"row-amber":"row-red";
-    let cells="";
-    for(let d=0;d<daysElapsed;d++){
-      const v=ag.daily[d]||0,wk=Math.floor(d/7)+1;
-      const inWkFilter=filterWeek===''||parseInt(filterWeek)===wk;
-      cells+=`<td class="mono" style="color:${v>0&&inWkFilter?bc:"var(--n300)"}">${v>0?S(v):"—"}</td>`;
+  let grand = 0;
+  document.getElementById("agBody").innerHTML = rows.map(function(r,rank){
+    grand += r.tot;
+    const bc = pCol(r.p);
+    let cells = "";
+    for(let d=0; d<showDays; d++){
+      const v = r.daily[d]||0;
+      cells += '<td class="mono" style="color:'+(v>0?bc:'var(--n300)')+'">'+(v>0?S(v):"&mdash;")+'</td>';
     }
-    return`<tr class="${rowCls}">
-      <td style="color:var(--muted);font-size:11px;font-weight:600">${rank+1}</td>
-      <td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:${avc(ag._i)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">${ini(ag.name)}</div><span style="font-weight:600;font-size:12px">${ag.name}</span></div></td>
-      ${cells}
-      <td style="font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px">${INR(ag.tot)}</td>
-      <td class="mono">${INR(ag.target)}</td>
-      <td><div style="display:flex;align-items:center;gap:6px"><div class="bw2"><div class="bf2" style="width:${Math.min(p,100).toFixed(0)}%;background:${bc}"></div></div><span style="font-size:11px;font-weight:700;color:${bc}">${Pct(p)}</span></div></td>
-      <td class="mono ${agDrr<actDrr?"up":"dn"}">${INR(agDrr)}</td>
-      <td class="mono">${INR(ttn)}</td>
-      <td class="mono ${over?"up":"dn"}">${over?"+":""}${INR(def)}</td>
-      <td><span class="pill ${pillCls(p)}">${pillTxt(p)}</span></td>
-    </tr>`;
+    return '<tr>' +
+      '<td style="color:var(--muted);font-size:11px;font-weight:600">'+(rank+1)+'</td>' +
+      '<td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:'+avc(r.idx)+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">'+ini(r.ag.name)+'</div><span style="font-weight:600;font-size:12px">'+r.ag.name+'</span></div></td>' +
+      cells +
+      '<td style="font-weight:700;font-family:\'JetBrains Mono\',monospace;font-size:11px">'+INR(r.tot)+'</td>' +
+      '<td class="mono">'+INR(r.tgt)+'</td>' +
+      '<td><span style="font-size:11px;font-weight:700;color:'+bc+'">'+Pct(r.p)+'</span></td>' +
+      '<td><span class="pill '+pillCls(r.p)+'">'+pillTxt(r.p)+'</span></td>' +
+    '</tr>';
   }).join("");
 
-  let foot=`<tr><td colspan="2"><b>Total</b></td>`;
-  for(let d=0;d<daysElapsed;d++){const dt=D.agents.reduce((s,ag)=>s+(ag.daily[d]||0),0);foot+=`<td class="mono">${S(dt)}</td>`;}
-  foot+=`<td style="font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px">${INR(grand)}</td><td colspan="6" style="color:var(--muted);font-size:11px">Team total — June 2026</td></tr>`;
-  document.getElementById("agFoot").innerHTML=foot;
-}
-
-function renderDaily(){
-  const jun=D.june.daily;
-  document.getElementById("dailyBody").innerHTML=D.mayDaily.map((r,i)=>{
-    const jv=i<jun.length?jun[i]:0,diff=jv-r.v;
-    const dEl=(r.v>0&&jv>0)?`<span class="chip ${diff>=0?"cg":"cr"}">${diff>=0?"▲":"▼"}${S(Math.abs(diff))}</span>`:"—";
-    return`<tr><td style="color:var(--muted);font-size:11px">${r.w}</td><td style="font-weight:500">${r.d}</td><td class="mono" style="color:${r.v>0?"#1e3a8a":"var(--muted)"}">${r.v>0?INR(r.v):"—"}</td><td class="mono" style="color:${jv>0?"#b91c1c":"var(--muted)"}">${jv>0?INR(jv):"—"}</td><td>${dEl}</td></tr>`;
-  }).join("");
-  const mS=D.mayDaily.reduce((s,r)=>s+r.v,0),jS=jun.reduce((s,v)=>s+v,0);
-  document.getElementById("dailyFoot").innerHTML=`<tr><td colspan="2"><b>Total</b></td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#1e3a8a">${INR(mS)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#b91c1c">${INR(jS)}</td><td></td></tr>`;
+  let foot = '<tr><td colspan="2"><b>Total</b></td>';
+  for(let d=0; d<showDays; d++){
+    const dt = rows.reduce(function(s,r){return s+(r.daily[d]||0);},0);
+    foot += '<td class="mono">'+S(dt)+'</td>';
+  }
+  foot += '<td style="font-weight:700;font-family:\'JetBrains Mono\',monospace;font-size:11px">'+INR(grand)+'</td><td colspan="3" style="color:var(--muted);font-size:11px">Team total &mdash; '+month+' 2026</td></tr>';
+  document.getElementById("agFoot").innerHTML = foot;
+  document.getElementById("trkTitle").textContent = "Full Daily Tracker \u2014 " + month + " 2026";
+  document.getElementById("trkMeta").textContent = showDays + " of " + meta.daysTotal + " days shown \u00b7 " + rows.length + " agents";
 }
 
 function renderInsights(){
-  const{achieved,remaining,daysLeft,drr,actDrr,dayTgt,pct,baseFc,optFc,consFc,daysElapsed,daily,target}=derive();
-  const alerts=[];
+  const month = activeMonth;
+  const meta = DATA.monthsMeta[month];
+  const achieved = teamAchievedSoFar(month);
+  const pct = meta.target>0 ? achieved/meta.target*100 : 0;
+  const alerts = [];
 
-  if(daysElapsed>0){
-    const idx=daysElapsed-1,zero=D.agents.filter(ag=>(ag.daily[idx]||0)===0);
-    const sev=zero.length>=Math.ceil(D.agents.length*.6)?"crit":zero.length>=3?"warn":zero.length===0?"ok":"info";
-    const badgeCls={crit:"bc",warn:"bw",ok:"bo",info:"bi"}[sev];
-    alerts.push({sev,icon:sev==="ok"?"✅":"🚨",bc:badgeCls,badge:sev==="ok"?"All Active Today":`${zero.length} Zero Revenue Today`,
-      title:sev==="ok"?`All ${D.agents.length} agents contributed on Jun ${daysElapsed}`:`${zero.length} of ${D.agents.length} agents had ₹0 on Jun ${daysElapsed}`,
-      val:zero.length>0?zero.length+"":null,vc:sev==="ok"?"green":"red",
-      desc:zero.length===0?"Every agent contributed — excellent team activation.":zero.map(a=>a.name.split(" ")[0]).join(", ")+" contributed nothing. ~"+INR(dayTgt)+" missed per idle agent.",
-      names:zero.map(a=>a.name)});
-  }
+  const pctSev = pct>=90?"ok":pct>=60?"warn":"crit";
+  alerts.push({sev:pctSev, bc:{ok:"bo",warn:"bw",crit:"bc"}[pctSev],
+    badge: month==="August" ? "In Progress" : "Final Result",
+    title: month+" is at "+Pct(pct)+" of target", val:INR(achieved), vc: pctSev==="ok"?"green":pctSev==="warn"?"amber":"red",
+    desc:"Target was "+INR(meta.target)+"; team delivered "+INR(achieved)+(month==='August'?' so far, with '+(meta.daysTotal-meta.daysElapsed)+' days left.':'.')});
 
-  const drrGap=drr-actDrr,gapPct=actDrr>0?(drrGap/actDrr*100):0;
-  const drrSev=drrGap>actDrr*.5?"crit":drrGap>0?"warn":"ok";
-  alerts.push({sev:drrSev,icon:drrSev==="ok"?"🟢":"📉",bc:{crit:"bc",warn:"bw",ok:"bo"}[drrSev],badge:drrSev==="ok"?"On Pace ✓":gapPct>50?"Critical DRR Gap":"DRR Behind",
-    title:drrSev==="ok"?"Team DRR ahead of required pace":`Need ${INR(Math.round(drr))}/day but averaging ${INR(Math.round(actDrr))}/day`,
-    val:(drrGap>0?"+":"")+INR(Math.round(Math.abs(drrGap))),vc:drrSev==="ok"?"green":drrSev==="crit"?"red":"amber",
-    desc:drrSev==="ok"?`Actual DRR (${INR(Math.round(actDrr))}) beats required (${INR(Math.round(drr))}). Maintain this pace.`:`DRR gap: ${INR(Math.round(drrGap))}/day (${gapPct.toFixed(0)}% shortfall). Base forecast: ${INR(baseFc)} = ${Pct(baseFc/target*100)} of target.`,
-    names:[]});
-
-  const zeroMTD=D.agents.filter(ag=>agTot(ag)===0);
-  if(zeroMTD.length>0) alerts.push({sev:"crit",icon:"💤",bc:"bc",badge:"No Revenue — Month to Date",
-    title:`${zeroMTD.length} agent${zeroMTD.length>1?"s have":" has"} ₹0 for all of June`,
-    val:zeroMTD.length+"",vc:"red",
-    desc:zeroMTD.map(a=>a.name.split(" ")[0]).join(", ")+" have not logged a single rupee in "+daysElapsed+" elapsed days.",
-    names:zeroMTD.map(a=>a.name)});
-
-  const sortedByRev=[...D.agents].map(ag=>({...ag,tot:agTot(ag)})).sort((a,b)=>b.tot-a.tot);
-  const top3=sortedByRev.slice(0,3).reduce((s,a)=>s+a.tot,0),concPct=achieved>0?top3/achieved*100:0;
-  const cSev=concPct>75?"crit":concPct>60?"warn":"ok";
-  alerts.push({sev:cSev,icon:cSev==="ok"?"⚖️":"⚠️",bc:{crit:"bc",warn:"bw",ok:"bo"}[cSev],badge:cSev==="ok"?"Balanced Load":"Concentration Risk",
-    title:`Top 3 agents = ${Pct(concPct,0)} of all June revenue`,
-    val:Pct(concPct,0),vc:cSev==="ok"?"green":cSev==="crit"?"red":"amber",
-    desc:cSev==="ok"?"Revenue load spread reasonably across team.":sortedByRev[0].name.split(" ")[0]+", "+sortedByRev[1].name.split(" ")[0]+" & "+sortedByRev[2].name.split(" ")[0]+" are carrying the team.",
-    names:cSev!=="ok"?sortedByRev.slice(0,3).map(a=>a.name):[]});
-
-  const fcSev=baseFc>=target?"ok":baseFc>=target*.75?"warn":"crit";
-  alerts.push({sev:fcSev,icon:fcSev==="ok"?"🎯":"🔮",bc:{crit:"bc",warn:"bw",ok:"bo"}[fcSev],badge:fcSev==="ok"?"Forecast Meets Target":"Shortfall Risk",
-    title:fcSev==="ok"?`On track — base forecast beats target`:`Base forecast short by ${INR(target-baseFc)}`,
-    val:INR(baseFc),vc:fcSev==="ok"?"green":fcSev==="crit"?"red":"amber",
-    desc:`Optimistic: ${INR(optFc)} (${Pct(optFc/target*100)}). Conservative: ${INR(consFc)} (${Pct(consFc/target*100)}). ${daysLeft} days to close ${INR(remaining)}.`,
-    names:[]});
-
-  const filledDays=daily.slice(0,daysElapsed).filter(v=>v>0);
-  if(filledDays.length>0){
-    const best=Math.max(...filledDays),bestDay=daily.indexOf(best)+1,avg=filledDays.reduce((s,v)=>s+v,0)/filledDays.length;
-    alerts.push({sev:"info",icon:"🏅",bc:"bi",badge:"Best Single Day",
-      title:`Jun ${bestDay} was the peak — ${(best/avg).toFixed(1)}× the daily average`,
-      val:INR(best),vc:"blue",
-      desc:`Daily avg across ${filledDays.length} revenue days: ${INR(Math.round(avg))}. Jun ${bestDay} outperformed by ${INR(Math.round(best-avg))}.`,
-      names:[]});
-  }
-
-  const needCoach=D.agents.filter(ag=>{const p=ag.target>0?agTot(ag)/ag.target*100:0;return p<10&&ag.target>0;});
-  if(needCoach.length>0) alerts.push({sev:"warn",icon:"🎙️",bc:"bw",badge:"Coaching Priority",
-    title:`${needCoach.length} agent${needCoach.length>1?"s":""} below 10% monthly achievement`,
-    val:needCoach.length+"",vc:"amber",
-    desc:`Immediate coaching required. Combined untapped target: ${INR(needCoach.reduce((s,a)=>s+a.target,0))}.`,
-    names:needCoach.map(a=>a.name)});
-
-  if(daysElapsed>=3){
-    const last3=daily.slice(Math.max(0,daysElapsed-3),daysElapsed).filter(v=>v>0);
-    if(last3.length===3){
-      const up=last3[2]>last3[1]&&last3[1]>last3[0],dn=last3[2]<last3[1]&&last3[1]<last3[0];
-      if(up||dn) alerts.push({sev:up?"ok":"warn",icon:up?"📈":"📉",bc:up?"bo":"bw",badge:up?"3-Day Surge":"3-Day Decline",
-        title:up?"Revenue growing 3 consecutive days":"Revenue declining 3 consecutive days",
-        val:null,vc:up?"green":"amber",
-        desc:`Day ${daysElapsed-2}: ${INR(last3[0])} → Day ${daysElapsed-1}: ${INR(last3[1])} → Day ${daysElapsed}: ${INR(last3[2])}.`,
-        names:[]});
+  const agentsThisMonth = DATA.agents.filter(function(ag){return isActiveInMonth(ag,month);});
+  if(agentsThisMonth.length){
+    const withTotals = agentsThisMonth.map(function(ag){return {ag:ag, tot:agentTotal(ag,month)};}).sort(function(a,b){return b.tot-a.tot;});
+    const top = withTotals[0], bottom = withTotals[withTotals.length-1];
+    alerts.push({sev:"info", bc:"bi", badge:"Top Performer",
+      title:top.ag.name+" led the team in "+month, val:INR(top.tot), vc:"blue",
+      desc:top.ag.name+" closed "+month+" with "+INR(top.tot)+", the highest of "+withTotals.length+" active agents."});
+    if(bottom.tot === 0){
+      alerts.push({sev:"crit", bc:"bc", badge:"Zero Revenue",
+        title:bottom.ag.name+" logged \u20b90 for all of "+month, val:"\u20b90", vc:"red",
+        desc:"Immediate coaching or escalation recommended."});
+    } else {
+      alerts.push({sev:"warn", bc:"bw", badge:"Needs Support",
+        title:bottom.ag.name+" trails the team in "+month, val:INR(bottom.tot), vc:"amber",
+        desc:"Lowest contribution among active agents this month."});
     }
+    const top3 = withTotals.slice(0,3).reduce(function(s,a){return s+a.tot;},0);
+    const concPct = achieved>0 ? top3/achieved*100 : 0;
+    const cSev = concPct>75?"crit":concPct>60?"warn":"ok";
+    alerts.push({sev:cSev, bc:{crit:"bc",warn:"bw",ok:"bo"}[cSev], badge:cSev==="ok"?"Balanced Load":"Concentration Risk",
+      title:"Top 3 agents = "+Pct(concPct,0)+" of "+month+" revenue", val:Pct(concPct,0), vc:cSev==="ok"?"green":cSev==="crit"?"red":"amber",
+      desc:cSev==="ok"?"Revenue load is spread reasonably across the team.":withTotals.slice(0,3).map(function(a){return a.ag.name.split(" ")[0];}).join(", ")+" are carrying the team this month."});
+  } else {
+    alerts.push({sev:"info", bc:"bi", badge:"No Agent Data",
+      title:"Agent-level breakdown unavailable", val:null, vc:null, desc:"Only the team total is tracked for "+month+"."});
   }
 
-  const bands={high:D.agents.filter(ag=>agTot(ag)/ag.target>=.6).length,mid:D.agents.filter(ag=>{const p=agTot(ag)/ag.target;return p>=.2&&p<.6;}).length,low:D.agents.filter(ag=>ag.target>0&&agTot(ag)/ag.target<.2).length};
-  alerts.push({sev:"info",icon:"📊",bc:"bi",badge:"Team Distribution",
-    title:`Team: ${bands.high} on track · ${bands.mid} halfway · ${bands.low} below 20%`,
-    val:null,vc:null,
-    desc:`${Pct(bands.high/D.agents.length*100,0)} of agents are at ≥60% achievement. ${bands.low} agent${bands.low!==1?"s":""} need urgent intervention.`,
-    names:[]});
+  const daily = DATA.dailyTeam[month];
+  const filled = daily.slice(0, month==="August"?meta.daysElapsed:meta.daysTotal).filter(function(v){return v>0;});
+  if(filled.length){
+    const best = Math.max.apply(null, filled), bestDay = daily.indexOf(best)+1;
+    const avg = filled.reduce(function(s,v){return s+v;},0)/filled.length;
+    alerts.push({sev:"info", bc:"bi", badge:"Best Single Day",
+      title:"Day "+bestDay+" was the peak \u2014 "+(best/avg).toFixed(1)+"x the daily average", val:INR(best), vc:"blue",
+      desc:"Daily avg across "+filled.length+" revenue days: "+INR(Math.round(avg))+"."});
+  }
 
-  const sevOrder={crit:0,warn:1,ok:2,info:3,neutral:4};
-  alerts.sort((a,b)=>sevOrder[a.sev]-sevOrder[b.sev]);
-  document.getElementById("intelGrid").innerHTML=alerts.map(a=>`
-    <div class="ic ${a.sev}">
-      <div class="ic-icon">${a.icon}</div>
-      <div class="ic-body">
-        <span class="ic-badge ${a.bc||"bn"}">${a.badge}</span>
-        ${a.val!=null?`<div class="ic-val" style="color:var(--${a.vc||"text"})">${a.val}</div>`:""}
-        <div class="ic-title">${a.title}</div>
-        <div class="ic-desc">${a.desc}</div>
-        ${a.names&&a.names.length?`<div class="ic-names">${a.names.map(n=>`<span class="ic-name">${n}</span>`).join("")}</div>`:""}
-      </div>
-    </div>`).join("");
-  document.getElementById("intelTs").textContent=`${alerts.filter(a=>a.sev==="crit").length} critical · ${alerts.filter(a=>a.sev==="warn").length} warnings · refreshed ${D.lastUpdated}`;
-}
+  const monthIdx = MONTHS.indexOf(month);
+  if(monthIdx>0){
+    const prevMonth = MONTHS[monthIdx-1];
+    const prevTotal = DATA.monthsMeta[prevMonth].total;
+    const growth = prevTotal>0 ? (meta.total-prevTotal)/prevTotal*100 : 0;
+    alerts.push({sev: growth>=0?"ok":"warn", bc: growth>=0?"bo":"bw", badge:"Month-over-Month",
+      title:month+" vs "+prevMonth+": "+(growth>=0?'+':'')+Pct(growth,1), val:null, vc:null,
+      desc:prevMonth+" closed at "+INR(prevTotal)+"; "+month+(month==='August'?' is currently at ':' closed at ')+INR(meta.total)+"."});
+  }
 
-function renderHealthCheck(){
-  const{daysElapsed,daily,target}=D.june;
-  const checks=[];
-
-  checks.push({icon:"📅",label:"Days Elapsed Auto-Sync",sub:`Set to ${daysElapsed} from date ${D.lastUpdated}`,status:daysElapsed>0&&daysElapsed<=30?"ok":"warn",st:daysElapsed>0&&daysElapsed<=30?"✓ Valid":"⚠ Check date"});
-
-  checks.push({icon:"📋",label:"Daily Revenue Array",sub:`${daily.length} of 30 slots populated`,status:daily.length===30?"ok":"err",st:daily.length===30?"✓ Complete":"✗ Missing slots"});
-
-  const neg=daily.filter(v=>v<0).length;
-  checks.push({icon:"❌",label:"Negative Values",sub:neg>0?`${neg} negative entries found`:"No negative daily values",status:neg>0?"err":"ok",st:neg>0?"✗ Fix entries":"✓ Clean"});
-
-  const badAg=D.agents.filter(ag=>!ag.daily||ag.daily.length<daysElapsed);
-  checks.push({icon:"👥",label:"Agent Data Completeness",sub:badAg.length>0?badAg.map(a=>a.name).join(", "):`All ${D.agents.length} agents have data`,status:badAg.length>0?"warn":"ok",st:badAg.length>0?"⚠ Incomplete":"✓ All Complete"});
-
-  const teamFromAgents=D.agents.reduce((s,ag)=>s+ag.daily.slice(0,daysElapsed).reduce((x,v)=>x+v,0),0);
-  const teamFromDaily=daily.reduce((s,v)=>s+v,0);
-  const mismatch=Math.abs(teamFromAgents-teamFromDaily);
-  checks.push({icon:"🔄",label:"Agent ↔ Team Totals Match",sub:mismatch>0?`Gap: ${INR(mismatch)} (update agent daily values)`:` Team: ${INR(teamFromDaily)} = Agents: ${INR(teamFromAgents)}`,status:mismatch>100?"warn":"ok",st:mismatch>100?"⚠ Mismatch":"✓ Match"});
-
-  checks.push({icon:"🎯",label:"Monthly Target",sub:`₹${target.toLocaleString("en-IN")} for June 2026`,status:target>0?"ok":"err",st:target>0?"✓ Set":"✗ Missing"});
-
-  const zeroTgt=D.agents.filter(ag=>!ag.target||ag.target===0);
-  checks.push({icon:"⚠️",label:"Agent Targets",sub:zeroTgt.length>0?`${zeroTgt.length} agents have no target`:`All ${D.agents.length} agents have targets`,status:zeroTgt.length>0?"err":"ok",st:zeroTgt.length>0?"✗ Missing targets":"✓ All Set"});
-
-  checks.push({icon:"☁️",label:"Firebase Sync",sub:`Last synced: ${document.getElementById("sclk").textContent||"—"}`,status:"ok",st:"✓ Connected"});
-
-  document.getElementById("hcGrid").innerHTML=checks.map(c=>`
-    <div class="hc-item">
-      <div class="hc-icon">${c.icon}</div>
-      <div class="hc-body"><div class="hc-label">${c.label}</div><div class="hc-sub">${c.sub}</div></div>
-      <div class="hc-status ${c.status==="ok"?"hcs-ok":c.status==="warn"?"hcs-warn":"hcs-err"}">${c.st}</div>
-    </div>`).join("");
+  const sevOrder = {crit:0, warn:1, ok:2, info:3};
+  alerts.sort(function(a,b){return sevOrder[a.sev]-sevOrder[b.sev];});
+  document.getElementById("intelGrid").innerHTML = alerts.map(function(a){
+    return '<div class="ic '+a.sev+'">' +
+      '<div class="ic-body">' +
+        '<span class="ic-badge '+a.bc+'">'+a.badge+'</span>' +
+        (a.val!=null?'<div class="ic-val" style="color:var(--'+(a.vc||'text')+')">'+a.val+'</div>':"") +
+        '<div class="ic-title">'+a.title+'</div>' +
+        '<div class="ic-desc">'+a.desc+'</div>' +
+      '</div>' +
+    '</div>';
+  }).join("");
+  document.getElementById("intelMeta").textContent = alerts.filter(function(a){return a.sev==="crit";}).length + " critical \u00b7 " + alerts.filter(function(a){return a.sev==="warn";}).length + " warnings \u00b7 " + month + " 2026";
 }
 
 function renderAll(){
   renderKPIs();
+  renderMonthTable();
+  renderWeekChart();
+  renderDayChart();
   renderLeaderboard();
-  renderAgentMgmt();
-  renderPerformers();
-  renderTVA();
-  renderForecast();
-  renderCharts();
-  renderWeekly();
-  renderAgents();
-  renderDaily();
+  renderTracker();
   renderInsights();
-  renderHealthCheck();
+  updatePersistBadge();
+}
+
+function updatePersistBadge(){
+  const saved = localStorage.getItem(LS_KEY);
+  document.getElementById("persistBadge").textContent = saved ? "Edited (saved in this browser)" : "";
 }
 
 function toast(msg){
-  const t=document.getElementById("toast");
-  document.getElementById("toastMsg").textContent=msg;
+  const t = document.getElementById("toast");
+  document.getElementById("toastMsg").textContent = msg;
   t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),3500);
+  setTimeout(function(){ t.classList.remove("show"); }, 3200);
 }
 
-function openLogin(){
-  if(isAdmin){
-    openEdit();
-    return;
-  }
-  document.getElementById("loginOvl").classList.add("on");
-  const pw=document.getElementById("loginPw");pw.value="";
-  document.getElementById("loginErr").style.display="none";
-  setTimeout(()=>pw.focus(),120);
+/* ---------- Edit modal ---------- */
+function openEdit(){
+  document.getElementById("editMonth").value = activeMonth;
+  populateEditForMonth();
+  document.getElementById("editOvl").classList.add("on");
 }
-function closeLogin(){ document.getElementById("loginOvl").classList.remove("on"); }
-function doLogin(){
-  if(btoa(document.getElementById("loginPw").value)===ADMIN_B64){
-    isAdmin = true;
-    applyAdminMode();
-    closeLogin();
-    openEdit();
-  } else {
-    document.getElementById("loginErr").style.display="block";
-  }
+function closeEdit(){
+  document.getElementById("editOvl").classList.remove("on");
 }
 
-function logout(){
-  isAdmin = false;
-  applyAdminMode();
-  toast("🔒 Admin session ended");
-}
+function populateEditForMonth(){
+  const month = document.getElementById("editMonth").value;
+  const meta = DATA.monthsMeta[month];
+  document.getElementById("editTarget").value = meta.target;
+  document.getElementById("editDaysElapsed").value = meta.daysElapsed;
+  document.getElementById("editDaysTotal").value = meta.daysTotal;
 
-function applyAdminMode(){
-  const rosterCard = document.getElementById("agMgmtCard");
-  if(rosterCard) rosterCard.style.display = isAdmin ? "" : "none";
-
-  const rosterSec = document.getElementById("rosterSec");
-  if(rosterSec) rosterSec.style.display = isAdmin ? "" : "none";
-
-  const addForm = document.getElementById("addAgentForm");
-  if(addForm) addForm.style.display = isAdmin ? "" : "none";
-
-  const logoutBtn = document.getElementById("logoutBtn");
-  const updateBtn = document.getElementById("updateBtn");
-  if(logoutBtn) logoutBtn.style.display = isAdmin ? "flex" : "none";
-  if(updateBtn) {
-    updateBtn.innerHTML = isAdmin
-      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Edit Data`
-      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Admin Login`;
-  }
-
-  if(isAdmin) renderAgentMgmt();
-}
-
-function openEdit(){ populateEdit(); document.getElementById("editOvl").classList.add("on"); }
-function closeEdit(){ document.getElementById("editOvl").classList.remove("on"); }
-function swTab(id,idx){
-  document.querySelectorAll(".tp").forEach(p=>p.classList.remove("on"));
-  document.querySelectorAll(".m-tab").forEach(t=>t.classList.remove("on"));
-  document.getElementById(id).classList.add("on");
-  document.querySelectorAll(".m-tab")[idx].classList.add("on");
-}
-
-function autoCalcDays(){
-  const dt=document.getElementById("eUpdated").value;
-  const el=computeElapsed(dt);
-  document.getElementById("eDaysElapsed").value=el;
-  livePreview();
-}
-
-function populateEdit(){
-  document.getElementById("eTarget").value=D.june.target;
-  document.getElementById("eDaysTotal").value=D.june.daysTotal;
-  document.getElementById("eUpdated").value=D.lastUpdated;
-  document.getElementById("eDaysElapsed").value=D.june.daysElapsed;
-
-  document.getElementById("juneDayGrid").innerHTML=D.june.daily.map((v,i)=>`
-    <div class="dw">
-      <span>Jun ${i+1}</span>
-      <input type="number" id="jd${i}" value="${v}" oninput="livePreview()"
-        class="${v>0?"has-val":""}"
-        style="border-color:${i<D.june.daysElapsed?"var(--border)":"var(--n200)"};background:${i<D.june.daysElapsed?"#fff":"var(--n50)"}">
-    </div>`).join("");
-
-  document.getElementById("allAgentsWrap").innerHTML=D.agents.map((ag,ai)=>{
-    const tot=agTot(ag);
-    const p=ag.target>0?((tot/ag.target)*100).toFixed(1):0;
-    const bc=pCol(parseFloat(p));
-    return`<div class="ag-acc">
-      <div class="ag-acc-hdr" onclick="toggleAg(${ai})">
-        <div style="width:26px;height:26px;border-radius:50%;background:${avc(ai)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${ini(ag.name)}</div>
-        <strong style="font-size:12px;flex:1">${ag.name}</strong>
-        <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:${bc};font-weight:700">${INR(tot)}</span>
-        <span style="font-size:10px;color:var(--muted);margin-left:6px">${p}%</span>
-        <span id="arr${ai}" style="font-size:11px;color:var(--muted);transition:transform .2s;margin-left:8px">▼</span>
-      </div>
-      <div id="agsec${ai}" class="ag-acc-body">
-        <div class="two-inp" style="margin-bottom:8px">
-          <div class="fg" style="margin-bottom:0"><label>Monthly Target (₹)</label><input type="number" id="agt${ai}" value="${ag.target}" oninput="agLive(${ai})"></div>
-          <div style="background:var(--n50);border-radius:var(--r);padding:8px 10px;font-size:11px">
-            <div>Total: <b id="agtot${ai}" style="font-family:'JetBrains Mono',monospace;color:${bc}">${INR(tot)}</b></div>
-            <div>Achv: <b id="agpct${ai}" style="font-family:'JetBrains Mono',monospace;color:${bc}">${p}%</b></div>
-            <div style="margin-top:4px;color:var(--muted)">DRR Needed: <b id="agdrr${ai}" style="font-family:'JetBrains Mono',monospace;color:var(--text)">—</b></div>
-          </div>
-        </div>
-        <div class="slbl">Daily Revenue — June (highlighted = elapsed days)</div>
-        <div class="agrid">
-          ${ag.daily.slice(0,D.june.daysTotal).map((v,d)=>`
-            <div class="dw">
-              <span>J${d+1}</span>
-              <input type="number" id="agd${ai}_${d}" value="${v}" oninput="agLive(${ai})"
-                class="${v>0?"has-val":""}"
-                style="border-color:${d<D.june.daysElapsed?"var(--border)":"var(--n200)"};background:${d<D.june.daysElapsed?"#fff":"var(--n50)"}">
-            </div>`).join("")}
-        </div>
-      </div>
-    </div>`;
+  const daily = DATA.dailyTeam[month];
+  document.getElementById("teamDayGrid").innerHTML = Array.from({length:meta.daysTotal}, function(_,i){
+    const v = daily[i]||0;
+    return '<div class="dw"><span>Day '+(i+1)+'</span><input type="number" id="td_'+i+'" value="'+v+'" class="'+(v>0?'has-val':'')+'"></div>';
   }).join("");
 
-  document.getElementById("mayWkInputs").innerHTML=D.mayWeekly.map((w,i)=>`<div class="fg"><label>May ${w.week}</label><input type="number" id="mw${i}" value="${w.revenue}"></div>`).join("");
-  document.getElementById("junWkInputs").innerHTML=D.juneWeekly.map((w,i)=>`<div class="fg"><label>June ${w.week}</label><input type="number" id="jw${i}" value="${w.revenue}"></div>`).join("");
-  livePreview();
+  const weekly = meta.weekly;
+  document.getElementById("weekGrid").innerHTML = weekly.map(function(w,i){
+    return '<div class="fg" style="margin-bottom:0"><label>Wk-'+(i+1)+'</label><input type="number" id="wk_'+i+'" value="'+w+'"></div>';
+  }).join("");
+
+  renderAgentEditAccordion(month);
 }
 
-function toggleAg(ai){
-  const sec=document.getElementById("agsec"+ai);
-  const arr=document.getElementById("arr"+ai);
-  const open=sec.classList.toggle("open");
-  arr.style.transform=open?"rotate(180deg)":"";
-  if(open) agLive(ai);
+function renderAgentEditAccordion(month){
+  const k = month.toLowerCase();
+  const kt = k + "Target";
+  document.getElementById("agentEditWrap").innerHTML = DATA.agents.map(function(ag, ai){
+    const has = !!ag[k];
+    const daily = ag[k] || Array(MONTH_DAYS[month]).fill(0);
+    const target = ag[kt] || 90000;
+    const tot = daily.reduce(function(s,v){return s+v;},0);
+    return '<div class="ag-acc">' +
+      '<div class="ag-acc-hdr" onclick="toggleAgAcc('+ai+')">' +
+        '<div style="width:24px;height:24px;border-radius:50%;background:'+avc(ai)+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">'+ini(ag.name)+'</div>' +
+        '<strong style="font-size:12px;flex:1">'+ag.name+(has?'':' <span style="color:var(--n400);font-weight:500">(not on roster this month)</span>')+'</strong>' +
+        '<span style="font-size:11px;font-family:\'JetBrains Mono\',monospace;color:var(--muted)">'+INR(tot)+'</span>' +
+        '<span id="agarr'+ai+'" style="font-size:11px;color:var(--muted);margin-left:8px">&#9660;</span>' +
+      '</div>' +
+      '<div id="agsec'+ai+'" class="ag-acc-body">' +
+        '<div class="two-inp" style="margin-bottom:8px">' +
+          '<div class="fg" style="margin-bottom:0"><label>Target this month (&#8377;)</label><input type="number" id="agt_'+ai+'" value="'+target+'"></div>' +
+          '<div class="fg" style="margin-bottom:0"><label>On roster this month?</label><select id="agactive_'+ai+'"><option value="1" '+(has?'selected':'')+'>Yes</option><option value="0" '+(has?'':'selected')+'>No (inactive)</option></select></div>' +
+        '</div>' +
+        '<div class="slbl">Daily Revenue (&#8377;)</div>' +
+        '<div class="daygrid">' + Array.from({length:MONTH_DAYS[month]}, function(_,d){
+          const v = daily[d]||0;
+          return '<div class="dw"><span>D'+(d+1)+'</span><input type="number" id="agd_'+ai+'_'+d+'" value="'+v+'" class="'+(v>0?'has-val':'')+'"></div>';
+        }).join("") +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join("");
 }
 
-function agLive(ai){
-  const ag=D.agents[ai];
-  let sum=0;
-  ag.daily.forEach((_,d)=>{const e=document.getElementById(`agd${ai}_${d}`);if(e)sum+=parseInt(e.value)||0;});
-  const tgt=parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target;
-  const p=tgt>0?((sum/tgt)*100).toFixed(1):0;
-  const bc=pCol(parseFloat(p));
-  const el=D.june.daysElapsed,dt=D.june.daysTotal,dl=dt-el;
-  const drrN=dl>0?(tgt-sum)/dl:0;
-  const totEl=document.getElementById(`agtot${ai}`);if(totEl){totEl.textContent=INR(sum);totEl.style.color=bc;}
-  const pctEl=document.getElementById(`agpct${ai}`);if(pctEl){pctEl.textContent=p+"%";pctEl.style.color=bc;}
-  const drrEl=document.getElementById(`agdrr${ai}`);if(drrEl)drrEl.textContent=INR(Math.max(0,drrN));
+function toggleAgAcc(ai){
+  const sec = document.getElementById("agsec"+ai);
+  const arr = document.getElementById("agarr"+ai);
+  const open = sec.classList.toggle("open");
+  arr.innerHTML = open ? "&#9650;" : "&#9660;";
 }
 
-function livePreview(){
-  const tgt=parseInt(document.getElementById("eTarget")?.value)||D.june.target;
-  const el=parseInt(document.getElementById("eDaysElapsed")?.value)||D.june.daysElapsed;
-  const dt=parseInt(document.getElementById("eDaysTotal")?.value)||D.june.daysTotal;
-  let sum=0;
-  D.june.daily.forEach((_,i)=>{const e=document.getElementById("jd"+i);if(e)sum+=parseInt(e.value)||0;});
-  const drr=el>0?sum/el:0,fc=Math.round(drr*dt),p=tgt>0?sum/tgt*100:0;
-  const dl=dt-el,drrN=dl>0?(tgt-sum)/dl:0;
-  document.getElementById("lvTotal").textContent=INR(sum);
-  document.getElementById("lvDrr").textContent=INR(Math.round(drr));
-  document.getElementById("lvFc").textContent=INR(fc);
-  document.getElementById("lvPct").textContent=Pct(p);
-  document.getElementById("lvRem").textContent=INR(Math.max(0,tgt-sum));
-  document.getElementById("lvDrrNeeded").textContent=INR(Math.round(Math.max(0,drrN)));
+function addAgentToMonth(){
+  const name = document.getElementById("newAgentName").value.trim();
+  const tgt = parseFloat(document.getElementById("newAgentTarget").value) || 90000;
+  if(!name){ toast("Enter an agent name first"); return; }
+  const month = document.getElementById("editMonth").value;
+  const k = month.toLowerCase(), kt = k+"Target";
+  let ag = DATA.agents.find(function(a){ return a.name.toLowerCase() === name.toLowerCase(); });
+  if(!ag){
+    ag = {name: name};
+    DATA.agents.push(ag);
+  }
+  if(!ag[k]) ag[k] = Array(MONTH_DAYS[month]).fill(0);
+  ag[kt] = tgt;
+  document.getElementById("newAgentName").value = "";
+  document.getElementById("newAgentTarget").value = "";
+  renderAgentEditAccordion(month);
+  toast(name + " added to " + month + " roster — expand to enter their daily numbers");
 }
 
-/* FIXED — write side now uses padArr() to guarantee every saved daily
-   array is exactly 30 entries, written explicitly to Firebase. This
-   closes the loop with normalise() on the read side. */
-function padArr(arr, len){
-  const out = (arr||[]).slice(0, len);
-  while(out.length < len) out.push(0);
-  return out;
-}
+function saveEditedData(){
+  const month = document.getElementById("editMonth").value;
+  const meta = DATA.monthsMeta[month];
 
-function saveData(){
-  const nd=JSON.parse(JSON.stringify(D));
-  nd.june.target    = parseInt(document.getElementById("eTarget").value)||nd.june.target;
-  nd.june.daysTotal = parseInt(document.getElementById("eDaysTotal").value)||30;
-  nd.lastUpdated    = document.getElementById("eUpdated").value;
-  nd.june.daysElapsed = computeElapsed(nd.lastUpdated);
+  meta.target = parseFloat(document.getElementById("editTarget").value) || meta.target;
+  meta.daysElapsed = Math.min(meta.daysTotal, Math.max(0, parseInt(document.getElementById("editDaysElapsed").value) || 0));
 
-  nd.june.daily = padArr(nd.june.daily.map((_,i)=>parseInt(document.getElementById("jd"+i)?.value)||0), JUNE_DAYS);
+  const newDaily = [];
+  for(let i=0; i<meta.daysTotal; i++){
+    const el = document.getElementById("td_"+i);
+    newDaily.push(el ? (parseFloat(el.value) || 0) : 0);
+  }
+  DATA.dailyTeam[month] = newDaily;
 
-  nd.agents = D.agents.map((ag,ai)=>({
-    name: ag.name,
-    target: parseInt(document.getElementById(`agt${ai}`)?.value)||ag.target,
-    daily: padArr(ag.daily.map((_,d)=>parseInt(document.getElementById(`agd${ai}_${d}`)?.value)||0), JUNE_DAYS),
-    inactive: !!ag.inactive
-  }));
+  const newWeekly = meta.weekly.map(function(_,i){
+    const el = document.getElementById("wk_"+i);
+    return el ? (parseFloat(el.value) || 0) : 0;
+  });
+  meta.weekly = newWeekly;
+  meta.total = newDaily.reduce(function(s,v){return s+v;},0);
 
-  nd.mayWeekly.forEach((_,i)=>{ nd.mayWeekly[i].revenue=parseInt(document.getElementById("mw"+i)?.value)||0; });
-  nd.juneWeekly.forEach((_,i)=>{ nd.juneWeekly[i].revenue=parseInt(document.getElementById("jw"+i)?.value)||0; });
+  const k = month.toLowerCase(), kt = k+"Target";
+  DATA.agents.forEach(function(ag, ai){
+    const activeSel = document.getElementById("agactive_"+ai);
+    if(!activeSel) return;
+    const isActive = activeSel.value === "1";
+    if(!isActive){
+      delete ag[k];
+      delete ag[kt];
+      return;
+    }
+    const tgtEl = document.getElementById("agt_"+ai);
+    ag[kt] = tgtEl ? (parseFloat(tgtEl.value) || 90000) : 90000;
+    const daily = [];
+    for(let d=0; d<MONTH_DAYS[month]; d++){
+      const el = document.getElementById("agd_"+ai+"_"+d);
+      daily.push(el ? (parseFloat(el.value) || 0) : 0);
+    }
+    ag[k] = daily;
+  });
+
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify(DATA));
+  }catch(e){
+    toast("Saved to dashboard, but browser storage failed — changes won't survive a reload");
+  }
 
   closeEdit();
-  document.getElementById("sov").classList.add("on");
-
-  db.ref(DB_KEY).set(nd).then(()=>{
-    document.getElementById("sov").classList.remove("on");
-    toast("☁️ Saved & synced — all sections updated automatically!");
-  }).catch(err=>{
-    document.getElementById("sov").classList.remove("on");
-    setSyncState("error","Save failed: "+err.message);
-    toast("❌ Save failed — check your connection");
-    D = normalise(nd);
-    renderAll();
-  });
+  activeMonth = month;
+  renderTabs();
+  renderAll();
+  toast("Saved — " + month + " updated across every section");
 }
 
-const BASELINE = {
-  lastUpdated:"2026-06-11",
-  june:{
-    target:885000, daysTotal:30, daysElapsed:11,
-    daily:[26428, 11245, 38262, 11229, 11346, 12823,  2000,  7903, 15029, 13055, 19820,
-           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-  },
-  mayWeekly:[
-    {week:"Wk-1",target:221250,revenue:113338},
-    {week:"Wk-2",target:221250,revenue:55807},
-    {week:"Wk-3",target:221250,revenue:72355},
-    {week:"Wk-4",target:221250,revenue:141239}
-  ],
-  juneWeekly:[
-    {week:"Wk-1",target:221250,revenue:112333},
-    {week:"Wk-2",target:221250,revenue:56812},
-    {week:"Wk-3",target:221250,revenue:0},
-    {week:"Wk-4",target:221250,revenue:0}
-  ],
-  mayDaily:[
-    {w:"Wk-1",d:"01-May",v:0},    {w:"Wk-1",d:"02-May",v:8623},
-    {w:"Wk-1",d:"03-May",v:2123}, {w:"Wk-1",d:"04-May",v:10015},
-    {w:"Wk-1",d:"05-May",v:4049}, {w:"Wk-1",d:"06-May",v:7042},
-    {w:"Wk-1",d:"07-May",v:11551},{w:"Wk-2",d:"08-May",v:7342},
-    {w:"Wk-2",d:"09-May",v:24567},{w:"Wk-2",d:"10-May",v:9083},
-    {w:"Wk-2",d:"11-May",v:12699},{w:"Wk-2",d:"12-May",v:4359},
-    {w:"Wk-2",d:"13-May",v:13623},{w:"Wk-2",d:"14-May",v:11395},
-    {w:"Wk-3",d:"15-May",v:21386},{w:"Wk-3",d:"16-May",v:8728},
-    {w:"Wk-3",d:"17-May",v:4424}, {w:"Wk-3",d:"18-May",v:18774},
-    {w:"Wk-3",d:"19-May",v:5309}, {w:"Wk-3",d:"20-May",v:8221},
-    {w:"Wk-3",d:"21-May",v:6075}, {w:"Wk-4",d:"22-May",v:8848},
-    {w:"Wk-4",d:"23-May",v:4359}, {w:"Wk-4",d:"24-May",v:6162},
-    {w:"Wk-4",d:"25-May",v:14561},{w:"Wk-4",d:"26-May",v:32552},
-    {w:"Wk-4",d:"27-May",v:27545},{w:"Wk-4",d:"28-May",v:16000},
-    {w:"Wk-4",d:"29-May",v:11000},{w:"Wk-4",d:"30-May",v:38342},
-    {w:"Wk-4",d:"31-May",v:23982}
-  ],
-  agents:[
-    {name:"Atul Kumar",        target:68077, daily:[0,    0,    0,     0,    0,    0,     0,    0,    0,     0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Teena Pal OC",      target:68077, daily:[0,    0,    0,     0,    2831, 0,     0,    0,    0,     2233, 0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Cally Richard OC",  target:68077, daily:[0,    0,    0,     0,    0,    4424,  0,    0,    0,     0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Km Kashish Sengar", target:68077, daily:[0,    4021, 6489,  0,    0,    0,     0,    0,    2831,  2005, 0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Neha Sharma",       target:68077, daily:[0,    0,    0,     0,    0,    0,     2000, 0,    0,     0,    2005, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Uqba Suhail OC",    target:68077, daily:[0,    0,    0,     5073, 0,    6039,  0,    0,    2662,  0,    2831, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Lucky Malik",       target:68077, daily:[8554, 3834, 2757,  4152, 3067, 2360,  0,    0,    3244,  0,    4424, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Priyanka Saini OC", target:68077, daily:[0,    0,    2831,  0,    2724, 0,     0,    0,    0,     0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Mohit Batra OC",    target:68077, daily:[0,    0,    0,     0,    2724, 0,     0,    0,    3568,  0,    0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Altmas OC",         target:68077, daily:[7255, 0,    0,     0,    0,    0,     0,    0,    0,     2005, 0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Shivani Pal OC",    target:68077, daily:[0,    3390, 3179,  0,    0,    0,     0,    0,    0,     3244, 0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Md Mehtab",         target:68077, daily:[10619,0,    20175, 2004, 0,    0,     0,    5899, 2724,  0,    8556, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-    {name:"Aman Tyagi OC",     target:68077, daily:[0,    0,    2831,  0,    0,    0,     0,    2004, 0,     3568, 2004, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
-  ]
-};
-
-function resetToBaseline(){
-  if(!isAdmin){ toast("🔒 Admin login required"); return; }
-  if(!confirm("Reset ALL data to the verified baseline figures from the original data sheet?\n\nThis will overwrite any changes made since the last save.")) return;
-  document.getElementById("sov").classList.add("on");
-  const reset = JSON.parse(JSON.stringify(BASELINE));
-  reset.june.daysElapsed = computeElapsed(reset.lastUpdated);
-  reset.june.daily = padArr(reset.june.daily, JUNE_DAYS);
-  reset.agents.forEach(ag=>{ ag.daily = padArr(ag.daily, JUNE_DAYS); ag.inactive = false; });
-  db.ref(DB_KEY).set(reset)
-    .then(()=>{
-      document.getElementById("sov").classList.remove("on");
-      toast("✅ Data reset to verified baseline — all numbers corrected!");
-    })
-    .catch(err=>{
-      document.getElementById("sov").classList.remove("on");
-      D = reset;
-      renderAll();
-      toast("✅ Reset applied locally (Firebase offline)");
-    });
+function resetData(){
+  if(!confirm("Reset all data back to the original workbook figures? This clears everything you've edited in this browser.")) return;
+  DATA = JSON.parse(JSON.stringify(BUNDLED_DATA));
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  closeEdit();
+  activeMonth = "August";
+  renderTabs();
+  renderAll();
+  toast("Reset to original workbook data");
 }
 
-setSyncState("connecting");
-updateDaysLeft();
-connectFirebase();
+renderTabs();
+renderAll();
 </script>
 </body>
 </html>
