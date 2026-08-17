@@ -25,6 +25,13 @@
   --ease:cubic-bezier(.16,1,.3,1);--spring:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
+body,.card,.kc,.wa-card,.mgmt-card,.today-card,.status-banner,.crs-card,.action-row,.recovery-card,.score-card{transition:background-color .5s ease,border-color .5s ease,color .5s ease;}
+/* ---------- Day / Evening / Night Mood — visual only, never affects data or calculations ---------- */
+body.mood-evening{--page:#e9e2d2;--surf:#fffdf9;--border:#ddd0ac;--n50:#f5efe1;--n100:#efe6d2;--n200:#e4d8bc;}
+body.mood-night{--page:#141310;--surf:#201e19;--border:#3c372c;--text:#f1ede3;--muted:#a8a294;
+  --n0:#201e19;--n50:#292620;--n100:#332f26;--n200:#413c30;--n300:#544e3f;--n400:#6f695a;--n500:#948d7c;--n600:#bdb6a3;--n700:#ddd8c9;--n800:#f1ede3;}
+.mood-indicator{font-size:11px;font-weight:600;color:rgba(255,255,255,.55);background:rgba(255,255,255,.06);padding:4px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.1);}
+.mood-override-wrap{display:flex;align-items:center;gap:4px;}
 body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
 ::selection{background:rgba(247,195,26,.25);}
 
@@ -53,6 +60,21 @@ body{font-family:'Inter',sans-serif;background:var(--page);color:var(--text);fon
 /* Role-based visibility: Admin controls only show in Admin view. Daily tracker (granular per-agent-per-day) hidden from Client view. */
 body.view-client .admin-only, body.view-team .admin-only{display:none !important;}
 body.view-client #trkCard{display:none !important;}
+/* Client sees the polished summary, not operational depth (simulators, streaks, distribution, dependency, best-day) */
+body.view-client .team-admin-only{display:none !important;}
+/* Client Review Summary is a client-facing artifact, not useful noise for Team/Admin */
+body:not(.view-client) .client-only{display:none !important;}
+
+/* ---------- Collapsible sections ---------- */
+.collapse-card{background:var(--surf);border-radius:var(--r-lg);border:1px solid var(--border);margin-bottom:14px;overflow:hidden;box-shadow:var(--sh-sm);}
+.collapse-hdr{padding:13px 18px;background:var(--n50);display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;}
+.collapse-hdr:hover{background:var(--n100);}
+.collapse-hdr .ch-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--n600);}
+.collapse-hdr .ch-sub{font-size:11px;color:var(--muted);margin-left:8px;font-weight:500;text-transform:none;letter-spacing:0;}
+.collapse-arrow{font-size:11px;color:var(--muted);transition:transform .2s;flex-shrink:0;}
+.collapse-arrow.open{transform:rotate(180deg);}
+.collapse-body{padding:14px 18px 4px;border-top:1px solid var(--border);}
+.collapse-body.hidden{display:none;}
 
 .mtabs{background:var(--surf);border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:4px;position:sticky;top:60px;z-index:390;box-shadow:var(--sh-sm);overflow-x:auto;}
 .mtab{padding:12px 20px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;transition:all .18s;white-space:nowrap;display:flex;align-items:center;gap:7px;}
@@ -262,11 +284,11 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 /* ---------- Performance Score & Recovery Opportunity ---------- */
 .exec-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
 @media(max-width:900px){.exec-two-col{grid-template-columns:1fr;}}
-.score-card{background:var(--surf);border-radius:var(--r-lg);border:1px solid var(--border);padding:20px;box-shadow:var(--sh-sm);display:flex;align-items:center;gap:18px;}
-.score-num{font-size:42px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;}
+.score-card{background:var(--surf);border-radius:var(--r-lg);border:1px solid var(--border);padding:14px 20px;box-shadow:var(--sh-sm);display:flex;align-items:center;gap:14px;}
+.score-num{font-size:30px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;}
 .score-body{flex:1;min-width:0;}
-.score-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:12px;display:inline-block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
-.score-explain{font-size:11.5px;color:var(--muted);line-height:1.6;}
+.score-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:12px;display:inline-block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
+.score-explain{font-size:11.5px;color:var(--muted);line-height:1.5;}
 .recovery-card{background:var(--surf);border-radius:var(--r-lg);border:1px solid var(--border);padding:18px 20px;box-shadow:var(--sh-sm);}
 .recovery-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--n500);margin-bottom:10px;}
 .recovery-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px dashed var(--n200);font-size:12.5px;}
@@ -334,6 +356,44 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
 .sim-item .sim-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
 .sim-item .sim-val{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace;}
 
+/* ---------- Today's Action Plan ---------- */
+.action-list{display:flex;flex-direction:column;gap:8px;padding:14px 18px;}
+.action-row{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);border:1px solid var(--border);background:var(--n50);}
+.action-rank{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px;}
+.action-body{flex:1;min-width:0;}
+.action-issue{font-size:12.5px;font-weight:700;margin-bottom:3px;}
+.action-rec{font-size:12px;color:var(--n600);line-height:1.5;}
+.action-meta{display:flex;gap:8px;margin-top:6px;align-items:center;flex-wrap:wrap;}
+.action-prio{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:10px;}
+.prio-critical{background:var(--red-l);color:var(--red-d);}
+.prio-high{background:var(--amber-l);color:var(--amber-d);}
+.prio-medium{background:var(--blue-l);color:var(--blue-d);}
+.prio-low{background:var(--n100);color:var(--n500);}
+
+/* ---------- Next 24 Hours / Target Countdown ---------- */
+.outlook-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;padding:14px 18px 0;}
+.outlook-item{text-align:center;}
+.outlook-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.outlook-val{font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+
+.countdown-card{border-radius:var(--r-lg);padding:20px 22px;color:#fff;margin-bottom:14px;}
+.countdown-card.green{background:linear-gradient(135deg,#14532d,#16a34a);}
+.countdown-card.amber{background:linear-gradient(135deg,#78350f,#d97706);}
+.countdown-card.red{background:linear-gradient(135deg,#7f1d1d,#dc2626);}
+.countdown-card.n{background:linear-gradient(135deg,var(--ink),#26241f);}
+.countdown-days{font-size:34px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;}
+.countdown-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.85;margin-top:4px;}
+.countdown-stats{display:flex;gap:26px;margin-top:14px;flex-wrap:wrap;}
+.countdown-stats .cs-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7;margin-bottom:2px;}
+.countdown-stats .cs-val{font-size:15px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+
+/* ---------- Data Confidence ---------- */
+.confidence-wrap{display:flex;align-items:center;gap:16px;padding:16px 18px;}
+.confidence-num{font-size:34px;font-weight:900;font-family:'JetBrains Mono',monospace;}
+.confidence-body{flex:1;font-size:12px;color:var(--n600);line-height:1.6;}
+.countdown-card.urgent{animation:countdownPulse 2.4s ease-in-out infinite;}
+@keyframes countdownPulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.35);}50%{box-shadow:0 0 0 8px rgba(220,38,38,0);}}
+
 /* ---------- Snapshot History ---------- */
 .snap-list{padding:6px 18px 16px;}
 .snap-row{display:grid;grid-template-columns:130px repeat(5,1fr);gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--n100);font-size:12px;}
@@ -386,6 +446,9 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <span class="persist-badge" id="persistBadge"></span>
     <span id="lastUpd" style="font-size:11px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);">Data as of &mdash;</span>
     <span class="health-pill" id="healthPill" onclick="toggleHealthPanel()">&mdash;</span>
+    <span class="health-pill" id="confPill" onclick="toggleConfPanel()" style="background:var(--blue-l);color:var(--blue-d);border-color:#93c5fd">&mdash;</span>
+    <span class="mood-indicator" id="moodIndicator">&mdash;</span>
+    <div class="mood-override-wrap admin-only" id="moodOverrideWrap" style="display:none"></div>
     <span class="admin-pill admin-only" id="adminPill" style="display:none">Admin ON</span>
     <button class="btn-ghost admin-only" id="logoutBtn" style="display:none" onclick="logoutAdmin()">Logout</button>
     <button class="btn-upd admin-only" id="mainActionBtn" onclick="requestEdit()">Admin Login</button>
@@ -396,6 +459,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   <div class="modal" style="width:400px">
     <h2>Admin Login</h2>
     <p class="sub">Enter the password to add or update data.</p>
+    <p style="font-size:10.5px;color:var(--muted);background:var(--n50);border-radius:var(--r);padding:8px 10px;margin-bottom:12px;line-height:1.5">&#9888;&#65039; Prototype-only authentication. This is a static file with no backend &mdash; treat this as a light deterrent for an internal team, not real access control.</p>
     <div class="fg"><label>Password</label>
       <input type="password" id="loginPw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
       <div class="err" id="loginErr">Incorrect password.</div>
@@ -468,24 +532,36 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   <div class="sec">Executive Snapshot <span class="sec-tag" id="secTagMonth"></span></div>
   <div class="status-banner" id="statusBanner"></div>
   <div class="alert-strip" id="alertStrip"></div>
+  <div class="countdown-card n" id="countdownCard"></div>
   <div class="kpi-grid" id="kpiGrid"></div>
 
-  <div class="sec">What Management Needs to Know</div>
+  <div class="sec">Management Intelligence</div>
   <div class="mgmt-grid" id="mgmtGrid"></div>
 
   <div class="health-panel" id="healthPanel" style="display:none"></div>
+  <div class="health-panel" id="confPanel" style="display:none"></div>
 
-  <div class="sec">Executive Performance Score &amp; Recovery Opportunity</div>
+  <div class="sec">Executive Score &amp; Recovery Opportunity</div>
   <div class="exec-two-col">
     <div class="score-card" id="scoreCard"></div>
     <div class="recovery-card" id="recoveryCard"></div>
   </div>
 
-  <div class="sec">Win &middot; Risk &middot; Action</div>
-  <div class="wra-grid" id="wraGrid"></div>
+  <div class="sec team-admin-only">Today's Action Plan</div>
+  <div class="card team-admin-only">
+    <div class="chdr"><h3>Today's Priorities</h3><aside id="actionPlanMeta">&mdash;</aside></div>
+    <div class="action-list" id="actionPlanList"></div>
+  </div>
 
   <div class="sec">Today's Performance</div>
   <div class="today-card" id="todayCard"></div>
+
+  <div class="sec">Next 24 Hours Outlook</div>
+  <div class="card">
+    <div class="chdr"><h3>Tomorrow's Requirement</h3><aside id="outlookMeta">&mdash;</aside></div>
+    <div class="outlook-grid" id="outlookGrid"></div>
+    <div class="insight-strip" id="insightOutlook"></div>
+  </div>
 
   <div class="sec">Performance Trends &amp; Analysis</div>
   <div class="three-col">
@@ -521,14 +597,49 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <div class="insight-strip" id="insightDay"></div>
   </div>
 
-  <div class="sec">Performance Streaks</div>
-  <div class="card">
-    <div class="chdr"><h3>Team Momentum</h3><aside id="streakMeta">&mdash;</aside></div>
-    <div class="streak-grid" id="streakGrid"></div>
+  <div class="sec client-only">Client Review Summary</div>
+  <div class="crs-grid client-only" id="crsGrid"></div>
+
+  <div class="collapse-card team-admin-only">
+    <div class="collapse-hdr" onclick="toggleCollapse('agentIntel')">
+      <span><span class="ch-title">Agent Intelligence</span><span class="ch-sub">Best-day, target-date, distribution, dependency, streaks</span></span>
+      <span class="collapse-arrow" id="arrow-agentIntel">&#9660;</span>
+    </div>
+    <div class="collapse-body hidden" id="body-agentIntel">
+      <div class="two-col">
+        <div class="card" style="margin-bottom:0">
+          <div class="chdr"><h3>Best-Day Benchmark</h3><aside id="benchMeta">&mdash;</aside></div>
+          <div class="cpd">
+            <div class="bench-grid" id="benchGrid"></div>
+            <div class="insight-strip" id="insightBench" style="margin:0"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:0">
+          <div class="chdr"><h3>Projected Target Reach Date</h3><aside id="targetDateMeta">&mdash;</aside></div>
+          <div class="cpd" id="targetDateBody"></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card" style="margin-bottom:0">
+          <div class="chdr"><h3>Performance Distribution</h3><aside id="distMeta">Active agents by achievement bucket</aside></div>
+          <div class="cpd" id="distBody"></div>
+          <div class="insight-strip" id="insightDist"></div>
+        </div>
+        <div class="card" style="margin-bottom:0">
+          <div class="chdr"><h3>Revenue Dependency / Concentration</h3><aside id="depMeta">&mdash;</aside></div>
+          <div class="cpd" id="depBody"></div>
+          <div class="insight-strip" id="insightDep"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="chdr"><h3>Performance Streaks</h3><aside id="streakMeta">&mdash;</aside></div>
+        <div class="streak-grid" id="streakGrid"></div>
+      </div>
+    </div>
   </div>
 
-  <div class="sec">Recovery Simulator <span class="sec-tag" style="background:var(--n700)">Scenario tool \u2014 does not change stored data</span></div>
-  <div class="card">
+  <div class="sec team-admin-only">Recovery Simulator <span class="sec-tag" style="background:var(--n700)">Scenario tool \u2014 does not change stored data</span></div>
+  <div class="card team-admin-only">
     <div class="chdr"><h3>What if we lift the daily run rate?</h3><aside id="simMeta">&mdash;</aside></div>
     <div class="sim-btns" id="simBtns"></div>
     <div class="sim-result" id="simResult"></div>
@@ -537,56 +648,27 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
   <div class="sec">Month-over-Month Overview &mdash; May &rarr; August 2026</div>
   <div class="card">
     <div class="chdr"><h3>All Months at a Glance</h3><aside>Target vs Achievement vs Growth</aside></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Month</th><th>Target</th><th>Achieved</th><th>Achv %</th><th>MoM Growth</th><th>Weeks (Wk1&ndash;4)</th></tr></thead><tbody id="monthBody"></tbody></table></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Month</th><th>Target</th><th>Achieved</th><th>Achv %</th><th>MoM Growth</th></tr></thead><tbody id="monthBody"></tbody></table></div>
   </div>
 
-  <div class="sec" id="lbSecTitle">Team &amp; Agent Performance</div>
-  <div class="card">
+  <div class="sec team-admin-only" id="lbSecTitle">Team &amp; Agent Performance</div>
+  <div class="card team-admin-only">
     <div class="chdr" style="justify-content:space-between"><h3 id="lbTitle">Rankings</h3><aside id="lbMeta">&mdash;</aside></div>
     <div id="monthNote"></div>
     <div id="lbWrap"></div>
   </div>
 
-  <div class="sec" id="trkSecTitle">Agent Daily Tracker</div>
-  <div class="card" id="trkCard">
-    <div class="chdr"><h3 id="trkTitle">Full Daily Tracker</h3><aside id="trkMeta">&mdash;</aside></div>
-    <div class="tbl-wrap"><table class="zebra"><thead><tr id="agHdr"></tr></thead><tbody id="agBody"></tbody><tfoot id="agFoot"></tfoot></table></div>
-  </div>
-
-  <div class="sec">Client Review Summary</div>
-  <div class="crs-grid" id="crsGrid"></div>
-
-  <div class="two-col">
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>Best-Day Benchmark</h3><aside id="benchMeta">&mdash;</aside></div>
-      <div class="cpd">
-        <div class="bench-grid" id="benchGrid"></div>
-        <div class="insight-strip" id="insightBench" style="margin:0"></div>
+  <div class="collapse-card">
+    <div class="collapse-hdr" onclick="toggleCollapse('dailyTracker')">
+      <span><span class="ch-title" id="trkSecTitle">Agent Daily Tracker</span></span>
+      <span class="collapse-arrow" id="arrow-dailyTracker">&#9660;</span>
+    </div>
+    <div class="collapse-body hidden" id="body-dailyTracker">
+      <div class="card" id="trkCard" style="margin-bottom:0">
+        <div class="chdr"><h3 id="trkTitle">Full Daily Tracker</h3><aside id="trkMeta">&mdash;</aside></div>
+        <div class="tbl-wrap"><table class="zebra"><thead><tr id="agHdr"></tr></thead><tbody id="agBody"></tbody><tfoot id="agFoot"></tfoot></table></div>
       </div>
     </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>Projected Target Reach Date</h3><aside id="targetDateMeta">&mdash;</aside></div>
-      <div class="cpd" id="targetDateBody"></div>
-    </div>
-  </div>
-
-  <div class="two-col">
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>Performance Distribution</h3><aside id="distMeta">Active agents by achievement bucket</aside></div>
-      <div class="cpd" id="distBody"></div>
-      <div class="insight-strip" id="insightDist"></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="chdr"><h3>Revenue Dependency / Concentration</h3><aside id="depMeta">&mdash;</aside></div>
-      <div class="cpd" id="depBody"></div>
-      <div class="insight-strip" id="insightDep"></div>
-    </div>
-  </div>
-
-  <div class="sec">Key Insights &amp; Action Points</div>
-  <div class="card">
-    <div class="chdr"><h3>Auto-Generated Observations</h3><aside id="intelMeta">&mdash;</aside></div>
-    <div class="intel-grid" id="intelGrid"></div>
   </div>
 
   <div id="dayCloseSectionWrap"></div>
@@ -645,6 +727,59 @@ function setViewMode(v){
   if(typeof renderWaSection === "function") renderWaSection();
   if(typeof renderSnapshotSection === "function") renderSnapshotSection();
   if(typeof renderDayCloseSection === "function") renderDayCloseSection();
+  if(typeof renderMoodControls === "function") renderMoodControls();
+}
+
+/* ---------- Day / Evening / Night Mood — cosmetic only, never touches data/calculations/permissions ---------- */
+let moodOverride = "auto";
+try{ moodOverride = sessionStorage.getItem("housing_mood_override") || "auto"; }catch(e){ moodOverride = "auto"; }
+
+function computeAutoMood(){
+  const h = new Date().getHours();
+  if(h>=6 && h<18) return "day";
+  if(h>=18) return "evening";
+  return "night";
+}
+function applyMood(){
+  const mood = moodOverride==="auto" ? computeAutoMood() : moodOverride;
+  document.body.classList.remove("mood-evening","mood-night");
+  if(mood!=="day") document.body.classList.add("mood-"+mood);
+  const ind = document.getElementById("moodIndicator");
+  if(ind) ind.textContent = mood==="day" ? "\u2600\uFE0F DAY" : mood==="evening" ? "\uD83C\uDF06 EVENING" : "\uD83C\uDF19 NIGHT";
+}
+function setMoodOverride(v){
+  moodOverride = v;
+  try{ sessionStorage.setItem("housing_mood_override", v); }catch(e){}
+  applyMood();
+  renderMoodControls();
+}
+function renderMoodControls(){
+  const wrap = document.getElementById("moodOverrideWrap");
+  if(!wrap) return;
+  if(!(viewMode==="admin" && isAdmin)){ wrap.style.display="none"; wrap.innerHTML=""; return; }
+  wrap.style.display="";
+  const opts = ["auto","day","evening","night"];
+  wrap.innerHTML = '<span style="font-size:9px;color:rgba(255,255,255,.4);margin-right:2px">Mood:</span>' + opts.map(function(o){
+    return '<button class="view-btn '+(moodOverride===o?'on':'')+'" style="padding:4px 9px;font-size:9px" onclick="setMoodOverride(\''+o+'\')">'+o.charAt(0).toUpperCase()+o.slice(1)+'</button>';
+  }).join("");
+}
+
+/* ---------- Collapsible sections ---------- */
+function toggleCollapse(id){
+  const body = document.getElementById("body-"+id);
+  const arrow = document.getElementById("arrow-"+id);
+  if(!body) return;
+  const willOpen = body.classList.contains("hidden");
+  body.classList.toggle("hidden", !willOpen);
+  if(arrow) arrow.classList.toggle("open", willOpen);
+}
+
+/* ---------- Compact Data Confidence panel toggle (mirrors Data Health panel) ---------- */
+function toggleConfPanel(){
+  const panel = document.getElementById("confPanel");
+  const show = panel.style.display === "none";
+  panel.style.display = show ? "" : "none";
+  if(show) renderConfPanelDetail();
 }
 
 function computeElapsedForMonth(dateStr, month){
@@ -1094,39 +1229,6 @@ function renderScoreRecovery(){
     '<div class="recovery-row final"><span>Additional DRR Required</span><span>'+(drrGap>0?"+"+INR(drrGap)+"/day":"None \u2014 on pace")+'</span></div>';
 }
 
-/* ---------- Win / Risk / Action panel ---------- */
-function renderWinRiskAction(){
-  const month = activeMonth;
-  const st = getMonthStats(month);
-
-  let win;
-  if(st.top && st.top.tot>0) win = st.top.ag.name + " has driven " + INR(st.top.tot) + " this month, the team's strongest single contribution.";
-  else if(st.bestDay) win = "Day " + st.bestDay + " produced " + INR(st.bestVal) + ", the best single day this month.";
-  else win = "No standout win identified yet for " + month + ".";
-  if(st.growth!=null && st.growth>=0) win = "Revenue is up " + Pct(st.growth,1) + " vs " + st.prevMonth + ". " + win;
-
-  let risk;
-  if(st.actDrr < st.drrReq && st.isLiveMonth) risk = "Current DRR (" + INR(st.actDrr) + ") is short of the required " + INR(st.drrReq) + "/day \u2014 forecast is tracking to " + Pct(st.forecastAchPct,1) + " of target.";
-  else if(st.concPct>70 && st.withTotals.length) risk = "Top 3 agents contribute " + Pct(st.concPct,0) + " of MTD revenue \u2014 concentration risk if any one slows down.";
-  else if(st.withTotals.some(function(a){return a.tot===0;})) risk = st.withTotals.filter(function(a){return a.tot===0;}).length + " agent(s) with zero sales this month.";
-  else risk = "No material risk flagged \u2014 pace is broadly aligned with target.";
-
-  let action;
-  const zeroAgents = st.withTotals.filter(function(a){return a.tot===0;});
-  if(zeroAgents.length) action = "Prioritize coaching/call monitoring for " + zeroAgents.map(function(a){return a.ag.name.split(" ")[0];}).join(", ") + " this week.";
-  else if(st.actDrr < st.drrReq && st.isLiveMonth) action = "Lift daily run rate to " + INR(st.drrReq) + "/day to close the gap of " + INR(st.remaining) + " by month-end.";
-  else action = "Maintain current cadence and monitor daily numbers against plan.";
-
-  const cards = [
-    {cls:"win", tag:"\uD83D\uDFE2 WIN", body:win},
-    {cls:"risk", tag:"\uD83D\uDD34 RISK", body:risk},
-    {cls:"action", tag:"\uD83C\uDFAF ACTION", body:action}
-  ];
-  document.getElementById("wraGrid").innerHTML = cards.map(function(c){
-    return '<div class="wra-card '+c.cls+'"><div class="wra-hdr">'+c.tag+'</div><div class="wra-body">'+c.body+'</div></div>';
-  }).join("");
-}
-
 /* ---------- Alert Center ---------- */
 function renderAlertCenter(){
   const month = activeMonth;
@@ -1359,6 +1461,158 @@ function renderSimulator(){
     '<div class="sim-item"><div class="sim-lbl">Remaining Gap</div><div class="sim-val" style="color:'+(newGap>0?"var(--amber-d)":"var(--green-d)")+'">'+(newGap>0?INR(newGap):"Closed")+'</div></div>';
 }
 
+/* ---------- Today's Action Plan (data-driven, ranked by impact) ---------- */
+function computeActionPlan(month){
+  const st = getMonthStats(month);
+  const actions = [];
+
+  const zeroAgents = st.withTotals.filter(function(a){return a.tot===0;});
+  if(zeroAgents.length){
+    actions.push({score:90+zeroAgents.length, prio:"critical",
+      issue: zeroAgents.length + " agent(s) at zero achievement: " + zeroAgents.map(function(a){return a.ag.name.split(" ")[0];}).join(", "),
+      impact:"Direct revenue loss vs target", action:"Prioritize coaching and call monitoring today.", owner:"TL"});
+  }
+  const lowAgents = st.withTotals.filter(function(a){return a.tgt>0 && (a.tot/a.tgt*100)<20 && a.tot>0;});
+  if(lowAgents.length){
+    actions.push({score:70+lowAgents.length, prio: lowAgents.length>=3?"high":"medium",
+      issue: lowAgents.length + " agent(s) below 20% achievement",
+      impact:"Drags down team average and month-end forecast", action:"Pair with top performers for shadow calls this week.", owner:"TL"});
+  }
+  if(st.isLiveMonth){
+    const drrGap = st.drrReq - st.actDrr;
+    if(drrGap>0){
+      actions.push({score:60+Math.min(30, st.drrReq>0 ? drrGap/st.drrReq*30 : 0), prio: st.forecastAchPct<75?"critical":"high",
+        issue: INR(drrGap) + "/day additional revenue required",
+        impact:"Forecast currently tracks to " + Pct(st.forecastAchPct,1) + " of target", action:"Increase daily sales focus and lead follow-through.", owner:"Team"});
+    }
+  }
+  if(st.concPct>50 && st.withTotals.length){
+    actions.push({score:40+Math.min(20,(st.concPct-50)/2), prio: st.concPct>70?"high":"medium",
+      issue:"Top 3 agents contribute " + Pct(st.concPct,0) + " of revenue",
+      impact:"High dependency risk if a top performer slows down", action:"Reduce dependency by developing the next performance tier.", owner:"TL"});
+  }
+  if(!actions.length){
+    actions.push({score:10, prio:"low", issue:"No urgent issues identified", impact:"Team is broadly on pace", action:"Maintain current cadence and monitor daily numbers.", owner:"Team"});
+  }
+  actions.sort(function(a,b){return b.score-a.score;});
+  return actions.slice(0,6);
+}
+function renderActionPlan(){
+  const month = activeMonth;
+  const actions = computeActionPlan(month);
+  document.getElementById("actionPlanMeta").textContent = month + " 2026 \u00b7 ranked by business impact";
+  const prioColor = {critical:"#dc2626", high:"#d97706", medium:"#2563eb", low:"#9e9b92"};
+  document.getElementById("actionPlanList").innerHTML = actions.map(function(a,i){
+    return '<div class="action-row">' +
+      '<div class="action-rank" style="background:'+prioColor[a.prio]+'">'+(i+1)+'</div>' +
+      '<div class="action-body">' +
+        '<div class="action-issue">'+a.issue+'</div>' +
+        '<div class="action-rec">'+a.impact+' &rarr; <b>'+a.action+'</b></div>' +
+        '<div class="action-meta"><span class="action-prio prio-'+a.prio+'">'+a.prio+'</span><span style="font-size:11px;color:var(--muted)">Owner: '+a.owner+'</span></div>' +
+      '</div>' +
+    '</div>';
+  }).join("");
+}
+
+/* ---------- Next 24 Hours Outlook ---------- */
+function renderOutlook(){
+  const month = activeMonth;
+  const st = getMonthStats(month);
+  document.getElementById("outlookMeta").textContent = month + " 2026";
+  if(!st.isLiveMonth){
+    document.getElementById("outlookGrid").innerHTML = "";
+    document.getElementById("insightOutlook").innerHTML = st.isUpcoming ? (month+" hasn't started yet.") : (month+" is closed \u2014 no next-day outlook to show.");
+    return;
+  }
+  const required = st.drrReq;
+  const expected = st.actDrr;
+  const gap = Math.max(0, required-expected);
+  const activeCount = st.withTotals.length;
+  const agentAvgDaily = (activeCount>0 && st.meta.daysElapsed>0) ? st.achieved/(activeCount*st.meta.daysElapsed) : 0;
+  const contributors = (gap>0 && agentAvgDaily>0) ? Math.ceil(gap/agentAvgDaily) : 0;
+  const perAgentSuggested = (contributors>0) ? gap/contributors : 0;
+
+  document.getElementById("outlookGrid").innerHTML =
+    '<div class="outlook-item"><div class="outlook-lbl">Tomorrow Required</div><div class="outlook-val">'+INR(required)+'</div></div>' +
+    '<div class="outlook-item"><div class="outlook-lbl">Expected at Current Pace</div><div class="outlook-val">'+INR(expected)+'</div></div>' +
+    '<div class="outlook-item"><div class="outlook-lbl">Expected Gap</div><div class="outlook-val" style="color:'+(gap>0?"var(--red-d)":"var(--green-d)")+'">'+(gap>0?INR(gap):"None")+'</div></div>' +
+    '<div class="outlook-item"><div class="outlook-lbl">Contributors Needed</div><div class="outlook-val">'+contributors+'</div></div>';
+  document.getElementById("insightOutlook").innerHTML = gap<=0 ?
+    "Tomorrow is currently on pace to meet the required run rate." :
+    (contributors>0 ? ("Based on average per-agent daily contribution, roughly <b>"+contributors+" agent(s)</b> at ~"+INR(perAgentSuggested)+" each would close tomorrow's expected gap.") : "Gap of "+INR(gap)+" expected \u2014 insufficient agent activity data to estimate contributors needed.");
+}
+
+/* ---------- Target Risk Countdown ---------- */
+function renderTargetCountdown(){
+  const month = activeMonth;
+  const st = getMonthStats(month);
+  const card = document.getElementById("countdownCard");
+  if(st.isUpcoming){
+    card.className = "countdown-card n";
+    card.innerHTML = '<div class="countdown-days">\u2014</div><div class="countdown-lbl">Target Not Started \u2014 ' + month + ' 2026</div>';
+    return;
+  }
+  if(!st.isLiveMonth){
+    const cls = st.pct>=95 ? "green" : st.pct>=70 ? "amber" : "red";
+    card.className = "countdown-card " + cls;
+    card.innerHTML = '<div class="countdown-days">'+Pct(st.pct,0)+'</div><div class="countdown-lbl">Target Closed \u2014 Final Result, ' + month + ' 2026</div>' +
+      '<div class="countdown-stats"><div><div class="cs-lbl">Final Achieved</div><div class="cs-val">'+INR(st.achieved)+'</div></div><div><div class="cs-lbl">Target</div><div class="cs-val">'+INR(st.target)+'</div></div></div>';
+    return;
+  }
+  const cls = st.forecastAchPct>=95 ? "green" : st.forecastAchPct>=75 ? "amber" : "red";
+  const riskLbl = cls==="green" ? "\uD83D\uDFE2 Comfortable" : cls==="amber" ? "\uD83D\uDFE0 Watch Closely" : "\uD83D\uDD34 High Risk";
+  card.className = "countdown-card " + cls + (st.daysLeft<=5 && cls!=="green" ? " urgent" : "");
+  card.innerHTML =
+    '<div class="countdown-days">'+st.daysLeft+' Day'+(st.daysLeft!==1?"s":"")+' Remaining</div>' +
+    '<div class="countdown-lbl">'+riskLbl+' \u2014 ' + month + ' 2026 Target Countdown</div>' +
+    '<div class="countdown-stats">' +
+      '<div><div class="cs-lbl">Gap</div><div class="cs-val">'+INR(st.remaining)+'</div></div>' +
+      '<div><div class="cs-lbl">Required DRR</div><div class="cs-val">'+INR(st.drrReq)+'</div></div>' +
+      '<div><div class="cs-lbl">Current DRR</div><div class="cs-val">'+INR(st.actDrr)+'</div></div>' +
+      '<div><div class="cs-lbl">Forecast</div><div class="cs-val">'+Pct(st.forecastAchPct,1)+'</div></div>' +
+    '</div>';
+}
+
+/* ---------- Data Confidence Score (reporting-confidence, not performance) ---------- */
+function computeDataConfidence(month){
+  const issues = computeDataHealth(month);
+  let score = 100;
+  const reasons = [];
+  issues.forEach(function(i){
+    const penalty = i.sev==="crit" ? 15 : 7;
+    score -= penalty;
+    reasons.push("\u2212" + penalty + ": " + i.msg);
+  });
+  if(DATA.updatedAt){
+    const ageHrs = (Date.now() - new Date(DATA.updatedAt).getTime())/3600000;
+    if(ageHrs>48){ score -= 10; reasons.push("\u221210: Data hasn't been updated in over 48 hours."); }
+  }
+  score = Math.max(0, Math.min(100, Math.round(score)));
+  const cls = score>=90 ? {lbl:"High Confidence", emoji:"\uD83D\uDFE2", color:"var(--green-d)"} : score>=70 ? {lbl:"Moderate Confidence", emoji:"\uD83D\uDFE0", color:"var(--amber-d)"} : {lbl:"Low Confidence", emoji:"\uD83D\uDD34", color:"var(--red-d)"};
+  return {score, cls, reasons};
+}
+function renderDataConfidence(){
+  const month = activeMonth;
+  const c = computeDataConfidence(month);
+  const pill = document.getElementById("confPill");
+  if(pill){
+    pill.className = "health-pill";
+    pill.style.background = c.score>=90 ? "var(--green-l)" : c.score>=70 ? "var(--amber-l)" : "var(--red-l)";
+    pill.style.color = c.score>=90 ? "var(--green-d)" : c.score>=70 ? "var(--amber-d)" : "var(--red-d)";
+    pill.style.borderColor = c.score>=90 ? "#86efac" : c.score>=70 ? "#fcd34d" : "#fca5a5";
+    pill.textContent = c.cls.emoji + " Data Confidence " + c.score + "%";
+  }
+  if(document.getElementById("confPanel").style.display !== "none") renderConfPanelDetail();
+}
+function renderConfPanelDetail(){
+  const month = activeMonth;
+  const c = computeDataConfidence(month);
+  document.getElementById("confPanel").innerHTML =
+    '<div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--n500);margin-bottom:8px;">Data Confidence \u2014 ' + month + ' 2026</div>' +
+    '<div class="health-item"><span class="health-tag" style="background:'+(c.score>=90?"var(--green-l);color:var(--green-d)":c.score>=70?"var(--amber-l);color:var(--amber-d)":"var(--red-l);color:var(--red-d)")+'">'+c.score+'%</span> '+c.cls.lbl+' \u2014 reporting-quality indicator, not a business performance score.</div>' +
+    (c.reasons.length ? c.reasons.map(function(r){return '<div class="health-item">'+r+'</div>';}).join("") : '<div class="health-item">\u2705 No data-quality issues detected for '+month+'.</div>');
+}
+
 function renderManagementInsights(){
   const month = activeMonth;
   const st = getMonthStats(month);
@@ -1366,6 +1620,12 @@ function renderManagementInsights(){
   const perfText = st.pct>=90 ? "Team has achieved <b>"+Pct(st.pct,1)+"</b> of the "+month+" target, tracking well against plan." :
     st.pct>=60 ? "Team has achieved <b>"+Pct(st.pct,1)+"</b> of target so far. Progress is steady but the pace needs to hold or improve to close the month strong." :
     "Team has achieved only <b>"+Pct(st.pct,1)+"</b> of target &mdash; well behind where "+month+" needs to be at this stage.";
+
+  let winText;
+  if(st.top && st.top.tot>0) winText = "<b>"+st.top.ag.name+"</b> leads the team with <b>"+INR(st.top.tot)+"</b>"+(st.top.ag[monthKey(month)+"Target"]?" ("+Pct(st.top.tot/st.top.ag[monthKey(month)+"Target"]*100,0)+" of their target)":"")+".";
+  else if(st.bestDay) winText = "Day "+st.bestDay+" produced <b>"+INR(st.bestVal)+"</b>, the best single day this month.";
+  else winText = "No standout win identified yet for "+month+".";
+  if(st.growth!=null && st.growth>=0) winText = "Revenue is up <b>"+Pct(st.growth,1)+"</b> vs "+st.prevMonth+". " + winText;
 
   let riskText;
   if(st.actDrr < st.drrReq && st.isLiveMonth){
@@ -1378,8 +1638,6 @@ function renderManagementInsights(){
   } else {
     riskText = "No major risk flags right now &mdash; pace is broadly in line with what's needed to hit target.";
   }
-
-  const topText = st.top ? "<b>"+st.top.ag.name+"</b> leads the team with <b>"+INR(st.top.tot)+"</b>"+(st.top.ag[monthKey(month)+"Target"]?" ("+Pct(st.top.tot/st.top.ag[monthKey(month)+"Target"]*100,0)+" of their target)":"")+"." : "No agent-level data available for "+month+" yet.";
 
   let actionText;
   const zeroAgents = st.withTotals.filter(function(a){return a.tot===0;});
@@ -1395,9 +1653,9 @@ function renderManagementInsights(){
 
   const cards = [
     {mc:"#2563eb", icon:"P", title:"Performance", body:perfText},
+    {mc:"#16a34a", icon:"W", title:"Win", body:winText},
     {mc:(st.status.level==="red"?"#dc2626":st.status.level==="amber"?"#d97706":"#16a34a"), icon:"R", title:"Risk", body:riskText},
-    {mc:"#16a34a", icon:"T", title:"Top Performer", body:topText},
-    {mc:"#7c3aed", icon:"A", title:"Action Required", body:actionText}
+    {mc:"#7c3aed", icon:"A", title:"Action", body:actionText}
   ];
   document.getElementById("mgmtGrid").innerHTML = cards.map(function(c){
     return '<div class="mgmt-card" style="--mc:'+c.mc+'">' +
@@ -1574,71 +1832,6 @@ function renderTracker(){
   document.getElementById("agFoot").innerHTML = foot;
   document.getElementById("trkTitle").textContent = "Full Daily Tracker \u2014 " + month + " 2026";
   document.getElementById("trkMeta").textContent = showDays + " of " + meta.daysTotal + " days shown \u00b7 " + rows.length + " agents";
-}
-
-function renderInsights(){
-  const month = activeMonth;
-  const st = getMonthStats(month);
-  const alerts = [];
-
-  const pctSev = st.pct>=90?"ok":st.pct>=60?"warn":"crit";
-  alerts.push({sev:pctSev, bc:{ok:"bo",warn:"bw",crit:"bc"}[pctSev],
-    badge: monthPhase(month)==="live" ? "In Progress" : "Final Result",
-    title: month+" is at "+Pct(st.pct)+" of target", val:INR(st.achieved), vc: pctSev==="ok"?"green":pctSev==="warn"?"amber":"red",
-    desc:"Target was "+INR(st.target)+"; team delivered "+INR(st.achieved)+(month==='August'?' so far, with '+st.daysLeft+' days left.':'.'),
-    action: pctSev==="crit" ? "Escalate recovery plan with leads today; review daily call/connect volumes." : pctSev==="warn" ? "Push a mid-month push campaign to close the gap of "+INR(st.remaining)+"." : "Maintain current cadence through month-end."});
-
-  if(st.withTotals.length){
-    alerts.push({sev:"info", bc:"bi", badge:"Top Performer",
-      title:st.top.ag.name+" led the team in "+month, val:INR(st.top.tot), vc:"blue",
-      desc:st.top.ag.name+" closed "+month+" with "+INR(st.top.tot)+", the highest of "+st.withTotals.length+" active agents.",
-      action:"Study "+st.top.ag.name.split(" ")[0]+"'s approach and share as a best practice in the next huddle."});
-    if(st.bottom.tot === 0){
-      alerts.push({sev:"crit", bc:"bc", badge:"Zero Revenue",
-        title:st.bottom.ag.name+" logged \u20b90 for all of "+month, val:"\u20b90", vc:"red",
-        desc:"No conversions recorded this month for this agent.",
-        action:"Immediate 1:1 coaching or escalation recommended within 48 hours."});
-    } else {
-      alerts.push({sev:"warn", bc:"bw", badge:"Needs Support",
-        title:st.bottom.ag.name+" trails the team in "+month, val:INR(st.bottom.tot), vc:"amber",
-        desc:"Lowest contribution among active agents this month.",
-        action:"Pair with a top performer for shadow calls this week."});
-    }
-    const cSev = st.concPct>75?"crit":st.concPct>60?"warn":"ok";
-    alerts.push({sev:cSev, bc:{crit:"bc",warn:"bw",ok:"bo"}[cSev], badge:cSev==="ok"?"Balanced Load":"Concentration Risk",
-      title:"Top 3 agents = "+Pct(st.concPct,0)+" of "+month+" revenue", val:Pct(st.concPct,0), vc:cSev==="ok"?"green":cSev==="crit"?"red":"amber",
-      desc:cSev==="ok"?"Revenue load is spread reasonably across the team.":st.withTotals.slice(0,3).map(function(a){return a.ag.name.split(" ")[0];}).join(", ")+" are carrying the team this month.",
-      action:cSev==="ok"?"No action needed &mdash; continue current distribution.":"De-risk by redistributing leads and ramping mid-tier agents."});
-  } else {
-    alerts.push({sev:"info", bc:"bi", badge:"No Agent Data",
-      title:"Agent-level breakdown unavailable", val:null, vc:null, desc:"Only the team total is tracked for "+month+".", action:"Start capturing agent-wise daily numbers from next month."});
-  }
-
-  if(st.bestDay){
-    alerts.push({sev:"info", bc:"bi", badge:"Best Single Day",
-      title:"Day "+st.bestDay+" was the peak \u2014 "+(st.avgDaily>0?(st.bestVal/st.avgDaily).toFixed(1):"0")+"x the daily average", val:INR(st.bestVal), vc:"blue",
-      desc:"Daily avg across active revenue days: "+INR(Math.round(st.avgDaily))+".", action:"Identify what changed on Day "+st.bestDay+" (campaign, leads, timing) and try to replicate it."});
-  }
-
-  if(st.growth!=null){
-    alerts.push({sev: st.growth>=0?"ok":"warn", bc: st.growth>=0?"bo":"bw", badge:"Month-over-Month",
-      title:month+" vs "+st.prevMonth+": "+(st.growth>=0?'+':'')+Pct(st.growth,1), val:null, vc:null,
-      desc:st.prevMonth+" closed at "+INR(st.prevTotal)+"; "+month+(month==='August'?' is currently at ':' closed at ')+INR(st.meta.total)+".",
-      action: st.growth>=0 ? "Momentum is positive &mdash; sustain lead flow and agent staffing levels." : "Review what drove the decline vs "+st.prevMonth+" and correct course this week."});
-  }
-
-  const sevOrder = {crit:0, warn:1, ok:2, info:3};
-  alerts.sort(function(a,b){return sevOrder[a.sev]-sevOrder[b.sev];});
-  document.getElementById("intelGrid").innerHTML = alerts.map(function(a){
-    return '<div class="ic '+a.sev+'">' +
-        '<span class="ic-badge '+a.bc+'">'+a.badge+'</span>' +
-        (a.val!=null?'<div class="ic-val" style="color:var(--'+(a.vc||'text')+')">'+a.val+'</div>':"") +
-        '<div class="ic-title">'+a.title+'</div>' +
-        '<div class="ic-desc">'+a.desc+'</div>' +
-        (a.action?'<div class="ic-action"><b>&#8594;</b> '+a.action+'</div>':"") +
-    '</div>';
-  }).join("");
-  document.getElementById("intelMeta").textContent = alerts.filter(function(a){return a.sev==="crit";}).length + " critical \u00b7 " + alerts.filter(function(a){return a.sev==="warn";}).length + " warnings \u00b7 " + month + " 2026";
 }
 
 /* ---------- WhatsApp / management summary generators ---------- */
@@ -1986,10 +2179,13 @@ function downloadSummary(){
 function renderAll(){
   renderStatusBanner();
   renderAlertCenter();
+  renderTargetCountdown();
   renderKPIs();
   renderManagementInsights();
   renderScoreRecovery();
-  renderWinRiskAction();
+  renderActionPlan();
+  renderOutlook();
+  renderDataConfidence();
   renderClientReviewSummary();
   renderBestDayBenchmark();
   renderTargetDate();
@@ -2007,7 +2203,6 @@ function renderAll(){
   renderChartInsights();
   renderLeaderboard();
   renderTracker();
-  renderInsights();
   refreshWaContent();
   renderSnapshotSection();
   renderDayCloseSection();
