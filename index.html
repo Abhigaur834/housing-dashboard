@@ -480,12 +480,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <div class="two-inp">
       <div class="fg"><label>As-Of Date (drives Days Elapsed for all months)</label><input type="date" id="editAsOf" oninput="onAsOfChange()"></div>
       <div class="fg"><label>Month you're editing</label>
-        <select id="editMonth" onchange="populateEditForMonth()">
-          <option value="May">May 2026</option>
-          <option value="June">June 2026</option>
-          <option value="July">July 2026</option>
-          <option value="August" selected>August 2026</option>
-        </select>
+        <select id="editMonth" onchange="onEditMonthSelectChange()"></select>
       </div>
     </div>
     <div class="two-inp">
@@ -645,7 +640,7 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <div class="sim-result" id="simResult"></div>
   </div>
 
-  <div class="sec">Month-over-Month Overview &mdash; May &rarr; August 2026</div>
+  <div class="sec" id="secMoM">Month-over-Month Overview &mdash; May &rarr; August 2026</div>
   <div class="card">
     <div class="chdr"><h3>All Months at a Glance</h3><aside>Target vs Achievement vs Growth</aside></div>
     <div class="tbl-wrap"><table><thead><tr><th>Month</th><th>Target</th><th>Achieved</th><th>Achv %</th><th>MoM Growth</th></tr></thead><tbody id="monthBody"></tbody></table></div>
@@ -702,6 +697,8 @@ if(!DATA.closedDays) DATA.closedDays = {};
 const MONTH_DAYS = {May:31, June:30, July:31, August:31};
 const MONTHS = ["May","June","July","August"];
 const MONTH_INDEX = {May:4, June:5, July:6, August:7}; // JS month index, 2026
+const MONTH_PALETTE = ["#9333ea","#2563eb","#d97706","#dc2626","#16a34a","#0d9488","#db2777","#4f46e5","#65a30d","#c2410c","#0284c7","#7c3aed"];
+const MONTH_NAMES_FULL = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 let activeMonth = "August";
 let waFormat = "mgmt";
 let viewMode = "admin";
@@ -2327,10 +2324,15 @@ function onAsOfChange(){
 /* ---------- Edit modal ---------- */
 let editSnapshot = null;
 let editAsOfSnapshot = null;
+let editMonthsCountSnapshot = null;
+let editActiveMonthSnapshot = null;
 function openEdit(){
   if(!requirePermission("edit data")) return;
   editSnapshot = JSON.parse(JSON.stringify(DATA.monthsMeta));
   editAsOfSnapshot = DATA.asOfDate;
+  editMonthsCountSnapshot = MONTHS.length;
+  editActiveMonthSnapshot = activeMonth;
+  renderEditMonthOptions();
   document.getElementById("editMonth").value = activeMonth;
   const asOfField = document.getElementById("editAsOf");
   asOfField.value = defaultAsOfDate();
@@ -2342,13 +2344,80 @@ function closeEdit(){
 }
 function cancelEdit(){
   if(editSnapshot){
+    /* Undo any month(s) added via "+ Add New Month" during this edit session that were never saved */
+    if(editMonthsCountSnapshot!=null && MONTHS.length > editMonthsCountSnapshot){
+      while(MONTHS.length > editMonthsCountSnapshot){
+        const removed = MONTHS.pop();
+        delete MONTH_DAYS[removed]; delete MONTH_INDEX[removed]; delete MONTH_COLORS[removed];
+        delete DATA.dailyTeam[removed]; delete editSnapshot[removed];
+      }
+      if(editActiveMonthSnapshot) activeMonth = editActiveMonthSnapshot;
+      const momHdr = document.getElementById("secMoM");
+      if(momHdr) momHdr.textContent = "Month-over-Month Overview \u2014 " + MONTHS[0] + " \u2192 " + MONTHS[MONTHS.length-1] + " " + (2026 + Math.floor(MONTH_INDEX[MONTHS[MONTHS.length-1]]/12));
+      renderTabs();
+    }
     DATA.monthsMeta = editSnapshot;
     DATA.asOfDate = editAsOfSnapshot;
     editSnapshot = null;
     editAsOfSnapshot = null;
+    editMonthsCountSnapshot = null;
+    editActiveMonthSnapshot = null;
     renderAll();
   }
   closeEdit();
+}
+
+/* ---------- Dynamic month list: renders the edit-modal month dropdown from MONTHS,
+   plus a trailing "+ Add New Month" option used once the latest month is over. ---------- */
+function renderEditMonthOptions(){
+  const sel = document.getElementById("editMonth");
+  if(!sel) return;
+  const cur = sel.value || activeMonth;
+  sel.innerHTML = MONTHS.map(function(m){
+    return '<option value="'+m+'">'+m+' '+(2026 + Math.floor(MONTH_INDEX[m]/12))+'</option>';
+  }).join("") + '<option value="__addnew__">+ Add New Month</option>';
+  sel.value = MONTHS.indexOf(cur)>-1 ? cur : activeMonth;
+}
+function getNextMonthInfo(){
+  const lastM = MONTHS[MONTHS.length-1];
+  const nextGlobalIdx = MONTH_INDEX[lastM] + 1;
+  const nextYear = 2026 + Math.floor(nextGlobalIdx/12);
+  const nextMonthIdx = ((nextGlobalIdx % 12)+12)%12;
+  const name = MONTH_NAMES_FULL[nextMonthIdx];
+  const daysInMonth = new Date(nextYear, nextMonthIdx+1, 0).getDate();
+  return {name:name, jsIdx:nextGlobalIdx, daysInMonth:daysInMonth, year:nextYear};
+}
+function onEditMonthSelectChange(){
+  const sel = document.getElementById("editMonth");
+  if(sel.value === "__addnew__"){ addNewMonth(); return; }
+  populateEditForMonth();
+}
+function addNewMonth(){
+  const info = getNextMonthInfo();
+  if(MONTHS.indexOf(info.name) > -1){
+    alert("A month named '"+info.name+"' already exists. Add it manually by editing the data.");
+    document.getElementById("editMonth").value = activeMonth;
+    return;
+  }
+  if(!confirm("Add "+info.name+" "+info.year+" ("+info.daysInMonth+" days) as a new month?")){
+    document.getElementById("editMonth").value = activeMonth;
+    return;
+  }
+  MONTHS.push(info.name);
+  MONTH_DAYS[info.name] = info.daysInMonth;
+  MONTH_INDEX[info.name] = info.jsIdx;
+  MONTH_COLORS[info.name] = MONTH_PALETTE[(MONTHS.length-1) % MONTH_PALETTE.length];
+  DATA.monthsMeta[info.name] = {target:0, weeklyTarget:0, weekly:[0,0,0,0], total:0, daysTotal:info.daysInMonth, daysElapsed:0};
+  DATA.dailyTeam[info.name] = new Array(info.daysInMonth).fill(0);
+  activeMonth = info.name;
+  syncDaysElapsedFromAsOf();
+  const momHdr = document.getElementById("secMoM");
+  if(momHdr) momHdr.textContent = "Month-over-Month Overview \u2014 " + MONTHS[0] + " \u2192 " + MONTHS[MONTHS.length-1] + " " + info.year;
+  renderEditMonthOptions();
+  document.getElementById("editMonth").value = info.name;
+  renderTabs();
+  populateEditForMonth();
+  toast("Added "+info.name+" "+info.year+" \u2014 set the target and data, then Save & Sync.");
 }
 
 function populateEditForMonth(){
