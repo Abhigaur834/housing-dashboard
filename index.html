@@ -6,6 +6,7 @@
 <title>Housing.com &middot; Multi-Month Sales Command Centre</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --gold:#F7C31A;--gold-d:#c9980e;--gold-l:#fef9e7;
@@ -476,6 +477,15 @@ tfoot td{padding:9px 12px;font-weight:700;background:var(--n100);border-top:2px 
     <h2>Add / Update Data</h2>
     <p class="sub">Enter revenue agent-wise (by day) or edit the team's day-wise and week-wise totals directly. Totals below update live as you type. Changes save to this browser and recompute every section on the dashboard.</p>
 
+    <div class="slbl" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Import from Excel &mdash; agent-wise, day-wise, week-wise, with each agent's own target</span>
+      <button type="button" class="btn-sec2" style="padding:4px 10px;font-size:10px" onclick="downloadImportTemplate()">Download Template</button>
+    </div>
+    <div class="hint">Upload your monthly tracking workbook directly &mdash; it's read straight from an "Agent Name" grid with each agent's daily figures and target, matched to the actual calendar dates in the sheet, so it works with the same format you already use (EMP ID / Agent Name / Process / Status / one column per date / Total / Target). The simpler "Download Template" layout works too. Either way: team totals and weekly figures (Wk-1&ndash;Wk-4) are built from the daily numbers automatically, existing agents get updated, new agents get added with their own target, and the manual fields further down still work for touch-ups. A workbook with several month tabs imports all of them in one go, and a month that doesn't exist yet on the dashboard is created.</div>
+    <input type="file" id="excelImportInput" accept=".xlsx,.xls" style="margin-top:8px;font-size:12px" onchange="handleExcelImport(event)">
+    <div id="excelImportStatus" style="font-size:11px;margin-top:6px;color:var(--muted)"></div>
+
+    <div class="dvdr"></div>
     <div class="hint">Days Elapsed is calculated automatically from <b>As-Of Date</b> below &mdash; set it once and every month's Days Elapsed, DRR, and forecast recompute from it. A month before this date is treated as complete; a month after it hasn't started.</div>
     <div class="two-inp">
       <div class="fg"><label>As-Of Date (drives Days Elapsed for all months)</label><input type="date" id="editAsOf" oninput="onAsOfChange()"></div>
@@ -2432,6 +2442,247 @@ function addNewMonth(){
   renderTabs();
   populateEditForMonth();
   toast("Added "+info.name+" "+info.year+" \u2014 set the target and data, then Save & Sync.");
+}
+
+/* ---------- Excel import: agent-wise, day-wise revenue + per-agent targets ---------- */
+function downloadImportTemplate(){
+  const month = (function(){ const sel = document.getElementById("editMonth"); const v = sel ? sel.value : activeMonth; return v==="__addnew__" ? getNextMonthInfo().name : v; })();
+  const days = MONTH_DAYS[month] || 30;
+  const rows = [
+    ["DASHBOARD IMPORT TEMPLATE"],
+    [],
+    ["Month:", month],
+    ["Monthly Team Target (\u20b9):", DATA.monthsMeta[month] ? DATA.monthsMeta[month].target : 0],
+    [],
+    ["Agent Name","Target (\u20b9)"].concat(Array.from({length:days},function(_,i){return "Day "+(i+1);}))
+  ];
+  DATA.agents.forEach(function(ag){
+    const daily = agentDaily(ag, month) || Array(days).fill(0);
+    const tgt = agentTarget(ag, month) || "";
+    rows.push([ag.name, tgt].concat(daily.slice(0,days)));
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws["!cols"] = [{wch:22},{wch:12}].concat(Array.from({length:days},function(){return {wch:8};}));
+  XLSX.utils.book_append_sheet(wb, ws, "Import");
+  XLSX.writeFile(wb, "dashboard-import-"+month.toLowerCase()+".xlsx");
+}
+function handleExcelImport(evt){
+  const file = evt.target.files && evt.target.files[0];
+  const statusEl = document.getElementById("excelImportStatus");
+  if(!file) return;
+  if(!requirePermission("import data")){ evt.target.value = ""; return; }
+  statusEl.style.color = "var(--muted)";
+  statusEl.textContent = "Reading "+file.name+"\u2026";
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const wb = XLSX.read(new Uint8Array(e.target.result), {type:"array", cellDates:true});
+      const results = [];
+      const skipped = [];
+      wb.SheetNames.forEach(function(sn){
+        const ws = wb.Sheets[sn];
+        const rows = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:null});
+        let res = null;
+        try{ res = detectAndParseSheet(rows); }catch(err){ /* not a matching sheet layout \u2014 skip quietly */ }
+        if(res) results.push(res); else skipped.push(sn);
+      });
+      if(!results.length) throw new Error("No agent-wise data grid found in any sheet (looked for a row with an \u201cAgent Name\u201d column). Use \u201cDownload Template\u201d for the expected layout, or upload your monthly tracking workbook directly.");
+      // Best-effort: pick up a "Monthly Target" label anywhere in the workbook (e.g. a Daily Snap-style summary tab)
+      // and apply it to whichever imported month doesn't already carry an explicit target from its own sheet.
+      const labelTarget = findLabelledNumber(wb, "monthly target");
+      results.sort(function(a,b){ return (a.year*12+a.monthIdx) - (b.year*12+b.monthIdx); });
+      if(labelTarget != null){
+        const latest = results[results.length-1];
+        if(latest.teamTarget == null) latest.teamTarget = labelTarget;
+      }
+      const summaries = results.map(function(res){
+        applyImportedMonth(res);
+        return res.month+" ("+res.agents.length+" agents, "+INR(res.teamTotal)+")";
+      });
+      statusEl.style.color = "var(--green)";
+      let msg = "Imported "+summaries.join("; ")+". Saved.";
+      if(skipped.length) msg += " Skipped sheet(s) with no agent grid: "+skipped.join(", ")+".";
+      statusEl.textContent = msg;
+      evt.target.value = "";
+    }catch(err){
+      statusEl.style.color = "var(--red)";
+      statusEl.textContent = "Couldn't read that file: " + err.message + ". Use \u201cDownload Template\u201d for the expected layout.";
+      evt.target.value = "";
+    }
+  };
+  reader.onerror = function(){ statusEl.style.color = "var(--red)"; statusEl.textContent = "Couldn't read that file."; };
+  reader.readAsArrayBuffer(file);
+}
+
+/* Scans every cell of every sheet for a label (case-insensitive) and returns the first numeric
+   value found immediately to its right, or elsewhere in the same row. Used for a workbook-wide
+   "Monthly Target" figure that isn't part of the per-agent grid itself. */
+function findLabelledNumber(wb, label){
+  const target = label.trim().toLowerCase();
+  for(let s=0; s<wb.SheetNames.length; s++){
+    const ws = wb.Sheets[wb.SheetNames[s]];
+    const rows = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:null});
+    for(let r=0; r<rows.length; r++){
+      const row = rows[r] || [];
+      for(let c=0; c<row.length; c++){
+        const v = row[c];
+        if(typeof v === "string" && v.trim().toLowerCase() === target){
+          for(let cc=c+1; cc<row.length; cc++){
+            if(typeof row[cc] === "number") return row[cc];
+          }
+        }
+      }
+    }
+  }
+  return null;
+}
+
+/* Detects one of two sheet layouts and returns a normalised result, or throws/returns null if
+   the sheet doesn't contain an agent-wise data grid at all:
+   1) The dashboard's own flat "Download Template" layout \u2014 Agent Name in column A, a
+      "Target (\u20b9)" column, then "Day 1", "Day 2"... columns, with "Month:" and
+      "Monthly Team Target:" label cells above the header row.
+   2) A real monthly tracking sheet like the ones already used elsewhere in this workbook \u2014
+      EMP ID / Agent Name / Process / Status columns, followed by one column per calendar date
+      (actual Excel dates, not "Day N" text), then Total / Contribution / Target columns.
+      The month and year are read straight off the date columns, and each day's figures are
+      placed by their actual calendar date \u2014 not by column position \u2014 so a grid that
+      skips a day or starts mid-month still lines up correctly. */
+function detectAndParseSheet(rows){
+  let hdrRowIdx = -1, nameCol = -1;
+  for(let i=0;i<rows.length;i++){
+    const r = rows[i] || [];
+    for(let c=0;c<r.length;c++){
+      if(typeof r[c] === "string" && r[c].trim().toLowerCase() === "agent name"){ hdrRowIdx = i; nameCol = c; break; }
+    }
+    if(hdrRowIdx !== -1) break;
+  }
+  if(hdrRowIdx === -1) return null;
+  const header = rows[hdrRowIdx] || [];
+
+  // Does this header row contain real Excel date cells? That's a real tracking-sheet grid.
+  const dateCols = [];
+  for(let c=nameCol+1; c<header.length; c++){ if(header[c] instanceof Date) dateCols.push(c); }
+
+  if(dateCols.length){
+    // ---- Real tracking-sheet layout ----
+    const first = header[dateCols[0]];
+    const monthIdx = first.getMonth(), year = first.getFullYear();
+    const month = MONTH_NAMES_FULL[monthIdx];
+    const daysInMonth = new Date(year, monthIdx+1, 0).getDate();
+
+    let targetCol = -1, statusCol = -1;
+    for(let c=nameCol+1; c<header.length; c++){
+      const h = (typeof header[c] === "string") ? header[c].trim().toLowerCase() : "";
+      if(targetCol === -1 && h.indexOf("target") === 0) targetCol = c;
+      if(statusCol === -1 && h === "status") statusCol = c;
+    }
+
+    const agents = [];
+    for(let i=hdrRowIdx+1; i<rows.length; i++){
+      const r = rows[i] || [];
+      const name = (r[nameCol]===null||r[nameCol]===undefined) ? "" : String(r[nameCol]).trim();
+      // A blank name, or a "SUM"/"Total" row, marks the end of the agent table \u2014 anything
+      // below (scratch notes, standalone target columns, etc.) is not part of the grid.
+      if(!name || /^(sum|total)$/i.test(name)) break;
+      const daily = Array(daysInMonth).fill(0);
+      dateCols.forEach(function(c){
+        const d = header[c];
+        if(!(d instanceof Date)) return;
+        const dayNum = d.getDate();
+        if(dayNum<1 || dayNum>daysInMonth) return;
+        const v = r[c];
+        if(typeof v === "number") daily[dayNum-1] = v;
+      });
+      const targetVal = (targetCol!==-1 && typeof r[targetCol] === "number") ? r[targetCol] : null;
+      const statusVal = (statusCol!==-1 && r[statusCol]!=null) ? String(r[statusCol]) : null;
+      const active = statusVal ? !/inactive/i.test(statusVal) : true;
+      agents.push({name:name, target:targetVal, daily:daily, active:active});
+    }
+    if(!agents.length) return null;
+    const teamDaily = Array(daysInMonth).fill(0);
+    agents.forEach(function(a){ a.daily.forEach(function(v,i){ teamDaily[i] += v; }); });
+    const teamTotal = teamDaily.reduce(function(s,v){return s+v;},0);
+    return {month:month, monthIdx:monthIdx, year:year, daysInMonth:daysInMonth, teamTarget:null,
+            agents:agents, teamDaily:teamDaily, teamTotal:teamTotal, source:"grid"};
+  }
+
+  // ---- Flat template layout (Agent Name in column A) ----
+  if(nameCol !== 0) return null;
+  let month = null, teamTarget = null;
+  for(let i=0;i<hdrRowIdx;i++){
+    const r = rows[i] || [];
+    const c0 = (r[0]===null||r[0]===undefined) ? "" : String(r[0]).trim().toLowerCase();
+    if(c0.indexOf("monthly team target") === 0 && r[1]!=null) teamTarget = Number(r[1]) || 0;
+    else if(c0 === "month:" && r[1]) month = String(r[1]).trim();
+  }
+  if(!month) return null;
+  month = month.charAt(0).toUpperCase() + month.slice(1).toLowerCase();
+  const monthIdx0 = MONTH_NAMES_FULL.map(function(m){return m.toLowerCase();}).indexOf(month.toLowerCase());
+  if(monthIdx0 === -1) return null;
+  let dayCount = 0;
+  for(let c=2;c<header.length;c++){ if(header[c] && String(header[c]).toLowerCase().indexOf("day") === 0) dayCount++; else break; }
+  if(dayCount === 0) return null;
+  const agents = [];
+  for(let i=hdrRowIdx+1;i<rows.length;i++){
+    const r = rows[i] || [];
+    const name = r[0] ? String(r[0]).trim() : "";
+    if(!name) continue;
+    const target = (r[1]===null||r[1]===undefined||r[1]==="") ? null : Number(r[1])||0;
+    const daily = [];
+    for(let d=0; d<dayCount; d++){ const v = r[2+d]; daily.push(typeof v === "number" ? v : (v && !isNaN(Number(v)) ? Number(v) : 0)); }
+    agents.push({name:name, target:target, daily:daily, active:true});
+  }
+  if(!agents.length) return null;
+  const teamDaily = Array(dayCount).fill(0);
+  agents.forEach(function(a){ a.daily.forEach(function(v,i){ teamDaily[i] += v; }); });
+  const teamTotal = teamDaily.reduce(function(s,v){return s+v;},0);
+  // Best-effort year: continue after the newest month already on the dashboard, same rule "+ Add New Month" uses.
+  const lastM = MONTHS[MONTHS.length-1];
+  const yearGuess = 2026 + Math.floor(monthIdx0 >= MONTH_INDEX[lastM]%12 ? Math.floor(MONTH_INDEX[lastM]/12) : Math.floor(MONTH_INDEX[lastM]/12)+1);
+  return {month:month, monthIdx:monthIdx0, year:yearGuess, daysInMonth:dayCount, teamTarget:teamTarget,
+          agents:agents, teamDaily:teamDaily, teamTotal:teamTotal, source:"template"};
+}
+function applyImportedMonth(res){
+  const month = res.month;
+  const jsIdx = (res.year-2026)*12 + res.monthIdx;
+  if(MONTHS.indexOf(month) === -1){
+    MONTHS.push(month);
+    MONTH_DAYS[month] = res.daysInMonth;
+    MONTH_INDEX[month] = jsIdx;
+    MONTH_COLORS[month] = MONTH_PALETTE[(MONTHS.length-1) % MONTH_PALETTE.length];
+    DATA.monthsMeta[month] = {target:0, weeklyTarget:0, weekly:[0,0,0,0], total:0, daysTotal:res.daysInMonth, daysElapsed:0};
+  } else {
+    MONTH_DAYS[month] = res.daysInMonth;
+    DATA.monthsMeta[month].daysTotal = res.daysInMonth;
+  }
+  const meta = DATA.monthsMeta[month];
+  if(res.teamTarget != null) meta.target = res.teamTarget;
+  DATA.dailyTeam[month] = res.teamDaily.slice();
+  meta.total = res.teamTotal;
+  meta.weeklyTarget = Math.round((meta.target||0)/4);
+  const wk = [0,0,0,0];
+  res.teamDaily.forEach(function(v,i){ const w = i<21 ? Math.floor(i/7) : 3; wk[w] += v; });
+  meta.weekly = wk;
+  const mk = monthKey(month), tk = mk+"Target";
+  res.agents.forEach(function(ai){
+    let ag = DATA.agents.filter(function(a){return a.name.toLowerCase()===ai.name.toLowerCase();})[0];
+    if(!ag){ ag = {name:ai.name, active:true}; DATA.agents.push(ag); }
+    ag[mk] = ai.daily.slice();
+    if(ai.target != null) ag[tk] = ai.target;
+    if(ai.active) ag.active = true; // never auto-deactivate from an import \u2014 only turn on
+  });
+  syncDaysElapsedFromAsOf();
+  activeMonth = month;
+  persistData();
+  const momHdr = document.getElementById("secMoM");
+  if(momHdr) momHdr.textContent = "Month-over-Month Overview \u2014 " + MONTHS[0] + " \u2192 " + MONTHS[MONTHS.length-1] + " " + (2026 + Math.floor(MONTH_INDEX[MONTHS[MONTHS.length-1]]/12));
+  renderEditMonthOptions();
+  document.getElementById("editMonth").value = month;
+  renderTabs();
+  populateEditForMonth();
+  renderAll();
 }
 
 function populateEditForMonth(){
